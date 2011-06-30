@@ -1,0 +1,208 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE beans PUBLIC "-//SPRING//DTD BEAN//EN" "http://www.springframework.org/dtd/spring-beans.dtd">
+
+<beans>
+
+  <bean id="LongTaskMonitor" class="org.geoserver.task.LongTaskMonitor">
+  </bean>
+  <bean id="LongTasksHomePagePanelProvider" class="org.geoserver.task.web.LongTasksHomePagePanelProvider">
+  </bean>
+
+  <bean id="GSS" class="org.geoserver.gss.impl.GSS">
+    <constructor-arg ref="catalog" />
+    <constructor-arg ref="dataDirectory" />
+  </bean>
+
+  <bean id="gssLoader" class="org.geoserver.gss.config.GSSXStreamLoader">
+    <constructor-arg ref="resourceLoader" />
+  </bean>
+
+  <bean id="gssWfsRecordingTransactionListener" class="org.geoserver.gss.wfsbridge.GSSTransactionListener">
+    <constructor-arg ref="GSS" />
+  </bean>
+
+  <!-- gss service -->
+  <bean id="gssServiceTarget" class="org.geoserver.gss.impl.DefaultGeoSynchronizationService">
+    <constructor-arg index="0" ref="GSS" />
+  </bean>
+
+  <bean id="gssService2" class="org.springframework.aop.framework.ProxyFactoryBean">
+    <property name="proxyInterfaces">
+      <value>org.geoserver.gss.service.GeoSynchronizationService</value>
+    </property>
+    <property name="targetName">
+      <value>gssServiceTarget</value>
+    </property>
+    <property name="interceptorNames">
+      <list>
+        <!-- allow any other advise defined elsewhere and named "gssServiceInterceptor*" to be added to the interceptors 
+          list -->
+        <value>gssServiceInterceptor*</value>
+      </list>
+    </property>
+  </bean>
+  <alias name="gssService2" alias="geoSyncronizationService" />
+
+  <!-- service descriptors -->
+  <bean id="gssService-1.0.0" class="org.geoserver.platform.Service">
+    <constructor-arg index="0" value="gss" />
+    <constructor-arg index="1" ref="geoSyncronizationService" />
+    <constructor-arg index="2" value="1.0.0" />
+    <constructor-arg index="3">
+      <list>
+        <value>GetCapabilities</value>
+        <value>Transaction</value>
+        <value>GetEntries</value>
+        <value>AcceptChange</value>
+        <value>RejectChange</value>
+        <value>ReviewedChanges</value>
+        <value>CreateTopic</value>
+        <value>RemoveTopic</value>
+        <value>ListTopics</value>
+        <value>Subscribe</value>
+        <value>ListSubscriptions</value>
+      </list>
+    </constructor-arg>
+  </bean>
+
+  <!-- Exception handler, we need to output ows 1.1 exceptions -->
+  <bean id="gss100ExceptionHandler" class="org.geoserver.ows.OWS11ServiceExceptionHandler">
+    <constructor-arg index="0">
+      <list>
+        <ref local="gssService-1.0.0" />
+      </list>
+    </constructor-arg>
+  </bean>
+  
+
+  <!-- GetCapabilities -->
+  <bean id="gssCapabilitiesKvpReader" class="org.geoserver.gss.impl.discovery.GetCapabilitiesKvpReader">
+  </bean>
+  <bean id="gssCapabilitiesOutputFormat" class="org.geoserver.gss.impl.discovery.GetCapabilitiesResponse">
+    <constructor-arg index="0" ref="GSS" />
+  </bean>
+  
+  <!-- GetEntries -->
+  <bean id="gssWKTGEomKvpParser" class="org.geoserver.gss.impl.query.GeomKvpParser">
+    <property name="service" value="GSS"/>
+    <property name="version" value="1.0.0"/>
+    <property name="request" value="GetEntries"/>
+  </bean>
+  <bean id="gssSpatialOpKvpParser" class="org.geoserver.ows.kvp.EnumKvpParser">
+    <constructor-arg value="SPATIALOP"/>
+    <constructor-arg value="org.geoserver.gss.impl.query.SpatialOp"/>
+    <property name="service" value="GSS"/>
+    <property name="version" value="1.0.0"/>
+    <property name="request" value="GetEntries"/>
+  </bean>
+  <bean id="gssBboxKvpParser" class="org.geoserver.wfs.kvp.BBoxKvpParser">
+    <property name="service" value="GSS"/>
+    <property name="version" value="1.0.0"/>
+    <property name="request" value="GetEntries"/>
+  </bean>
+  <bean id="gssFeedKvpParser" class="org.geoserver.ows.kvp.EnumKvpParser">
+    <constructor-arg value="FEED"/>
+    <constructor-arg value="org.geoserver.gss.service.FeedType"/>
+    <property name="service" value="GSS"/>
+    <property name="version" value="1.0.0"/>
+    <property name="request" value="GetEntries"/>
+  </bean>
+  <bean id="gssStartTimeKvpParser" class="org.geoserver.gss.impl.query.TimeStampKvpParser">
+    <constructor-arg value="STARTTIME"/>
+    <property name="service" value="GSS"/>
+    <property name="version" value="1.0.0"/>
+    <property name="request" value="GetEntries"/>
+  </bean>
+  <bean id="gssEndTimeKvpParser" class="org.geoserver.gss.impl.query.TimeStampKvpParser">
+    <constructor-arg value="ENDTIME"/>
+    <property name="service" value="GSS"/>
+    <property name="version" value="1.0.0"/>
+    <property name="request" value="GetEntries"/>
+  </bean>
+  <bean id="gssTemporalOpKvpParser" class="org.geoserver.ows.kvp.EnumKvpParser">
+    <constructor-arg value="TEMPORALOP"/>
+    <constructor-arg value="org.geoserver.gss.impl.query.TemporalOp"/>
+    <property name="service" value="GSS"/>
+    <property name="version" value="1.0.0"/>
+    <property name="request" value="GetEntries"/>
+  </bean>
+  <bean id="gssSearchTermsKvpParser" class="org.geoserver.ows.FlatKvpParser">
+    <constructor-arg index="0" value="SEARCHTERMS"/>
+    <constructor-arg index="1" value="java.lang.String"/>
+    <property name="service"><value>GSS</value></property>
+    <property name="version"><value>1.0.0</value></property>
+  </bean>
+  <bean id="gssFilterKvpParser" class="org.geoserver.gss.impl.query.FilterKvpParser">
+    <property name="service" value="GSS"/>
+    <property name="version" value="1.0.0"/>
+  </bean>
+  
+
+  <bean id="gssGetEntriesKvpReader" class="org.geoserver.gss.impl.query.GetEntriesKvpRequestReader">
+  </bean>
+  
+  <bean id="gssGetEntriesChangeFeedResponse" class="org.geoserver.gss.impl.query.ChangeFeedResponse">
+    <constructor-arg ref="GSS"/>
+  </bean>
+  
+  <bean id="gssGetEntriesResolutionResponse" class="org.geoserver.gss.impl.query.ResolutionFeedResponse">
+    <constructor-arg ref="GSS"/>
+  </bean>
+  
+  <bean id="gssGetEntriesReplicationResponse" class="org.geoserver.gss.impl.query.ReplicationFeedResponse">
+    <constructor-arg ref="GSS"/>
+  </bean>
+  
+
+  <!-- XML handling -->
+  <bean id="gssXsd" class="org.geoserver.gss.xml.GSSSchema">
+    <constructor-arg ref="wfsXsd-1.1" />
+  </bean>
+
+  <bean id="gssXmlConfiguration" class="org.geoserver.gss.xml.GSSConfiguration">
+    <constructor-arg>
+      <list>
+        <ref bean="wfsXmlConfiguration-1.1" />
+      </list>
+    </constructor-arg>
+    <constructor-arg ref="gssXsd" />
+    <constructor-arg ref="catalog" />
+  </bean>
+
+    
+    
+  <!-- WEB UI -->
+  <bean id="gssServicePage" class="org.geoserver.web.MenuPageInfo">
+    <property name="id" value="gss"/>
+    <property name="titleKey" value="gss.name"/>
+    <property name="descriptionKey" value="GSSAdminPage.description"/>
+    <property name="componentClass" value="org.geoserver.gss.web.GSSAdminPage"/>
+    <property name="icon" value="server_feed.png"/>
+    <property name="category" ref="servicesCategory"/>
+  </bean> 
+  <bean id="gssTypesMenuPage" class="org.geoserver.web.MenuPageInfo">
+    <property name="id" value="gssTypes"/>
+    <property name="titleKey" value="GSSLayersPage.title"/>
+    <property name="descriptionKey" value="GSSLayersPage.description"/>
+    <property name="componentClass" value="org.geoserver.gss.web.GSSLayersPage"/>
+    <property name="category" ref="dataCategory"/>
+    <property name="icon" value="shape_square_feed.png"/>
+    <property name="order" value="50"/>
+  </bean>
+  
+  
+  <bean id="gssRestConfigMapping" class="org.geoserver.rest.RESTMapping">
+    <property name="routes">
+      <map>
+        <entry>
+          <key>
+            <value>/gss/timeline.xml</value>
+          </key>
+          <value>gssTimeline</value>
+        </entry>
+      </map>
+    </property>
+  </bean>
+  <bean id="gssTimeline" class="org.geoserver.gss.web.TimeLineRestlet"/>
+  
+</beans>

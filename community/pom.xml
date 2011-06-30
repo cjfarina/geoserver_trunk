@@ -181,5 +181,11 @@
         <module>sfs</module>
       </modules>
     </profile>
+    <profile>
+      <id>geosync</id>
+      <modules>
+        <module>geosync</module>
+      </modules>
+    </profile>
   </profiles>
 </project>
