@@ -114,6 +114,8 @@ public class FeedDecoderTest extends TestCase {
 
             assertEquals(1, entry.getContributor().size());
             assertEquals("geoserver", entry.getContributor().get(0).getName());*/
+            
+            reader.close();
         } catch (Exception e) {
             e.printStackTrace();
         }
