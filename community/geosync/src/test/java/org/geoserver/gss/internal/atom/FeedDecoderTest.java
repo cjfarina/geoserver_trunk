@@ -25,7 +25,7 @@ public class FeedDecoderTest extends TestCase {
             inputFactory.setNamespaceAware(true);
             reader = inputFactory.createScanner(input);
             FeedDecoder feedDecoder = new FeedDecoder();
-            FeedImpl feed = feedDecoder.decodeDocument(reader);
+            FeedImpl feed = feedDecoder.decode(reader);
 
             assertEquals(new Long(50), feed.getMaxEntries());
             assertEquals(new Long(1), feed.getStartPosition());

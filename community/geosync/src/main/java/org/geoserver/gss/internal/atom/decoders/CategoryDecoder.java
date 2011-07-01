@@ -15,24 +15,22 @@ public class CategoryDecoder extends AbstractDecoder<CategoryImpl> {
 
     private CategoryImpl category;
 
-    @Override
-    public void setupInitialData() {
+    public CategoryDecoder() {
         category = new CategoryImpl();
-
     }
 
     @Override
-    public void decodeAttributtes(BxmlStreamReader r, Map<QName, String> attributes) throws IOException {
+    protected void decodeAttributtes(BxmlStreamReader r, Map<QName, String> attributes) throws IOException {
         category.setScheme(attributes.get(scheme));
         category.setTerm(attributes.get(term));
     }
 
     @Override
-    public void decodeElement(BxmlStreamReader r) throws IOException {
+    protected void decodeElement(BxmlStreamReader r) throws IOException {
     }
 
     @Override
-    public CategoryImpl buildResult() {
+    protected CategoryImpl buildResult() {
         return category;
     }
 

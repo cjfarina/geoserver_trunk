@@ -16,24 +16,23 @@ public class GeneratorDecoder extends AbstractDecoder<GeneratorImpl> {
 
     private GeneratorImpl generator;
 
-    @Override
-    public void setupInitialData() {
+    public GeneratorDecoder() {
         generator = new GeneratorImpl();
     }
 
     @Override
-    public void decodeAttributtes(BxmlStreamReader r, Map<QName, String> attributes)
+    protected void decodeAttributtes(BxmlStreamReader r, Map<QName, String> attributes)
             throws IOException {
         generator.setUri(attributes.get(uri));
         generator.setVersion(attributes.get(version));
     }
 
-    public void setStringValue(String value) {
+    protected void setStringValue(String value) {
         generator.setValue(value);
     }
 
     @Override
-    public void decodeElement(BxmlStreamReader r) throws IOException {
+    protected void decodeElement(BxmlStreamReader r) throws IOException {
         QName name = r.getElementName();
 
         if (generator.equals(name)) {
@@ -42,7 +41,7 @@ public class GeneratorDecoder extends AbstractDecoder<GeneratorImpl> {
     }
 
     @Override
-    public GeneratorImpl buildResult() {
+    protected GeneratorImpl buildResult() {
         return generator;
     }
 

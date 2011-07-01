@@ -1,8 +1,10 @@
 package org.geoserver.gss.internal.atom.builders;
 
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.Date;
 import java.util.List;
+import java.util.Iterator;
 
 import org.geoserver.gss.internal.atom.CategoryImpl;
 import org.geoserver.gss.internal.atom.EntryImpl;
@@ -38,7 +40,15 @@ public final class FeedBuilder {
 
     private Date updated;
 
-    private List<EntryImpl> entry = new ArrayList<EntryImpl>();
+    private Iterator<EntryImpl> entry = Collections.EMPTY_LIST.iterator();
+
+    public Iterator<EntryImpl> getEntry() {
+        return entry;
+    }
+
+    public void setEntry(Iterator<EntryImpl> entry) {
+        this.entry = entry;
+    }
 
     private Long startPosition;
 
@@ -59,7 +69,7 @@ public final class FeedBuilder {
         feed.setSubtitle(subtitle);
         feed.setTitle(title);
         feed.setUpdated(updated);
-        feed.setEntry(entry.iterator());
+        feed.setEntry(entry);
         feed.setStartPosition(startPosition);
         feed.setMaxEntries(maxEntries);
 
@@ -168,18 +178,6 @@ public final class FeedBuilder {
 
     public void setUpdated(Date updated) {
         this.updated = updated;
-    }
-
-    public List<EntryImpl> getEntry() {
-        return entry;
-    }
-
-    public void setEntry(List<EntryImpl> entry) {
-        this.entry = entry;
-    }
-
-    public void addEntry(EntryImpl entry) {
-        this.entry.add(entry);
     }
 
     public Long getStartPosition() {

@@ -15,27 +15,22 @@ import org.gvsig.bxml.stream.BxmlStreamReader;
 import org.gvsig.bxml.stream.EventType;
 
 public abstract class AbstractDecoder<T> {
+
     private static final Logger LOGGER = Logging.getLogger(AbstractEncoder.class);
 
-    public void setupInitialData() {
+    protected void decodeElement(final BxmlStreamReader r) throws IOException {
     }
 
-    public void decodeElement(final BxmlStreamReader r) throws IOException {
-    }
-
-    public T buildResult() {
-        return null;
-    }
-
-    public void decodeAttributtes(final BxmlStreamReader r, Map<QName, String> attributes)
+    protected void decodeAttributtes(final BxmlStreamReader r, Map<QName, String> attributes)
             throws IOException {
     }
 
-    public void setStringValue(String value) throws IOException {
+    protected abstract T buildResult();
+
+    protected void setStringValue(String value) throws IOException {
     }
 
-    public T decodeDocument(BxmlStreamReader r) throws IOException {
-        setupInitialData();
+    public T decode(BxmlStreamReader r) throws IOException {
         EventType event;
         while ((event = r.next()) != EventType.END_DOCUMENT) {
             if (EventType.START_DOCUMENT == event) {
@@ -51,9 +46,8 @@ public abstract class AbstractDecoder<T> {
         return buildResult();
     }
 
-    public T decodeElement(BxmlStreamReader r, QName name) throws IOException {
+    public T decode(BxmlStreamReader r, QName name) throws IOException {
         r.require(EventType.START_ELEMENT, name.getNamespaceURI(), name.getLocalPart());
-        setupInitialData();
 
         EventType event;
         if (r.getAttributeCount() > 0) {
@@ -93,7 +87,7 @@ public abstract class AbstractDecoder<T> {
      * @return
      * @throws IOException
      */
-    public String readStringValue(final BxmlStreamReader r, final QName name) throws IOException {
+    protected String readStringValue(final BxmlStreamReader r, final QName name) throws IOException {
         r.require(EventType.START_ELEMENT, name.getNamespaceURI(), name.getLocalPart());
         StringBuilder sb = new StringBuilder();
         while (r.next().isValue()) {
@@ -103,7 +97,7 @@ public abstract class AbstractDecoder<T> {
         return sb.toString();
     }
 
-    public Long readLongValue(final BxmlStreamReader r, final QName name) throws IOException {
+    protected Long readLongValue(final BxmlStreamReader r, final QName name) throws IOException {
         String stringValue = readStringValue(r, name);
         if (stringValue != null && stringValue.equals("")) {
             LOGGER.warning(name.getLocalPart() + " value is null.");
@@ -120,7 +114,7 @@ public abstract class AbstractDecoder<T> {
         return null;
     }
 
-    public Date readDateValue(BxmlStreamReader r, final QName name) throws IOException {
+    protected Date readDateValue(BxmlStreamReader r, final QName name) throws IOException {
         r.require(EventType.START_ELEMENT, name.getNamespaceURI(), name.getLocalPart());
         String dateString = readStringValue(r, name);
         Date date = null;
@@ -133,7 +127,7 @@ public abstract class AbstractDecoder<T> {
         return date;
     }
 
-    public Map<QName, String> getAttributes(BxmlStreamReader r) {
+    protected Map<QName, String> getAttributes(BxmlStreamReader r) {
         final int attributeCount = r.getAttributeCount();
         Map<QName, String> map = new HashMap<QName, String>();
         for (int i = 0; i < attributeCount; i++) {

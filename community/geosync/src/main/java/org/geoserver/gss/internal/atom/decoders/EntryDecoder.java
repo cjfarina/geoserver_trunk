@@ -17,13 +17,12 @@ public class EntryDecoder extends AbstractDecoder<EntryImpl> {
 
     private EntryBuilder builder;
 
-    @Override
-    public void setupInitialData() {
+    public EntryDecoder() {
         builder = new EntryBuilder();
     }
 
     @Override
-    public void decodeElement(BxmlStreamReader r) throws IOException {
+    protected void decodeElement(BxmlStreamReader r) throws IOException {
         QName name = r.getElementName();
 
         if (title.equals(name)) {
@@ -45,7 +44,7 @@ public class EntryDecoder extends AbstractDecoder<EntryImpl> {
     }
 
     @Override
-    public EntryImpl buildResult() {
+    protected EntryImpl buildResult() {
         return builder.build();
     }
 

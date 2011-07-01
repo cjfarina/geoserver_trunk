@@ -25,15 +25,11 @@ public class LinkDecoder extends AbstractDecoder<LinkImpl> {
 
     public LinkDecoder() {
         LOGGER = Logging.getLogger(getClass());
-    }
-
-    @Override
-    public void setupInitialData() {
         link = new LinkImpl();
     }
 
     @Override
-    public void decodeAttributtes(BxmlStreamReader r, Map<QName, String> attributes)
+    protected void decodeAttributtes(BxmlStreamReader r, Map<QName, String> attributes)
             throws IOException {
         link.setHref(attributes.get(href));
         link.setRel(attributes.get(rel));
@@ -46,7 +42,7 @@ public class LinkDecoder extends AbstractDecoder<LinkImpl> {
     }
 
     @Override
-    public void decodeElement(BxmlStreamReader r) throws IOException {
+    protected void decodeElement(BxmlStreamReader r) throws IOException {
         QName name = r.getElementName();
 
         if (href.equals(name)) {
@@ -71,7 +67,7 @@ public class LinkDecoder extends AbstractDecoder<LinkImpl> {
     }
 
     @Override
-    public LinkImpl buildResult() {
+    protected LinkImpl buildResult() {
         return link;
     }
 
