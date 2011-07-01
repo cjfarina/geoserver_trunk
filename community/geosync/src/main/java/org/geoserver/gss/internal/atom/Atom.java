@@ -53,6 +53,28 @@ public class Atom extends XSD {
     public static QName content = new QName(NAMESPACE, "content");
 
     public static QName category = new QName(NAMESPACE, "category");
+    
+    public static QName startPosition = new QName(NAMESPACE, "startPosition");
+    
+    public static QName maxEntries = new QName(NAMESPACE, "maxEntries");
+    
+    public static QName term = new QName(NAMESPACE, "term");
+    
+    public static QName scheme = new QName(NAMESPACE, "scheme");
+    
+    public static QName version = new QName(NAMESPACE, "version");
+    
+    public static QName icon = new QName(NAMESPACE, "icon");
+    
+    public static QName href = new QName(NAMESPACE, "href");
+    
+    public static QName rel = new QName(NAMESPACE, "rel");
+    
+    public static QName type = new QName(NAMESPACE, "type");
+    
+    public static QName hreflang = new QName(NAMESPACE, "hreflang");
+    
+    public static QName length = new QName(NAMESPACE, "length");
 
     @Override
     public String getNamespaceURI() {

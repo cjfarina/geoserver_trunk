@@ -1,0 +1,457 @@
+<?xml version="1.0" encoding="ISO-8859-1"?>
+<feed xmlns="http://www.w3.org/2005/Atom"
+  xmlns:georss="http://www.georss.org/georss"
+  xmlns:gss="http://www.opengis.net/gss/1.0"
+  xmlns:ows="http://www.opengis.net/ows/1.1"
+  xmlns:fes="http://www.opengis.net/ogc"
+  xmlns:xlink="http://www.w3.org/1999/xlink"
+  xmlns:wfs="http://www.opengis.net/wfs" xmlns:gml="http://www.opengis.net/gml"
+  startPosition="1" maxEntries="5">
+  <id>70ec4a39a04e3917231af986cf8613ec560e65e5</id>
+  <updated>2011-05-31T20:11:37.881Z</updated>
+  <entry>
+    <title>Insert of Feature planet_osm_polygon.1000</title>
+    <summary>Initial import of FeatureType http://opengeo.org/osm:planet_osm_polygon</summary>
+    <id>3205da9b60edeacfa076ff71727c6440d7e3e556</id>
+    <updated>2011-05-31T20:11:37.881Z</updated>
+    <author>
+      <name>admin</name>
+    </author>
+    <contributor>
+      <name>admin</name>
+    </contributor>
+    <content>
+      <wfs:Insert xmlns:f="http://opengeo.org/osm">
+        <f:planet_osm_polygon gml:id="planet_osm_polygon.1000">
+          <f:osm_id>45298844</f:osm_id>
+          <f:access></f:access>
+          <f:addr_flats></f:addr_flats>
+          <f:addr_housenumber></f:addr_housenumber>
+          <f:addr_interpolation></f:addr_interpolation>
+          <f:admin_level></f:admin_level>
+          <f:aerialway></f:aerialway>
+          <f:aeroway></f:aeroway>
+          <f:amenity></f:amenity>
+          <f:area></f:area>
+          <f:barrier></f:barrier>
+          <f:bicycle></f:bicycle>
+          <f:bridge></f:bridge>
+          <f:boundary></f:boundary>
+          <f:building>false</f:building>
+          <f:construction></f:construction>
+          <f:cutting></f:cutting>
+          <f:disused></f:disused>
+          <f:embankment></f:embankment>
+          <f:foot></f:foot>
+          <f:highway></f:highway>
+          <f:historic></f:historic>
+          <f:horse></f:horse>
+          <f:junction></f:junction>
+          <f:landuse></f:landuse>
+          <f:layer></f:layer>
+          <f:learning></f:learning>
+          <f:leisure></f:leisure>
+          <f:lock></f:lock>
+          <f:man_made></f:man_made>
+          <f:military></f:military>
+          <f:motorcar></f:motorcar>
+          <f:name></f:name>
+          <f:natural></f:natural>
+          <f:oneway></f:oneway>
+          <f:operator></f:operator>
+          <f:power></f:power>
+          <f:power_source></f:power_source>
+          <f:place></f:place>
+          <f:railway></f:railway>
+          <f:ref></f:ref>
+          <f:religion></f:religion>
+          <f:residence></f:residence>
+          <f:route></f:route>
+          <f:service></f:service>
+          <f:shop></f:shop>
+          <f:sport></f:sport>
+          <f:tourism></f:tourism>
+          <f:tracktype></f:tracktype>
+          <f:tunnel></f:tunnel>
+          <f:waterway></f:waterway>
+          <f:width></f:width>
+          <f:wood></f:wood>
+          <f:z_order>0</f:z_order>
+          <f:way_area>583.1195</f:way_area>
+          <f:way>
+            <gml:Polygon>
+              <gml:exterior>
+                <gml:LinearRing>
+                  <gml:posList gml:srsName="urn:x-ogc:def:crs:EPSG:900913"
+                    gml:srsDimension="2" gml:count="5">-8421981.58 5074017.82 -8421975.14 5074027.33 -8421933.13 5073998.82 -8421939.57 5073990.31 -8421981.58 5074017.82</gml:posList>
+                </gml:LinearRing>
+              </gml:exterior>
+            </gml:Polygon>
+          </f:way>
+        </f:planet_osm_polygon>
+      </wfs:Insert>
+    </content>
+    <georss:where>
+      <gml:Envelope gml:srsName="urn:x-ogc:def:crs:EPSG:900913">
+        <gml:lowerCorner>-8421981.58 -8421981.58</gml:lowerCorner>
+        <gml:upperCorner>-8421933.13 -8421933.13</gml:upperCorner>
+      </gml:Envelope>
+    </georss:where>
+  </entry>
+  <entry>
+    <title>Insert of Feature planet_osm_polygon.46051</title>
+    <summary>Initial import of FeatureType http://opengeo.org/osm:planet_osm_polygon</summary>
+    <id>a8c78079255a3c2f8114277c461a30d9074efa34</id>
+    <updated>2011-05-31T20:11:37.881Z</updated>
+    <author>
+      <name>admin</name>
+    </author>
+    <contributor>
+      <name>admin</name>
+    </contributor>
+    <content>
+      <wfs:Insert xmlns:f="http://opengeo.org/osm">
+        <f:planet_osm_polygon gml:id="planet_osm_polygon.46051">
+          <f:osm_id>40563291</f:osm_id>
+          <f:access></f:access>
+          <f:addr_flats></f:addr_flats>
+          <f:addr_housenumber></f:addr_housenumber>
+          <f:addr_interpolation></f:addr_interpolation>
+          <f:admin_level></f:admin_level>
+          <f:aerialway></f:aerialway>
+          <f:aeroway></f:aeroway>
+          <f:amenity></f:amenity>
+          <f:area></f:area>
+          <f:barrier></f:barrier>
+          <f:bicycle></f:bicycle>
+          <f:bridge></f:bridge>
+          <f:boundary></f:boundary>
+          <f:building></f:building>
+          <f:construction></f:construction>
+          <f:cutting></f:cutting>
+          <f:disused></f:disused>
+          <f:embankment></f:embankment>
+          <f:foot></f:foot>
+          <f:highway></f:highway>
+          <f:historic></f:historic>
+          <f:horse></f:horse>
+          <f:junction></f:junction>
+          <f:landuse>industrial</f:landuse>
+          <f:layer></f:layer>
+          <f:learning></f:learning>
+          <f:leisure></f:leisure>
+          <f:lock></f:lock>
+          <f:man_made></f:man_made>
+          <f:military></f:military>
+          <f:motorcar></f:motorcar>
+          <f:name></f:name>
+          <f:natural></f:natural>
+          <f:oneway></f:oneway>
+          <f:operator></f:operator>
+          <f:power></f:power>
+          <f:power_source></f:power_source>
+          <f:place></f:place>
+          <f:railway></f:railway>
+          <f:ref></f:ref>
+          <f:religion></f:religion>
+          <f:residence></f:residence>
+          <f:route></f:route>
+          <f:service></f:service>
+          <f:shop></f:shop>
+          <f:sport></f:sport>
+          <f:tourism></f:tourism>
+          <f:tracktype></f:tracktype>
+          <f:tunnel></f:tunnel>
+          <f:waterway></f:waterway>
+          <f:width></f:width>
+          <f:wood></f:wood>
+          <f:z_order>0</f:z_order>
+          <f:way_area>186239.89</f:way_area>
+          <f:way>
+            <gml:Polygon>
+              <gml:exterior>
+                <gml:LinearRing>
+                  <gml:posList gml:srsName="urn:x-ogc:def:crs:EPSG:900913"
+                    gml:srsDimension="2" gml:count="31">-8271351.07 4869168.89 -8271079.03 4869471.57 -8271058.23 4869494.93 -8271050.8 4869488.75 -8271072.11 4869457.29 -8271058.63 4869450.5 -8270954.87 4869570.35 -8270935.46 4869570.62 -8270908.35 4869540.34 -8270931.74 4869500.44 -8270932.8 4869463.73 -8270892.41 4869466.51 -8270822.79 4869430.37 -8270821.15 4869396.82 -8270872.01 4869366.55 -8270802.39 4869347.85 -8270979.6 4869160.75 -8270843.05 4869086.16 -8270832.28 4869011.2 -8270849.47 4868963.87 -8270893.76 4868927.96 -8270952.53 4868942.72 -8270991.67 4868957.75 -8271016.25 4868929.44 -8271117.29 4869003.19 -8271138.06 4868979.45 -8271230.37 4869061.54 -8271229.19 4869139.13 -8271275.52 4869141.5 -8271291.66 4869116.05 -8271351.07 4869168.89</gml:posList>
+                </gml:LinearRing>
+              </gml:exterior>
+            </gml:Polygon>
+          </f:way>
+        </f:planet_osm_polygon>
+      </wfs:Insert>
+    </content>
+    <georss:where>
+      <gml:Envelope gml:srsName="urn:x-ogc:def:crs:EPSG:900913">
+        <gml:lowerCorner>-8271351.07 -8271351.07</gml:lowerCorner>
+        <gml:upperCorner>-8270802.39 -8270802.39</gml:upperCorner>
+      </gml:Envelope>
+    </georss:where>
+  </entry>
+  <entry>
+    <title>Insert of Feature planet_osm_polygon.46052</title>
+    <summary>Initial import of FeatureType http://opengeo.org/osm:planet_osm_polygon</summary>
+    <id>3231ac74d61429cd881a71e34075a689b0da8ce7</id>
+    <updated>2011-05-31T20:11:37.881Z</updated>
+    <author>
+      <name>admin</name>
+    </author>
+    <contributor>
+      <name>admin</name>
+    </contributor>
+    <content>
+      <wfs:Insert xmlns:f="http://opengeo.org/osm">
+        <f:planet_osm_polygon gml:id="planet_osm_polygon.46052">
+          <f:osm_id>37354022</f:osm_id>
+          <f:access></f:access>
+          <f:addr_flats></f:addr_flats>
+          <f:addr_housenumber></f:addr_housenumber>
+          <f:addr_interpolation></f:addr_interpolation>
+          <f:admin_level></f:admin_level>
+          <f:aerialway></f:aerialway>
+          <f:aeroway></f:aeroway>
+          <f:amenity></f:amenity>
+          <f:area></f:area>
+          <f:barrier></f:barrier>
+          <f:bicycle></f:bicycle>
+          <f:bridge></f:bridge>
+          <f:boundary></f:boundary>
+          <f:building></f:building>
+          <f:construction></f:construction>
+          <f:cutting></f:cutting>
+          <f:disused></f:disused>
+          <f:embankment></f:embankment>
+          <f:foot></f:foot>
+          <f:highway></f:highway>
+          <f:historic></f:historic>
+          <f:horse></f:horse>
+          <f:junction></f:junction>
+          <f:landuse></f:landuse>
+          <f:layer></f:layer>
+          <f:learning></f:learning>
+          <f:leisure>common</f:leisure>
+          <f:lock></f:lock>
+          <f:man_made></f:man_made>
+          <f:military></f:military>
+          <f:motorcar></f:motorcar>
+          <f:name>Joseph A Citta Reservation -- BSA</f:name>
+          <f:natural></f:natural>
+          <f:oneway></f:oneway>
+          <f:operator></f:operator>
+          <f:power></f:power>
+          <f:power_source></f:power_source>
+          <f:place></f:place>
+          <f:railway></f:railway>
+          <f:ref></f:ref>
+          <f:religion></f:religion>
+          <f:residence></f:residence>
+          <f:route></f:route>
+          <f:service></f:service>
+          <f:shop></f:shop>
+          <f:sport></f:sport>
+          <f:tourism></f:tourism>
+          <f:tracktype></f:tracktype>
+          <f:tunnel></f:tunnel>
+          <f:waterway></f:waterway>
+          <f:width></f:width>
+          <f:wood></f:wood>
+          <f:z_order>0</f:z_order>
+          <f:way_area>890580.3</f:way_area>
+          <f:way>
+            <gml:Polygon>
+              <gml:exterior>
+                <gml:LinearRing>
+                  <gml:posList gml:srsName="urn:x-ogc:def:crs:EPSG:900913"
+                    gml:srsDimension="2" gml:count="84">-8271350.78 4834323.92 -8271339.31 4834366.92 -8271340.84 4834420.83 -8271312.45 4834430.1 -8271296.76 4834437.93 -8271254.79 4834458.79 -8271225.62 4834473.13 -8271206.14 4834483.85 -8271173.53 4834506.73 -8271145.7 4834536.43 -8271130.11 4834558.3 -8271101.95 4834604.8 -8271085.81 4834650.0 -8271077.01 4834696.5 -8271075.34 4834730.4 -8271075.79 4834761.83 -8270985.79 4834755.79 -8270914.13 4834744.33 -8270856.8 4834787.33 -8270773.68 4834851.34 -8270656.16 4834908.67 -8270603.6 4834943.07 -8270536.72 4834962.18 -8270450.73 4834946.88 -8270407.74 4834921.1 -8270374.3 4834868.54 -8270362.83 4834744.33 -8270316.97 4834663.11 -8270283.53 4834545.6 -8270271.1 4834491.13 -8270251.99 4834457.69 -8270273.96 4834414.69 -8270293.08 4834400.37 -8270353.27 4834362.15 -8270366.65 4834316.29 -8270350.41 4834271.37 -8270331.29 4834242.72 -8270348.49 4834190.17 -8270377.16 4834172.97 -8270401.05 4834144.3 -8270415.37 4834102.25 -8270429.71 4834064.04 -8270453.6 4834067.87 -8270479.39 4834051.61 -8270498.51 4834022.96 -8270523.34 4833979.96 -8270491.82 4833932.18 -8270469.84 4833901.61 -8270453.6 4833879.63 -8270508.06 4833836.64 -8270573.02 4833777.4 -8270647.55 4833743.01 -8270694.37 4833731.54 -8270723.04 4833717.21 -8270768.9 4833712.43 -8270802.34 4833704.79 -8270826.22 4833685.68 -8270854.88 4833669.43 -8270887.66 4833643.56 -8270915.09 4833624.53 -8270957.12 4833602.55 -8270972.42 4833576.76 -8270979.09 4833542.36 -8271055.54 4833576.76 -8271134.84 4833717.21 -8271125.28 4833748.73 -8271117.64 4833784.09 -8271110.95 4833819.45 -8271136.75 4833850.97 -8271119.56 4833874.87 -8271110.0 4833908.3 -8271081.33 4833967.54 -8271050.76 4834015.31 -8271038.34 4834059.26 -8271009.67 4834082.19 -8271025.92 4834108.95 -8271043.11 4834135.7 -8271086.11 4834158.63 -8271124.33 4834166.28 -8271157.77 4834187.3 -8271236.12 4834225.51 -8271303.0 4834252.26 -8271334.53 4834263.74 -8271350.78 4834323.92</gml:posList>
+                </gml:LinearRing>
+              </gml:exterior>
+            </gml:Polygon>
+          </f:way>
+        </f:planet_osm_polygon>
+      </wfs:Insert>
+    </content>
+    <georss:where>
+      <gml:Envelope gml:srsName="urn:x-ogc:def:crs:EPSG:900913">
+        <gml:lowerCorner>-8271350.78 -8271350.78</gml:lowerCorner>
+        <gml:upperCorner>-8270251.99 -8270251.99</gml:upperCorner>
+      </gml:Envelope>
+    </georss:where>
+  </entry>
+  <entry>
+    <title>Insert of Feature planet_osm_polygon.46053</title>
+    <summary>Initial import of FeatureType http://opengeo.org/osm:planet_osm_polygon</summary>
+    <id>45425e0c6bc80f6eb6d526fabe576cde8819def6</id>
+    <updated>2011-05-31T20:11:37.881Z</updated>
+    <author>
+      <name>admin</name>
+    </author>
+    <contributor>
+      <name>admin</name>
+    </contributor>
+    <content>
+      <wfs:Insert xmlns:f="http://opengeo.org/osm">
+        <f:planet_osm_polygon gml:id="planet_osm_polygon.46053">
+          <f:osm_id>39835900</f:osm_id>
+          <f:access></f:access>
+          <f:addr_flats></f:addr_flats>
+          <f:addr_housenumber></f:addr_housenumber>
+          <f:addr_interpolation></f:addr_interpolation>
+          <f:admin_level></f:admin_level>
+          <f:aerialway></f:aerialway>
+          <f:aeroway></f:aeroway>
+          <f:amenity></f:amenity>
+          <f:area></f:area>
+          <f:barrier></f:barrier>
+          <f:bicycle></f:bicycle>
+          <f:bridge></f:bridge>
+          <f:boundary></f:boundary>
+          <f:building></f:building>
+          <f:construction></f:construction>
+          <f:cutting></f:cutting>
+          <f:disused></f:disused>
+          <f:embankment></f:embankment>
+          <f:foot></f:foot>
+          <f:highway></f:highway>
+          <f:historic></f:historic>
+          <f:horse></f:horse>
+          <f:junction></f:junction>
+          <f:landuse>recreation_ground</f:landuse>
+          <f:layer></f:layer>
+          <f:learning></f:learning>
+          <f:leisure></f:leisure>
+          <f:lock></f:lock>
+          <f:man_made></f:man_made>
+          <f:military></f:military>
+          <f:motorcar></f:motorcar>
+          <f:name></f:name>
+          <f:natural></f:natural>
+          <f:oneway></f:oneway>
+          <f:operator></f:operator>
+          <f:power></f:power>
+          <f:power_source></f:power_source>
+          <f:place></f:place>
+          <f:railway></f:railway>
+          <f:ref></f:ref>
+          <f:religion></f:religion>
+          <f:residence></f:residence>
+          <f:route></f:route>
+          <f:service></f:service>
+          <f:shop></f:shop>
+          <f:sport></f:sport>
+          <f:tourism></f:tourism>
+          <f:tracktype></f:tracktype>
+          <f:tunnel></f:tunnel>
+          <f:waterway></f:waterway>
+          <f:width></f:width>
+          <f:wood></f:wood>
+          <f:z_order>0</f:z_order>
+          <f:way_area>25892.797</f:way_area>
+          <f:way>
+            <gml:Polygon>
+              <gml:exterior>
+                <gml:LinearRing>
+                  <gml:posList gml:srsName="urn:x-ogc:def:crs:EPSG:900913"
+                    gml:srsDimension="2" gml:count="17">-8271347.28 4968979.42 -8271282.55 4969172.47 -8271282.59 4969207.99 -8271326.81 4969225.41 -8271288.11 4969336.25 -8271296.3 4969359.98 -8271254.29 4969338.41 -8271279.33 4969306.82 -8271269.54 4969135.63 -8271237.22 4969120.35 -8271228.46 4968949.66 -8271194.14 4968888.75 -8271219.61 4968875.81 -8271270.05 4968909.19 -8271279.13 4968941.42 -8271325.13 4968957.5 -8271347.28 4968979.42</gml:posList>
+                </gml:LinearRing>
+              </gml:exterior>
+            </gml:Polygon>
+          </f:way>
+        </f:planet_osm_polygon>
+      </wfs:Insert>
+    </content>
+    <georss:where>
+      <gml:Envelope gml:srsName="urn:x-ogc:def:crs:EPSG:900913">
+        <gml:lowerCorner>-8271347.28 -8271347.28</gml:lowerCorner>
+        <gml:upperCorner>-8271194.14 -8271194.14</gml:upperCorner>
+      </gml:Envelope>
+    </georss:where>
+  </entry>
+  <entry>
+    <title>Insert of Feature planet_osm_polygon.46054</title>
+    <summary>Initial import of FeatureType http://opengeo.org/osm:planet_osm_polygon</summary>
+    <id>e3abca0d4a6c38ec00a3c025ea9a45ed8689f97f</id>
+    <updated>2011-05-31T20:11:37.881Z</updated>
+    <author>
+      <name>admin</name>
+    </author>
+    <contributor>
+      <name>admin</name>
+    </contributor>
+    <content>
+      <wfs:Insert xmlns:f="http://opengeo.org/osm">
+        <f:planet_osm_polygon gml:id="planet_osm_polygon.46054">
+          <f:osm_id>39640861</f:osm_id>
+          <f:access></f:access>
+          <f:addr_flats></f:addr_flats>
+          <f:addr_housenumber></f:addr_housenumber>
+          <f:addr_interpolation></f:addr_interpolation>
+          <f:admin_level></f:admin_level>
+          <f:aerialway></f:aerialway>
+          <f:aeroway></f:aeroway>
+          <f:amenity></f:amenity>
+          <f:area></f:area>
+          <f:barrier></f:barrier>
+          <f:bicycle></f:bicycle>
+          <f:bridge></f:bridge>
+          <f:boundary></f:boundary>
+          <f:building></f:building>
+          <f:construction></f:construction>
+          <f:cutting></f:cutting>
+          <f:disused></f:disused>
+          <f:embankment></f:embankment>
+          <f:foot></f:foot>
+          <f:highway></f:highway>
+          <f:historic></f:historic>
+          <f:horse></f:horse>
+          <f:junction></f:junction>
+          <f:landuse></f:landuse>
+          <f:layer></f:layer>
+          <f:learning></f:learning>
+          <f:leisure></f:leisure>
+          <f:lock></f:lock>
+          <f:man_made></f:man_made>
+          <f:military></f:military>
+          <f:motorcar></f:motorcar>
+          <f:name></f:name>
+          <f:natural>wood</f:natural>
+          <f:oneway></f:oneway>
+          <f:operator></f:operator>
+          <f:power></f:power>
+          <f:power_source></f:power_source>
+          <f:place></f:place>
+          <f:railway></f:railway>
+          <f:ref></f:ref>
+          <f:religion></f:religion>
+          <f:residence></f:residence>
+          <f:route></f:route>
+          <f:service></f:service>
+          <f:shop></f:shop>
+          <f:sport></f:sport>
+          <f:tourism></f:tourism>
+          <f:tracktype></f:tracktype>
+          <f:tunnel></f:tunnel>
+          <f:waterway></f:waterway>
+          <f:width></f:width>
+          <f:wood></f:wood>
+          <f:z_order>0</f:z_order>
+          <f:way_area>16239.555</f:way_area>
+          <f:way>
+            <gml:Polygon>
+              <gml:exterior>
+                <gml:LinearRing>
+                  <gml:posList gml:srsName="urn:x-ogc:def:crs:EPSG:900913"
+                    gml:srsDimension="2" gml:count="12">-8271333.07 4978118.09 -8271332.93 4978176.44 -8271321.14 4978233.32 -8271320.39 4978232.71 -8271258.8 4978309.84 -8271203.93 4978265.79 -8271248.78 4978218.15 -8271226.75 4978198.97 -8271251.68 4978159.67 -8271265.84 4978086.18 -8271330.43 4978103.04 -8271333.07 4978118.09</gml:posList>
+                </gml:LinearRing>
+              </gml:exterior>
+            </gml:Polygon>
+          </f:way>
+        </f:planet_osm_polygon>
+      </wfs:Insert>
+    </content>
+    <georss:where>
+      <gml:Envelope gml:srsName="urn:x-ogc:def:crs:EPSG:900913">
+        <gml:lowerCorner>-8271333.07 -8271333.07</gml:lowerCorner>
+        <gml:upperCorner>-8271203.93 -8271203.93</gml:upperCorner>
+      </gml:Envelope>
+    </georss:where>
+  </entry>
+</feed>
