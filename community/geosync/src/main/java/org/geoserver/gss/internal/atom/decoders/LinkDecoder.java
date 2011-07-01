@@ -13,6 +13,7 @@ import java.util.logging.Logger;
 
 import javax.xml.namespace.QName;
 
+import org.geoserver.gss.internal.atom.Atom;
 import org.geoserver.gss.internal.atom.LinkImpl;
 import org.geotools.util.logging.Logging;
 import org.gvsig.bxml.stream.BxmlStreamReader;
@@ -24,6 +25,7 @@ public class LinkDecoder extends AbstractDecoder<LinkImpl> {
     protected final Logger LOGGER;
 
     public LinkDecoder() {
+        super(Atom.link);
         LOGGER = Logging.getLogger(getClass());
         link = new LinkImpl();
     }

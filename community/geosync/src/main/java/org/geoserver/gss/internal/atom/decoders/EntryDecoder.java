@@ -9,6 +9,7 @@ import java.io.IOException;
 
 import javax.xml.namespace.QName;
 
+import org.geoserver.gss.internal.atom.Atom;
 import org.geoserver.gss.internal.atom.EntryImpl;
 import org.geoserver.gss.internal.atom.builders.EntryBuilder;
 import org.gvsig.bxml.stream.BxmlStreamReader;
@@ -18,6 +19,7 @@ public class EntryDecoder extends AbstractDecoder<EntryImpl> {
     private EntryBuilder builder;
 
     public EntryDecoder() {
+        super(Atom.entry);
         builder = new EntryBuilder();
     }
 

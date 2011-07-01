@@ -8,6 +8,7 @@ import java.util.Map;
 
 import javax.xml.namespace.QName;
 
+import org.geoserver.gss.internal.atom.Atom;
 import org.geoserver.gss.internal.atom.CategoryImpl;
 import org.gvsig.bxml.stream.BxmlStreamReader;
 
@@ -16,6 +17,7 @@ public class CategoryDecoder extends AbstractDecoder<CategoryImpl> {
     private CategoryImpl category;
 
     public CategoryDecoder() {
+        super(Atom.category);
         category = new CategoryImpl();
     }
 

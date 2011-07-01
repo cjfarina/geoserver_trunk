@@ -18,6 +18,12 @@ public abstract class AbstractDecoder<T> {
 
     private static final Logger LOGGER = Logging.getLogger(AbstractEncoder.class);
 
+    private final QName name;
+    
+    public AbstractDecoder(final QName name) {
+        this.name = name;
+    }
+    
     protected void decodeElement(final BxmlStreamReader r) throws IOException {
     }
 
@@ -31,22 +37,6 @@ public abstract class AbstractDecoder<T> {
     }
 
     public T decode(BxmlStreamReader r) throws IOException {
-        EventType event;
-        while ((event = r.next()) != EventType.END_DOCUMENT) {
-            if (EventType.START_DOCUMENT == event) {
-            }
-            if (EventType.START_ELEMENT != event) {
-                continue;
-            }
-            if (r.getAttributeCount() > 0) {
-                decodeAttributtes(r, getAttributes(r));
-            }
-            decodeElement(r);
-        }
-        return buildResult();
-    }
-
-    public T decode(BxmlStreamReader r, QName name) throws IOException {
         r.require(EventType.START_ELEMENT, name.getNamespaceURI(), name.getLocalPart());
 
         EventType event;

@@ -41,19 +41,20 @@ public class FeedDecoder extends AbstractDecoder<FeedImpl> {
 
     private FeedBuilder builder;
 
-    Function<BxmlStreamReader, EntryImpl> entryReaderFunctor;
+    Function<BxmlStreamReader, EntryImpl> entryReaderFunction;
  
     public FeedDecoder() {
+        super(feed);
         builder = new FeedBuilder();
         LOGGER = Logging.getLogger(getClass());
         
-        entryReaderFunctor = new Function<BxmlStreamReader, EntryImpl>() {
+        entryReaderFunction = new Function<BxmlStreamReader, EntryImpl>() {
 
             @Override
             public EntryImpl apply(BxmlStreamReader input) {
                 EntryImpl entry = null;
                 try {
-                    entry = new EntryDecoder().decode(input, Atom.entry);
+                    entry = new EntryDecoder().decode(input);
                 } catch (IOException e) {
                     Throwables.propagate(e);
                 }
@@ -66,8 +67,6 @@ public class FeedDecoder extends AbstractDecoder<FeedImpl> {
     public FeedImpl decode(BxmlStreamReader r) throws IOException {
         EventType event;
         while ((event = r.next()) != EventType.END_DOCUMENT) {
-            if (EventType.START_DOCUMENT == event) {
-            }
             if (EventType.START_ELEMENT != event) {
                 continue;
             }
@@ -113,28 +112,28 @@ public class FeedDecoder extends AbstractDecoder<FeedImpl> {
         }
 
         if (author.equals(name)) {
-            PersonDecoder personDecoder = new PersonDecoder();
-            builder.addAuthor(personDecoder.decode(r, author));
+            PersonDecoder personDecoder = new PersonDecoder(author);
+            builder.addAuthor(personDecoder.decode(r));
         }
 
         if (contributor.equals(name)) {
-            PersonDecoder personDecoder = new PersonDecoder();
-            builder.addContributor(personDecoder.decode(r, contributor));
+            PersonDecoder personDecoder = new PersonDecoder(contributor);
+            builder.addContributor(personDecoder.decode(r));
         }
 
         if (category.equals(name)) {
             CategoryDecoder categoryDecoder = new CategoryDecoder();
-            builder.addCategory(categoryDecoder.decode(r, category));
+            builder.addCategory(categoryDecoder.decode(r));
         }
 
         if (link.equals(name)) {
             LinkDecoder linkDecoder = new LinkDecoder();
-            builder.addLink(linkDecoder.decode(r, link));
+            builder.addLink(linkDecoder.decode(r));
         }
 
         if (generator.equals(name)) {
             GeneratorDecoder generatorDecoder = new GeneratorDecoder();
-            builder.setGenerator(generatorDecoder.decode(r, generator));
+            builder.setGenerator(generatorDecoder.decode(r));
         }
 
         if (entry.equals(name)) {
@@ -142,7 +141,7 @@ public class FeedDecoder extends AbstractDecoder<FeedImpl> {
                     Atom.entry);
 
             Iterator<EntryImpl> entryIterator;
-            entryIterator = Iterators.transform(entryElemIterator, entryReaderFunctor);
+            entryIterator = Iterators.transform(entryElemIterator, entryReaderFunction);
 
             builder.setEntry(entryIterator);
             

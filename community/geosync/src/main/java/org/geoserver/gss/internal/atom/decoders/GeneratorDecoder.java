@@ -17,6 +17,7 @@ public class GeneratorDecoder extends AbstractDecoder<GeneratorImpl> {
     private GeneratorImpl generator;
 
     public GeneratorDecoder() {
+        super(Atom.generator);
         generator = new GeneratorImpl();
     }
 

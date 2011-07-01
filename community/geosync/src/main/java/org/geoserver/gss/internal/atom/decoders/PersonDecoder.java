@@ -15,7 +15,8 @@ public class PersonDecoder extends AbstractDecoder<PersonImpl> {
 
     private PersonImpl person;
 
-    public PersonDecoder() {
+    public PersonDecoder(final QName name) {
+        super(name);
         person = new PersonImpl();
         
     }
