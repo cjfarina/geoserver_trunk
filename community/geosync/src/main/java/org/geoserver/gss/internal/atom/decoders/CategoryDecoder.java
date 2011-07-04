@@ -22,7 +22,8 @@ public class CategoryDecoder extends AbstractDecoder<CategoryImpl> {
     }
 
     @Override
-    protected void decodeAttributtes(BxmlStreamReader r, Map<QName, String> attributes) throws IOException {
+    protected void decodeAttributtes(BxmlStreamReader r, Map<QName, String> attributes)
+            throws IOException {
         category.setScheme(attributes.get(scheme));
         category.setTerm(attributes.get(term));
     }

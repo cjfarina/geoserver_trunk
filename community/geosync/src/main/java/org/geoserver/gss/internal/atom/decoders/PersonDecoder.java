@@ -18,13 +18,13 @@ public class PersonDecoder extends AbstractDecoder<PersonImpl> {
     public PersonDecoder(final QName name) {
         super(name);
         person = new PersonImpl();
-        
+
     }
 
     @Override
     protected void decodeElement(BxmlStreamReader r) throws IOException {
         QName name = r.getElementName();
-        
+
         if (Atom.name.equals(name)) {
             person.setName(readStringValue(r, Atom.name));
         }
@@ -42,5 +42,5 @@ public class PersonDecoder extends AbstractDecoder<PersonImpl> {
     protected PersonImpl buildResult() {
         return person;
     }
-    
+
 }

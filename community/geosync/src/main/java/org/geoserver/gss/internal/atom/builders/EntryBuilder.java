@@ -39,7 +39,7 @@ public class EntryBuilder {
 
     public EntryImpl build() {
         Assert.notNull(id, "Id can't be null");
-        
+
         final EntryImpl entry = new EntryImpl();
         entry.setAuthor(author);
         entry.setCategory(category);
@@ -53,7 +53,7 @@ public class EntryBuilder {
         entry.setSummary(summary);
         entry.setTitle(title);
         entry.setUpdated(updated);
-        
+
         return entry;
     }
 
@@ -64,7 +64,7 @@ public class EntryBuilder {
     public void setAuthor(List<PersonImpl> author) {
         this.author = author;
     }
-    
+
     public void addAuthor(PersonImpl author) {
         this.author.add(author);
     }
@@ -76,9 +76,9 @@ public class EntryBuilder {
     public void setCategory(List<CategoryImpl> category) {
         this.category = category;
     }
-    
+
     public void addCategory(CategoryImpl category) {
-    	this.category.add(category);
+        this.category.add(category);
     }
 
     public ContentImpl getContent() {
@@ -96,9 +96,9 @@ public class EntryBuilder {
     public void setContributor(List<PersonImpl> contributor) {
         this.contributor = contributor;
     }
-    
+
     public void addContributor(PersonImpl contributor) {
-    	this.contributor.add(contributor);
+        this.contributor.add(contributor);
     }
 
     public String getId() {
@@ -116,7 +116,7 @@ public class EntryBuilder {
     public void setLink(List<LinkImpl> link) {
         this.link = link;
     }
-    
+
     public void addLink(LinkImpl link) {
         this.link.add(link);
     }

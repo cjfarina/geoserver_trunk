@@ -41,8 +41,8 @@ public class FeedDecoderTest extends TestCase {
             assertEquals(2011, feedUpdated.get(Calendar.YEAR));
             assertEquals(04, feedUpdated.get(Calendar.MONTH));
             assertEquals(31, feedUpdated.get(Calendar.DAY_OF_MONTH));
-            //assertEquals(21, feedUpdated.get(Calendar.HOUR_OF_DAY));
-            //assertEquals(48, feedUpdated.get(Calendar.MINUTE));
+            // assertEquals(21, feedUpdated.get(Calendar.HOUR_OF_DAY));
+            // assertEquals(48, feedUpdated.get(Calendar.MINUTE));
 
             assertEquals(2, feed.getAuthor().size());
             PersonImpl feedAuthor1 = feed.getAuthor().get(0);
@@ -142,28 +142,28 @@ public class FeedDecoderTest extends TestCase {
             CategoryImpl entryCategory3 = entry.getCategory().get(2);
             assertEquals(null, entryCategory3.getTerm());
             assertEquals("categoryScheme3", entryCategory3.getScheme());
-            
+
             assertEquals(2, entry.getLink().size());
-            
+
             LinkImpl entryLink1 = entry.getLink().get(0);
             assertEquals("Entry Title 1", entryLink1.getTitle());
             assertEquals("text/html", entryLink1.getType());
             assertEquals("en", entryLink1.getHreflang());
             assertEquals("http://entryexample.org/", entryLink1.getHref());
-           
+
             LinkImpl entryLink2 = entry.getLink().get(1);
             assertEquals("Entry Title 3", entryLink2.getTitle());
             assertEquals("alternate", entryLink2.getRel());
             assertEquals("text/html", entryLink2.getType());
             assertEquals("es", entryLink2.getHreflang());
             assertEquals("http://entryexample2.org/", entryLink2.getHref());
-            
+
             Calendar entryPublished = Calendar.getInstance();
             entryPublished.setTime(entry.getPublished());
             assertEquals(2010, entryPublished.get(Calendar.YEAR));
             assertEquals(07, entryPublished.get(Calendar.MONTH));
             assertEquals(20, entryPublished.get(Calendar.DAY_OF_MONTH));
-            
+
             assertEquals("This are the entry rights.", entry.getRights());
             assertEquals("Entry source.", entry.getSource());
 

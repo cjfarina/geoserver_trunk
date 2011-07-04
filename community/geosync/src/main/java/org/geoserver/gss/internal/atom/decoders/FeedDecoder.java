@@ -15,9 +15,9 @@ import static org.geoserver.gss.internal.atom.Atom.title;
 import static org.geoserver.gss.internal.atom.Atom.updated;
 
 import java.io.IOException;
+import java.util.Iterator;
 import java.util.Map;
 import java.util.logging.Logger;
-import java.util.Iterator;
 
 import javax.xml.namespace.QName;
 
@@ -36,20 +36,20 @@ import com.google.common.collect.Iterators;
 public class FeedDecoder extends AbstractDecoder<FeedImpl> {
 
     protected final Logger LOGGER;
-    
+
     public static QName startPosition = new QName("http://www.w3.org/2005/Atom", "startPosition");
-    
+
     public static QName maxEntries = new QName("http://www.w3.org/2005/Atom", "maxEntries");
 
     private FeedBuilder builder;
 
     Function<BxmlStreamReader, EntryImpl> entryReaderFunction;
- 
+
     public FeedDecoder() {
         super(feed);
         builder = new FeedBuilder();
         LOGGER = Logging.getLogger(getClass());
-        
+
         entryReaderFunction = new Function<BxmlStreamReader, EntryImpl>() {
 
             @Override
@@ -64,7 +64,7 @@ public class FeedDecoder extends AbstractDecoder<FeedImpl> {
             }
         };
     }
-    
+
     @Override
     public FeedImpl decode(BxmlStreamReader r) throws IOException {
         EventType event;
@@ -77,7 +77,7 @@ public class FeedDecoder extends AbstractDecoder<FeedImpl> {
             }
             decodeElement(r);
             QName name = r.getElementName();
-            if(name.equals(entry)){
+            if (name.equals(entry)) {
                 break;
             }
         }
@@ -87,7 +87,6 @@ public class FeedDecoder extends AbstractDecoder<FeedImpl> {
     @Override
     protected void decodeElement(BxmlStreamReader r) throws IOException {
         QName name = r.getElementName();
-
 
         if (id.equals(name)) {
             builder.setId(readStringValue(r, id));
@@ -139,14 +138,13 @@ public class FeedDecoder extends AbstractDecoder<FeedImpl> {
         }
 
         if (entry.equals(name)) {
-            Iterator<BxmlStreamReader> entryElemIterator = new BxmlElementIterator(r,
-                    Atom.entry);
+            Iterator<BxmlStreamReader> entryElemIterator = new BxmlElementIterator(r, Atom.entry);
 
             Iterator<EntryImpl> entryIterator;
             entryIterator = Iterators.transform(entryElemIterator, entryReaderFunction);
 
             builder.setEntry(entryIterator);
-            
+
         }
 
     }

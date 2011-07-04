@@ -4,13 +4,11 @@ import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
-import java.io.OutputStream;
 import java.security.DigestOutputStream;
 import java.security.MessageDigest;
 import java.util.Map;
 import java.util.logging.Level;
 import java.util.logging.Logger;
-import java.util.zip.GZIPOutputStream;
 
 import org.apache.commons.collections.map.LRUMap;
 import org.geogit.api.ObjectId;
@@ -98,7 +96,7 @@ public class ObjectDatabase {
         final byte[] cData = data.getData();
 
         // return new GZIPInputStream(new ByteArrayInputStream(cData));
-        //return new ByteArrayInputStream(cData);
+        // return new ByteArrayInputStream(cData);
         return new LZFInputStream(new ByteArrayInputStream(cData));
     }
 
@@ -159,13 +157,13 @@ public class ObjectDatabase {
         ByteArrayOutputStream rawOut = new ByteArrayOutputStream();
 
         DigestOutputStream keyGenOut = new DigestOutputStream(rawOut, sha1);
-//        GZIPOutputStream cOut = new GZIPOutputStream(keyGenOut);
+        // GZIPOutputStream cOut = new GZIPOutputStream(keyGenOut);
         LZFOutputStream cOut = new LZFOutputStream(keyGenOut);
-        
+
         try {
             writer.write(cOut);
         } finally {
-//            cOut.finish();
+            // cOut.finish();
             cOut.flush();
             cOut.close();
             keyGenOut.flush();
@@ -203,13 +201,13 @@ public class ObjectDatabase {
      */
     public boolean put(final ObjectId id, final ObjectWriter<?> writer) throws Exception {
         ByteArrayOutputStream rawOut = new ByteArrayOutputStream();
-        //GZIPOutputStream cOut = new GZIPOutputStream(rawOut);
+        // GZIPOutputStream cOut = new GZIPOutputStream(rawOut);
         LZFOutputStream cOut = new LZFOutputStream(rawOut);
         try {
-        //    writer.write(cOut);
+            // writer.write(cOut);
             writer.write(cOut);
         } finally {
-//            cOut.finish();
+            // cOut.finish();
             cOut.flush();
             cOut.close();
             rawOut.flush();

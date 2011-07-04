@@ -3,8 +3,8 @@ package org.geoserver.gss.internal.atom.builders;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Date;
-import java.util.List;
 import java.util.Iterator;
+import java.util.List;
 
 import org.geoserver.gss.internal.atom.CategoryImpl;
 import org.geoserver.gss.internal.atom.EntryImpl;
@@ -95,7 +95,7 @@ public final class FeedBuilder {
     public void setCategory(List<CategoryImpl> category) {
         this.category = category;
     }
-    
+
     public void addCategory(CategoryImpl category) {
         this.category.add(category);
     }
@@ -107,7 +107,7 @@ public final class FeedBuilder {
     public void setContributor(List<PersonImpl> contributor) {
         this.contributor = contributor;
     }
-    
+
     public void addContributor(PersonImpl contributor) {
         this.contributor.add(contributor);
     }
@@ -143,7 +143,7 @@ public final class FeedBuilder {
     public void setLink(List<LinkImpl> link) {
         this.link = link;
     }
-    
+
     public void addLink(LinkImpl link) {
         this.link.add(link);
     }
