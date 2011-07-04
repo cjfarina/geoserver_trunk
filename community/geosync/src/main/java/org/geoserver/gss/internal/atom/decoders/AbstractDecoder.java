@@ -4,6 +4,7 @@ import java.io.IOException;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.logging.Level;
 import java.util.logging.Logger;
 
 import javax.xml.namespace.QName;
@@ -109,9 +110,9 @@ public abstract class AbstractDecoder<T> {
         String dateString = readStringValue(r, name);
         Date date = null;
         try {
-            date = DateUtil.deserializeDateTime(dateString);
+            date = DateUtil.deserializeTimestamp(dateString);
         } catch (IllegalArgumentException e) {
-            LOGGER.warning("incorrect value for " + name + ".");
+            LOGGER.log(Level.WARNING, "incorrect value for ", e);
         }
         r.require(EventType.END_ELEMENT, name.getNamespaceURI(), name.getLocalPart());
         return date;

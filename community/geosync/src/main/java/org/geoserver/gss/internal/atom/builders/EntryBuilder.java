@@ -1,5 +1,6 @@
 package org.geoserver.gss.internal.atom.builders;
 
+import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 
@@ -12,17 +13,17 @@ import org.springframework.util.Assert;
 
 public class EntryBuilder {
 
-    private List<PersonImpl> author;
+    private List<PersonImpl> author = new ArrayList<PersonImpl>();
 
-    private List<CategoryImpl> category;
+    private List<CategoryImpl> category = new ArrayList<CategoryImpl>();
 
     private ContentImpl content;
 
-    private List<PersonImpl> contributor;
+    private List<PersonImpl> contributor = new ArrayList<PersonImpl>();
 
     private String id;
 
-    private List<LinkImpl> link;
+    private List<LinkImpl> link = new ArrayList<LinkImpl>();
 
     private Date published;
 
@@ -75,6 +76,10 @@ public class EntryBuilder {
     public void setCategory(List<CategoryImpl> category) {
         this.category = category;
     }
+    
+    public void addCategory(CategoryImpl category) {
+    	this.category.add(category);
+    }
 
     public ContentImpl getContent() {
         return content;
@@ -91,6 +96,10 @@ public class EntryBuilder {
     public void setContributor(List<PersonImpl> contributor) {
         this.contributor = contributor;
     }
+    
+    public void addContributor(PersonImpl contributor) {
+    	this.contributor.add(contributor);
+    }
 
     public String getId() {
         return id;
@@ -106,6 +115,10 @@ public class EntryBuilder {
 
     public void setLink(List<LinkImpl> link) {
         this.link = link;
+    }
+    
+    public void addLink(LinkImpl link) {
+        this.link.add(link);
     }
 
     public Date getPublished() {

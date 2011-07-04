@@ -9,9 +9,7 @@ import static org.geoserver.gss.internal.atom.Atom.generator;
 import static org.geoserver.gss.internal.atom.Atom.icon;
 import static org.geoserver.gss.internal.atom.Atom.id;
 import static org.geoserver.gss.internal.atom.Atom.link;
-import static org.geoserver.gss.internal.atom.Atom.maxEntries;
 import static org.geoserver.gss.internal.atom.Atom.rights;
-import static org.geoserver.gss.internal.atom.Atom.startPosition;
 import static org.geoserver.gss.internal.atom.Atom.subtitle;
 import static org.geoserver.gss.internal.atom.Atom.title;
 import static org.geoserver.gss.internal.atom.Atom.updated;
@@ -38,6 +36,10 @@ import com.google.common.collect.Iterators;
 public class FeedDecoder extends AbstractDecoder<FeedImpl> {
 
     protected final Logger LOGGER;
+    
+    public static QName startPosition = new QName("http://www.w3.org/2005/Atom", "startPosition");
+    
+    public static QName maxEntries = new QName("http://www.w3.org/2005/Atom", "maxEntries");
 
     private FeedBuilder builder;
 
