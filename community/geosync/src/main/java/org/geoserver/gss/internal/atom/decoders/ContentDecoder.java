@@ -27,7 +27,8 @@ public class ContentDecoder extends AbstractDecoder<ContentImpl> {
         QName name = r.getElementName();
 
         if (DELETE.equals(name)) {
-            // builder.setTitle(readStringValue(r, title));
+            DeleteElementTypeDecoder deleteElementTypeDecoder = new DeleteElementTypeDecoder();
+            content.setValue(deleteElementTypeDecoder.decode(r));
         }
     }
 
