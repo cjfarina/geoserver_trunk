@@ -111,7 +111,7 @@ public abstract class AbstractDecoder<T> {
         String dateString = readStringValue(r, name);
         Date date = null;
         try {
-            date = DateUtil.deserializeTimestamp(dateString);
+            date = DateUtil.deserializeDateTime(dateString);
         } catch (IllegalArgumentException e) {
             LOGGER.log(Level.WARNING, "incorrect value for ", e);
         }
