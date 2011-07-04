@@ -5,12 +5,13 @@ import static org.geoserver.gss.internal.atom.Atom.category;
 import static org.geoserver.gss.internal.atom.Atom.contributor;
 import static org.geoserver.gss.internal.atom.Atom.id;
 import static org.geoserver.gss.internal.atom.Atom.link;
-import static org.geoserver.gss.internal.atom.Atom.published;
 import static org.geoserver.gss.internal.atom.Atom.rights;
-import static org.geoserver.gss.internal.atom.Atom.source;
 import static org.geoserver.gss.internal.atom.Atom.summary;
 import static org.geoserver.gss.internal.atom.Atom.title;
 import static org.geoserver.gss.internal.atom.Atom.updated;
+import static org.geoserver.gss.internal.atom.Atom.published;
+import static org.geoserver.gss.internal.atom.Atom.source;
+import static org.geoserver.gss.internal.atom.Atom.content;
 
 import java.io.IOException;
 
@@ -69,17 +70,22 @@ public class EntryDecoder extends AbstractDecoder<EntryImpl> {
             LinkDecoder linkDecoder = new LinkDecoder();
             builder.addLink(linkDecoder.decode(r));
         }
-
+        
         if (published.equals(name)) {
             builder.setPublished(readDateValue(r, published));
         }
-
+        
         if (rights.equals(name)) {
             builder.setRights(readStringValue(r, rights));
         }
-
+        
         if (source.equals(name)) {
             builder.setSource(readStringValue(r, source));
+        }
+        
+        if (content.equals(name)) {
+            ContentDecoder contentDecoder = new ContentDecoder();
+            builder.setContent(contentDecoder.decode(r));
         }
 
     }

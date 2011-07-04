@@ -63,7 +63,7 @@
     <published>2010-08-20T21:48:06.466Z</published>
     <rights>This are the entry rights.</rights>
     <source>Entry source.</source>
-    <content>
+    <content source="source1" type="type1">
       <wfs:Delete xmlns:f="http://opengeo.org/osm" typeName="f:planet_osm_point">
         <fes:Filter>
           <fes:FeatureId fid="planet_osm_point.100"></fes:FeatureId>

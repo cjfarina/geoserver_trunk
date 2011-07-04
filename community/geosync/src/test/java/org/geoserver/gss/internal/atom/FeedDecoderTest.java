@@ -174,6 +174,11 @@ public class FeedDecoderTest extends TestCase {
             
             assertEquals("This are the entry rights.", entry.getRights());
             assertEquals("Entry source.", entry.getSource());
+            
+            assertNotNull(entry.getContent());
+            ContentImpl content1 = entry.getContent();
+            assertEquals("type1", content1.getType());
+            assertEquals("source1", content1.getSrc());
 
             reader.close();
         } catch (Exception e) {
