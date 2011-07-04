@@ -4,7 +4,6 @@ import java.util.Arrays;
 import java.util.Collections;
 import java.util.Date;
 import java.util.Map;
-import java.util.logging.Level;
 
 import org.geoserver.gss.internal.atom.Atom;
 import org.geoserver.gss.service.FeedType;
@@ -14,6 +13,7 @@ import org.geoserver.platform.ServiceException;
 import org.geotools.factory.CommonFactoryFinder;
 import org.geotools.factory.GeoTools;
 import org.geotools.filter.visitor.SimplifyingFilterVisitor;
+import org.geotools.geometry.jts.JTS;
 import org.geotools.geometry.jts.ReferencedEnvelope;
 import org.geotools.referencing.CRS;
 import org.opengis.filter.Filter;
@@ -21,7 +21,6 @@ import org.opengis.filter.FilterFactory2;
 import org.opengis.filter.Id;
 import org.opengis.filter.expression.Expression;
 import org.opengis.filter.expression.PropertyName;
-import org.opengis.referencing.FactoryException;
 import org.opengis.referencing.crs.CoordinateReferenceSystem;
 import org.xml.sax.helpers.NamespaceSupport;
 
@@ -108,6 +107,28 @@ public class GetEntriesKvpRequestReader extends KvpRequestReader {
         return entryIdFilter;
     }
 
+    /**
+     * Parses the spatial parameters {@code GEOM}, {@code BBOX}, {@code SPATIALOP}, {@code CRS}
+     * <p>
+     * <ul>
+     * <li><b>GEOM</b>: if present, raw value is a geometry WKT, and must have resolved to a
+     * {@link Geometry}, and is mutually exclusive with {@code BBOX}
+     * <li><b>BBOX</b>: if present, must have resolved to a {@link ReferencedEnvelope}, and is
+     * mutually exclusive with {@code GEOM}.
+     * <li><b>CRS</b>: if present, a String of the form {@code "urn:ogc:def:crs:EPSG::XXXX"},
+     * otherwise defaults to {@code "urn:ogc:def:crs:EPSG::4326"}. If {@code GEOM} was given it's
+     * the Geometry. CRS. If BBOX was given and it has no CRS, the CRS of the BBOX, otherwise
+     * ignored.
+     * <li><b>SPATIALOP</b>: the {@link SpatialOp} to apply to the given geometry/bbox. If absent
+     * defaults to {@link SpatialOp#Intersects Intersects}.
+     * </ul>
+     * </p>
+     * 
+     * @param kvp
+     * @param rawKvp
+     * @return {@code Filter#INCLUDE} if no spatial parameters where given, the parsed filter
+     *         otherwise.
+     */
     @SuppressWarnings("rawtypes")
     private Filter buildSpatialParamsFilter(final Map kvp, final Map rawKvp) {
         final boolean hasSpatialParameters = kvp.containsKey("BBOX") || kvp.containsKey("GEOM")
@@ -131,7 +152,12 @@ public class GetEntriesKvpRequestReader extends KvpRequestReader {
         }
         String srs = (String) kvp.get("CRS");
         if (srs == null) {
-            srs = "urn:ogc:def:crs:EPSG::4326";
+            if (bbox != null && bbox.getCoordinateReferenceSystem() != null) {
+                final boolean simple = false;
+                srs = CRS.toSRS(bbox.getCoordinateReferenceSystem(), simple);
+            } else {
+                srs = "urn:ogc:def:crs:EPSG::4326";
+            }
         }
         if (geom != null && bbox != null) {
             throw new ServiceException("Parameters GEOM and BBOX" + "are mutually exclusive",
@@ -146,11 +172,16 @@ public class GetEntriesKvpRequestReader extends KvpRequestReader {
                     + e.getMessage(), "InvalidParameterValue", "CRS");
         }
 
+        if (spatialOp == null) {
+            spatialOp = SpatialOp.Intersects;
+        }
+        if (geom == null && !SpatialOp.Intersects.equals(spatialOp)) {
+            geom = JTS.toGeometry(bbox);
+            bbox = null;
+        }
+
         Filter filter = null;
         if (geom != null) {
-            if (spatialOp == null) {
-                spatialOp = SpatialOp.Intersects;
-            }
             geom.setUserData(crs);
             NamespaceSupport nscontext = new NamespaceSupport();
             nscontext.declarePrefix("atom", Atom.NAMESPACE);
@@ -168,7 +199,7 @@ public class GetEntriesKvpRequestReader extends KvpRequestReader {
                 filter = ff.disjoint(propertyName, geometryLiteral);
                 break;
             case Equals:
-                filter = ff.equals(propertyName, geometryLiteral);
+                filter = ff.equal(propertyName, geometryLiteral);
                 break;
             case Intersects:
                 filter = ff.intersects(propertyName, geometryLiteral);
@@ -184,13 +215,6 @@ public class GetEntriesKvpRequestReader extends KvpRequestReader {
                 break;
             }
         } else if (bbox != null) {
-            if (null != bbox.getCoordinateReferenceSystem()) {
-                try {
-                    srs = CRS.lookupIdentifier(bbox.getCoordinateReferenceSystem(), true);
-                } catch (FactoryException e) {
-                    LOGGER.log(Level.INFO, e.getMessage(), e);
-                }
-            }
             filter = ff.bbox((String) null, bbox.getMinX(), bbox.getMinY(), bbox.getMaxX(),
                     bbox.getMaxY(), srs);
         }
@@ -207,7 +231,7 @@ public class GetEntriesKvpRequestReader extends KvpRequestReader {
         if (temporalOp != null && startTime == null && endTime == null) {
             throw new ServiceException(
                     "TEMPORALOP cannot be specified if either STARTTIME and/or ENDTIME are specified",
-                    "InvalidParameterValue", "TEMPORALOP");
+                    "MissingParameterValue", "STARTTIME");
         }
         if (null != endTime) {
             if (null == startTime) {
@@ -217,8 +241,8 @@ public class GetEntriesKvpRequestReader extends KvpRequestReader {
             }
             if (null == temporalOp) {
                 throw new ServiceException(
-                        "TEMPORALOP is mandatory if either STARTTIME and ENDTIME were provided",
-                        "MissingParameterValue", "STARTTIME");
+                        "TEMPORALOP is mandatory if STARTTIME and ENDTIME were provided",
+                        "MissingParameterValue", "TEMPORALOP");
             }
             if (!temporalOp.requiresPeriod()) {
                 throw new ServiceException(
@@ -253,20 +277,27 @@ public class GetEntriesKvpRequestReader extends KvpRequestReader {
             break;
         }
         case TEquals: {
-            temporalFilter = ff.equal(property, ff.literal(startTime), true);
+            temporalFilter = ff.equals(property, ff.literal(startTime));
             break;
         }
-        case Begins:
+        case Begins: {
+            temporalFilter = ff.greaterOrEqual(property, ff.literal(startTime));
+            break;
+        }
+        case Ends: {
+            temporalFilter = ff.lessOrEqual(property, ff.literal(startTime));
+            break;
+        }
         case OverlappedBy:
         case BegunBy:
         case EndedBy:
-        case Ends:
         case Meets:
         case MetBy:
         case TContains:
         case TOverlaps:
         default:
-            throw new ServiceException(temporalOp + " predicate not yet supported", "TEMPORALOP");
+            throw new ServiceException("Unsupported temporalOp: " + temporalOp,
+                    "InvalidParameterValue", "TEMPORALOP");
         }
 
         return temporalFilter;
