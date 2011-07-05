@@ -15,6 +15,8 @@ import net.opengis.wfs.WfsFactory;
 import net.opengis.wfs.impl.WfsFactoryImpl;
 
 import org.geoserver.gss.internal.atom.DeleteElementTypeEncoder;
+import org.geoserver.gss.internal.atom.decoders.filters.FeatureIdFilterDecoder;
+import org.geoserver.gss.internal.atom.decoders.filters.FilterChainDecoder;
 import org.gvsig.bxml.stream.BxmlStreamReader;
 
 public class DeleteElementTypeDecoder extends AbstractDecoder<DeleteElementType> {
@@ -34,7 +36,7 @@ public class DeleteElementTypeDecoder extends AbstractDecoder<DeleteElementType>
         QName name = r.getElementName();
         
         if (Filter.equals(name)) {
-            FilterDecoder filterDecoder = new FilterDecoder();
+            FilterChainDecoder filterDecoder = new FilterChainDecoder();
             element.setFilter(filterDecoder.decode(r));
         }
     }

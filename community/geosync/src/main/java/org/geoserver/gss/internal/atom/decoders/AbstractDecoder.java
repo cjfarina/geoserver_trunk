@@ -19,12 +19,12 @@ public abstract class AbstractDecoder<T> {
 
     private static final Logger LOGGER = Logging.getLogger(AbstractEncoder.class);
 
-    private final QName name;
-
+    protected final QName name;
+    
     public AbstractDecoder(final QName name) {
         this.name = name;
     }
-
+    
     protected void decodeElement(final BxmlStreamReader r) throws IOException {
     }
 
@@ -72,10 +72,9 @@ public abstract class AbstractDecoder<T> {
     }
 
     /**
-     * @param r
-     *            must be possitioned at the START_ELEMENT event of the element who's value is to be
-     *            read. When this method returns the reader is guaranteed to be possitioned at the
-     *            END_ELEMENT event of the same element.
+     * @param r must be possitioned at the START_ELEMENT event of the element who's value is to be
+     *        read. When this method returns the reader is guaranteed to be possitioned at the
+     *        END_ELEMENT event of the same element.
      * @return
      * @throws IOException
      */
