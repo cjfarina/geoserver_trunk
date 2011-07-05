@@ -11,7 +11,6 @@ import org.geoserver.gss.internal.atom.decoders.FeedDecoder;
 import org.gvsig.bxml.stream.BxmlFactoryFinder;
 import org.gvsig.bxml.stream.BxmlInputFactory;
 import org.gvsig.bxml.stream.BxmlStreamReader;
-import org.geotools.feature.type.DateUtil;
 
 public class FeedDecoderTest extends TestCase {
 
