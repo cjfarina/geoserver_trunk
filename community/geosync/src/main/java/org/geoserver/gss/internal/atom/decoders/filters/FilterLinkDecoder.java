@@ -27,13 +27,14 @@ public abstract class FilterLinkDecoder extends AbstractDecoder<Filter> {
         this.filterLink = filterLink;
     }
     
-    public Filter decodeFilter(final BxmlStreamReader r) throws IOException {
+    @Override
+    public Filter decode(final BxmlStreamReader r) throws IOException {
         QName name = r.getElementName();
         
         if(this.name.equals(name)){
-            return decode(r);
+            return super.decode(r);
         } else if(filterLink != null) {
-            return filterLink.decodeFilter(r);
+            return filterLink.decode(r);
         } else {
             return null;
         }

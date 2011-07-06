@@ -34,7 +34,7 @@ public class FilterChainDecoder extends AbstractDecoder<Filter> {
     
     public Filter decodeFilter(final BxmlStreamReader r) throws IOException {
         if(filterLink != null) {
-            return filterLink.decodeFilter(r);
+            return filterLink.decode(r);
         } else {
             return null;
         }
