@@ -184,6 +184,7 @@
     <profile>
       <id>geosync</id>
       <modules>
+        <module>geogit</module>
         <module>geosync</module>
       </modules>
     </profile>

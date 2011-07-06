@@ -16,7 +16,6 @@ import org.springframework.util.Assert;
 import com.google.common.base.Function;
 import com.google.common.base.Predicate;
 import com.google.common.collect.Iterators;
-import com.sun.istack.internal.NotNull;
 
 class DiffTreeWalk {
 
@@ -28,8 +27,7 @@ class DiffTreeWalk {
 
     private List<String> basePath;
 
-    public DiffTreeWalk(@NotNull final Repository repo, @NotNull final ObjectId fromCommit,
-            @NotNull final ObjectId toCommit) {
+    public DiffTreeWalk(final Repository repo, final ObjectId fromCommit, final ObjectId toCommit) {
         this.repo = repo;
         this.fromCommit = fromCommit;
         this.toCommit = toCommit;

@@ -9,39 +9,34 @@
     <version>2.2-SNAPSHOT</version>
   </parent>
 
-  <groupId>org.geoserver.community</groupId>
-  <artifactId>geosync</artifactId>
-  <version>${parent.version}</version>
+  <groupId>org.geogit</groupId>
+  <artifactId>geogit</artifactId>
+  <version>1.0-SNAPSHOT</version>
   <packaging>jar</packaging>
-  <name>GeoSyncronization Service </name>
+  <name>GeoGit</name>
 
   <dependencies>
-    <dependency>
-      <groupId>org.geogit</groupId>
-      <artifactId>geogit</artifactId>
-      <version>1.0-SNAPSHOT</version>
-    </dependency>
-    <dependency>
-      <groupId>org.geoserver</groupId>
-      <artifactId>wfs</artifactId>
-      <version>${project.version}</version>
-    </dependency>
-    <dependency>
-      <groupId>org.geoserver</groupId>
-      <artifactId>rest</artifactId>
-      <version>${project.version}</version>
-    </dependency>
-    <dependency>
-      <groupId>org.geoserver.web</groupId>
-      <artifactId>web-core</artifactId>
-      <version>${project.version}</version>
-    </dependency>
-    
     <dependency>
       <!-- Google Common Libraries. Featuring com.google.collect collection classes -->
       <groupId>com.google.guava</groupId>
       <artifactId>guava</artifactId>
       <version>r09</version>
+    </dependency>
+    
+    <!-- StAX is needed for the code to compile on Java5. Java6 has the StAX library in the standard runtime -->
+    <dependency>
+      <groupId>stax</groupId>
+      <artifactId>stax-api</artifactId>
+    </dependency>
+    <dependency>
+      <groupId>stax</groupId>
+      <artifactId>stax</artifactId>
+    </dependency>
+
+    <dependency>
+      <groupId>com.ning</groupId>
+      <artifactId>compress-lzf</artifactId>
+      <version>0.7.0</version>
     </dependency>
 
     <!-- Berkeley DB JE -->

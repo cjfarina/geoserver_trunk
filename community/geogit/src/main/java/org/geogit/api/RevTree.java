@@ -4,7 +4,6 @@ import java.math.BigInteger;
 import java.util.Iterator;
 
 import com.google.common.base.Predicate;
-import com.sun.istack.internal.NotNull;
 
 public abstract class RevTree extends RevObject {
 
@@ -17,13 +16,13 @@ public abstract class RevTree extends RevObject {
         return TYPE.TREE;
     }
 
-    public abstract void put(@NotNull final Ref ref);
+    public abstract void put(final Ref ref);
 
-    public abstract Ref get(@NotNull final String key);
+    public abstract Ref get(final String key);
 
-    public abstract void remove(@NotNull final String key);
+    public abstract void remove(final String key);
 
-    public abstract void accept(@NotNull TreeVisitor visitor);
+    public abstract void accept(TreeVisitor visitor);
 
     public abstract BigInteger size();
 
