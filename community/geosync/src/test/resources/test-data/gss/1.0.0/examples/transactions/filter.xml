@@ -1,0 +1,30 @@
+<?xml version="1.0"?>
+<fes:Filter xmlns:fes="http://www.opengis.net/fes/2.0"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xsi:schemaLocation="http://www.opengis.net/fes/2.0
+    http://schemas.opengis.net/filter/1.0.0/filter.xsd">
+	<fes:Or>
+		<fes:And>
+			<fes:PropertyIsBetween>
+				<fes:ValueReference>Person/age</fes:ValueReference>
+				<fes:LowerBoundary>
+					<fes:Literal>18</fes:Literal>
+				</fes:LowerBoundary>
+				<fes:UpperBoundary>
+					<fes:Literal>200</fes:Literal>
+				</fes:UpperBoundary>
+			</fes:PropertyIsBetween>
+			<fes:Function name="ClassifiedAs">
+				<fes:Literal>RoadTaxonomy</fes:Literal>
+				<fes:Literal>Major Highway</fes:Literal>
+			</fes:Function>
+
+		</fes:And>
+		<fes:Not>
+			<fes:PropertyIsEqualTo>
+				<fes:ValueReference>addresses/Address/city</fes:ValueReference>
+				<fes:Literal>Bonn</fes:Literal>
+			</fes:PropertyIsEqualTo>
+		</fes:Not>
+	</fes:Or>
+</fes:Filter>

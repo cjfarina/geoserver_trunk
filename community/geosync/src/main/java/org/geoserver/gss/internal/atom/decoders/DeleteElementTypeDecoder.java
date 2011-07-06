@@ -1,8 +1,6 @@
 package org.geoserver.gss.internal.atom.decoders;
 
 import static org.geoserver.wfs.xml.v1_1_0.WFS.DELETE;
-import static org.geoserver.gss.internal.atom.Atom.id;
-import static org.geoserver.gss.internal.atom.Atom.typeName;
 import static org.geotools.filter.v1_1.OGC.Filter;
 
 import java.io.IOException;
@@ -14,8 +12,6 @@ import net.opengis.wfs.DeleteElementType;
 import net.opengis.wfs.WfsFactory;
 import net.opengis.wfs.impl.WfsFactoryImpl;
 
-import org.geoserver.gss.internal.atom.DeleteElementTypeEncoder;
-import org.geoserver.gss.internal.atom.decoders.filters.FeatureIdFilterDecoder;
 import org.geoserver.gss.internal.atom.decoders.filters.FilterChainDecoder;
 import org.gvsig.bxml.stream.BxmlStreamReader;
 
@@ -36,7 +32,7 @@ public class DeleteElementTypeDecoder extends AbstractDecoder<DeleteElementType>
         QName name = r.getElementName();
         
         if (Filter.equals(name)) {
-            FilterChainDecoder filterDecoder = new FilterChainDecoder();
+            FilterChainDecoder filterDecoder = new FilterChainDecoder(Filter);
             element.setFilter(filterDecoder.decode(r));
         }
     }

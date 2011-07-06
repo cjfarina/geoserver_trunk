@@ -1,22 +1,23 @@
 package org.geoserver.gss.internal.atom.decoders.filters;
 
-import static org.geotools.filter.v1_1.OGC.And;
+import static org.geotools.filter.v1_1.OGC.Or;
 
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
 
 import javax.xml.namespace.QName;
 
 import org.gvsig.bxml.stream.BxmlStreamReader;
 import org.opengis.filter.Filter;
 
-public class AndFilterDecoder extends FilterLinkDecoder {
+public class OrFilterDecoder extends FilterLinkDecoder {
 
-    private List<Filter> params = new ArrayList<Filter>();
+private List<Filter> params = new ArrayList<Filter>();
     
-    public AndFilterDecoder() {
-        super(And, new OrFilterDecoder());
+    public OrFilterDecoder() {
+        super(Or, new NotFilterDecoder());
     }
     
     @Override
@@ -26,8 +27,12 @@ public class AndFilterDecoder extends FilterLinkDecoder {
     }
 
     @Override
-    protected Filter buildResult() {
-        return ff.and(params.get(0), params.get(1));
+    protected void decodeAttributtes(final BxmlStreamReader r, Map<QName, String> attributes)
+            throws IOException {
     }
-
+    
+    @Override
+    protected Filter buildResult() {
+        return ff.or(params.get(0), params.get(1));
+    }
 }

@@ -5,12 +5,18 @@ import java.io.IOException;
 import javax.xml.namespace.QName;
 
 import org.geoserver.gss.internal.atom.decoders.AbstractDecoder;
+import org.geotools.factory.CommonFactoryFinder;
+import org.geotools.factory.GeoTools;
 import org.gvsig.bxml.stream.BxmlStreamReader;
 import org.opengis.filter.Filter;
+import org.opengis.filter.FilterFactory2;
 
 public abstract class FilterLinkDecoder extends AbstractDecoder<Filter> {
 
-    private FilterLinkDecoder filterLink;
+    protected FilterLinkDecoder filterLink;
+    
+    protected static FilterFactory2 ff = CommonFactoryFinder.getFilterFactory2(GeoTools
+            .getDefaultHints());
     
     public FilterLinkDecoder(final QName name){
         super(name);
