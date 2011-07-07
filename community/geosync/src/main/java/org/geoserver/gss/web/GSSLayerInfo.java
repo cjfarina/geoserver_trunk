@@ -4,7 +4,6 @@
  */
 package org.geoserver.gss.web;
 
-import java.io.IOException;
 import java.io.Serializable;
 
 import org.geoserver.catalog.FeatureTypeInfo;
@@ -30,23 +29,45 @@ public class GSSLayerInfo implements Comparable<GSSLayerInfo>, Serializable {
 
     private Class<?> geometryType;
 
+    private boolean enabled;
+
+    private String errorMessage;
+
     @SuppressWarnings("rawtypes")
     public GSSLayerInfo(final FeatureTypeInfo featureType) {
         final Name qualifiedName = featureType.getQualifiedName();
         this.ns = qualifiedName.getNamespaceURI();
         this.name = qualifiedName.getLocalPart();
+        this.enabled = featureType.enabled();
 
         GeometryDescriptor geometryDescriptor;
-        try {
-            geometryDescriptor = featureType.getFeatureType().getGeometryDescriptor();
-            FeatureSource featureSource = featureType.getFeatureSource(null, null);
-            this.readOnly = !(featureSource instanceof FeatureStore);
-        } catch (IOException e) {
-            throw new RuntimeException(e);
+        if (enabled) {
+            try {
+                geometryDescriptor = featureType.getFeatureType().getGeometryDescriptor();
+                FeatureSource featureSource = featureType.getFeatureSource(null, null);
+                this.readOnly = !(featureSource instanceof FeatureStore);
+                if (geometryDescriptor != null) {
+                    this.geometryType = geometryDescriptor.getType().getBinding();
+                }
+            } catch (Exception e) {
+                enabled = false;
+                errorMessage = e.getMessage();
+            }
         }
-        if (geometryDescriptor != null) {
-            this.geometryType = geometryDescriptor.getType().getBinding();
-        }
+    }
+
+    /**
+     * @return the isInError
+     */
+    public boolean isInError() {
+        return enabled;
+    }
+
+    /**
+     * @return the errorMessage
+     */
+    public String getErrorMessage() {
+        return errorMessage;
     }
 
     public Name getName() {
