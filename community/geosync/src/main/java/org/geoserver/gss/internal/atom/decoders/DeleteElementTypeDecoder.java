@@ -42,7 +42,9 @@ public class DeleteElementTypeDecoder extends AbstractDecoder<DeleteElementType>
         QName name = r.getElementName();
         featureNamespace = name.getNamespaceURI();
         name.getPrefix();
-        /*if(DELETE.equals(name)){
+        /*r.getp
+        
+        if(DELETE.equals(name)){
             if (attributes.get(typeName) != null) {
                 element.setTypeName(attributes.get(typeName));
             }
