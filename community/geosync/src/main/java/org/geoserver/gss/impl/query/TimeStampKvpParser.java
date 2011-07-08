@@ -2,7 +2,7 @@ package org.geoserver.gss.impl.query;
 
 import java.util.Date;
 
-import org.geoserver.gss.internal.atom.AbstractEncoder;
+import org.geoserver.bxml.AbstractEncoder;
 import org.geoserver.ows.KvpParser;
 import org.geotools.feature.type.DateUtil;
 

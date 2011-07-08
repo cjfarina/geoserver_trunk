@@ -4,8 +4,8 @@ import static org.geoserver.gss.service.FeedType.REPLICATIONFEED;
 
 import java.io.IOException;
 
+import org.geoserver.bxml.atom.FeedEncoder;
 import org.geoserver.gss.impl.GSS;
-import org.geoserver.gss.internal.atom.FeedEncoder;
 import org.geoserver.gss.internal.atom.FeedImpl;
 import org.geoserver.gss.service.FeedType;
 import org.geoserver.gss.service.GetEntries;

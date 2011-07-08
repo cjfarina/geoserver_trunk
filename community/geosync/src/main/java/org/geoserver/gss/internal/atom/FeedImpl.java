@@ -5,6 +5,8 @@ import java.util.Date;
 import java.util.Iterator;
 import java.util.List;
 
+import org.geoserver.bxml.atom.EntryEncoder;
+
 /**
  * Atom feed document element as per <a href="http://tools.ietf.org/html/rfc4287">rfc4287</a>,
  * section 4.1.1.

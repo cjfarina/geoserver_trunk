@@ -6,7 +6,7 @@ import java.util.List;
 import junit.framework.TestCase;
 import net.opengis.wfs.DeleteElementType;
 
-import org.geoserver.gss.internal.atom.decoders.FeedDecoder;
+import org.geoserver.bxml.atom.FeedDecoder;
 import org.geotools.filter.AttributeExpressionImpl;
 import org.geotools.filter.LiteralExpressionImpl;
 import org.gvsig.bxml.stream.BxmlFactoryFinder;
