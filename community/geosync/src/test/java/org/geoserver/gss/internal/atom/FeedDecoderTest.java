@@ -6,6 +6,8 @@ import java.util.Date;
 import java.util.List;
 import java.util.TimeZone;
 
+import javax.xml.namespace.QName;
+
 import junit.framework.TestCase;
 
 import net.opengis.wfs.DeleteElementType;
@@ -194,6 +196,9 @@ public class FeedDecoderTest extends TestCase {
             assertEquals("source1", content1.getSrc());
 
             DeleteElementType deleteElement = (DeleteElementType)content1.getValue();
+            QName deleteTypeName = deleteElement.getTypeName();
+            assertEquals("http://opengeo.org/osm", deleteTypeName.getNamespaceURI());
+            assertEquals("planet_osm_point", deleteTypeName.getLocalPart());
             Filter filter = deleteElement.getFilter();
             assertNotNull(deleteElement.getFilter());
             Or orFilter = (Or)filter;

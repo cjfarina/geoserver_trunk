@@ -6,7 +6,6 @@ import static org.geotools.filter.v1_1.OGC.Filter;
 import java.io.IOException;
 import java.util.Map;
 
-import javax.smartcardio.ATR;
 import javax.xml.namespace.QName;
 
 import net.opengis.wfs.DeleteElementType;
@@ -22,8 +21,6 @@ public class DeleteElementTypeDecoder extends AbstractDecoder<DeleteElementType>
 
     private final DeleteElementType element;
 
-    private String featureNamespace;
-    
     public DeleteElementTypeDecoder() {
         super(DELETE);
         final WfsFactory factory = WfsFactoryImpl.eINSTANCE;

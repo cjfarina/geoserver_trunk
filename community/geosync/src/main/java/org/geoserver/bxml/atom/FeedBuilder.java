@@ -40,6 +40,7 @@ public final class FeedBuilder {
 
     private Date updated;
 
+    @SuppressWarnings("unchecked")
     private Iterator<EntryImpl> entry = Collections.EMPTY_LIST.iterator();
 
     public Iterator<EntryImpl> getEntry() {
