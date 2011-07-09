@@ -3,6 +3,7 @@ package org.geogit.repository;
 import java.io.IOException;
 import java.io.InputStream;
 import java.util.Arrays;
+import java.util.List;
 import java.util.logging.Logger;
 
 import org.geogit.api.ObjectId;
@@ -22,6 +23,8 @@ import org.geotools.util.logging.Logging;
 import org.opengis.feature.Feature;
 import org.opengis.feature.type.FeatureType;
 import org.springframework.util.Assert;
+
+import com.google.common.base.Throwables;
 
 /**
  * A repository is a collection of commits, each of which is an archive of what the project's
@@ -109,6 +112,17 @@ public class Repository {
         Ref ref2 = getRef(ref.getName());
         Assert.isTrue(ref.equals(ref2));
         return ref;
+    }
+
+    public boolean commitExists(final ObjectId id) {
+        try {
+            getObjectDatabase().getCached(id, new CommitReader());
+        } catch (IllegalArgumentException e) {
+            return false;
+        } catch (IOException e) {
+            Throwables.propagate(e);
+        }
+        return true;
     }
 
     public RevCommit getCommit(final ObjectId commitId) {
@@ -207,13 +221,17 @@ public class Repository {
         return new RevSHA1Tree(getObjectDatabase());
     }
 
-    public ObjectId getChildTreeId(String... path) {
+    public ObjectId getTreeChildId(String... path) {
         RevTree root = getRootTree();
-        return getChildTreeId(root, path);
+        return getTreeChildId(root, path);
     }
 
-    public ObjectId getChildTreeId(RevTree root, String... path) {
-        Ref treeRef = new DepthSearch(this).find(root, Arrays.asList(path));
+    public ObjectId getTreeChildId(RevTree root, String... path) {
+        return getTreeChildId(root, Arrays.asList(path));
+    }
+
+    public ObjectId getTreeChildId(RevTree root, List<String> path) {
+        Ref treeRef = new DepthSearch(this).find(root, path);
         return treeRef == null ? null : treeRef.getObjectId();
     }
 }

@@ -97,8 +97,8 @@ public class CommitOpTest extends RepositoryTestCase {
         assertNotNull(repo.getTree(commit1.getTreeId()));
         assertEquals(commit1.getId(), getRepository().getRef(Ref.HEAD).getObjectId());
 
-        ObjectId type1SubTreeId = repo.getChildTreeId(namespace1, typeName1);
-        ObjectId type2SubTreeId = repo.getChildTreeId(namespace2, typeName2);
+        ObjectId type1SubTreeId = repo.getTreeChildId(namespace1, typeName1);
+        ObjectId type2SubTreeId = repo.getTreeChildId(namespace2, typeName2);
 
         assertNotNull(type1SubTreeId);
         // assertNotNull(type2SubTreeId);

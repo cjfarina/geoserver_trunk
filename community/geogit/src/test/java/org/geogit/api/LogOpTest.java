@@ -2,10 +2,13 @@ package org.geogit.api;
 
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Collections;
 import java.util.Date;
+import java.util.HashSet;
 import java.util.Iterator;
 import java.util.LinkedList;
 import java.util.List;
+import java.util.Set;
 
 import org.geogit.repository.Index;
 import org.geogit.storage.FeatureWriter;
@@ -13,6 +16,8 @@ import org.geogit.test.RepositoryTestCase;
 import org.geotools.util.Range;
 import org.opengis.feature.Feature;
 import org.opengis.feature.type.Name;
+
+import com.google.common.collect.Iterators;
 
 public class LogOpTest extends RepositoryTestCase {
 
@@ -30,9 +35,9 @@ public class LogOpTest extends RepositoryTestCase {
     }
 
     public void testEmptyRepo() throws Exception {
-        Iterable<RevCommit> logs = logOp.call();
+        Iterator<RevCommit> logs = logOp.call();
         assertNotNull(logs);
-        assertFalse(logs.iterator().hasNext());
+        assertFalse(logs.hasNext());
     }
 
     public void testHeadWithSingleCommit() throws Exception {
@@ -41,10 +46,9 @@ public class LogOpTest extends RepositoryTestCase {
                 .getIdentifier().getID());
         final RevCommit firstCommit = ggit.commit().call();
 
-        Iterable<RevCommit> logs = logOp.call();
-        assertNotNull(logs);
+        Iterator<RevCommit> iterator = logOp.call();
+        assertNotNull(iterator);
 
-        Iterator<RevCommit> iterator = logs.iterator();
         assertTrue(iterator.hasNext());
         assertEquals(firstCommit, iterator.next());
         assertFalse(iterator.hasNext());
@@ -60,10 +64,9 @@ public class LogOpTest extends RepositoryTestCase {
                 .getIdentifier().getID());
         final RevCommit secondCommit = ggit.commit().call();
 
-        Iterable<RevCommit> logs = logOp.call();
-        assertNotNull(logs);
+        Iterator<RevCommit> iterator = logOp.call();
+        assertNotNull(iterator);
 
-        Iterator<RevCommit> iterator = logs.iterator();
         assertTrue(iterator.hasNext());
         // by default returns most recent first
         assertEquals(secondCommit, iterator.next());
@@ -90,20 +93,21 @@ public class LogOpTest extends RepositoryTestCase {
             expected.addFirst(commit);
         }
 
-        Iterable<RevCommit> logs = logOp.call();
+        Iterator<RevCommit> logs = logOp.call();
         List<RevCommit> logged = new ArrayList<RevCommit>();
-        for (RevCommit c : logs) {
-            logged.add(c);
+        for (; logs.hasNext();) {
+            logged.add(logs.next());
         }
 
         assertEquals(expected, logged);
     }
 
-    public void testHeadWithMultipleCommitsOldestFirst() throws Exception {
+    public void testPathFilterSingleFeature() throws Exception {
 
         List<Feature> features = Arrays.asList(feature1_1, feature2_1, feature1_2, feature2_2,
                 feature1_3, feature2_3);
-        LinkedList<RevCommit> expected = new LinkedList<RevCommit>();
+
+        RevCommit expectedCommit = null;
 
         for (Feature f : features) {
             Name name = f.getType().getName();
@@ -112,13 +116,64 @@ public class LogOpTest extends RepositoryTestCase {
             String id = f.getIdentifier().getID();
             index.inserted(new FeatureWriter(f), namespaceURI, localPart, id);
             final RevCommit commit = ggit.commit().call();
-            // adLast cause we'll ask for logOp.setAscending(true)
-            expected.addLast(commit);
+            if (id.equals(feature2_1.getIdentifier().getID())) {
+                expectedCommit = commit;
+            }
         }
 
-        Iterable<RevCommit> logged = toList(logOp.setAscending(true).call());
+        String[] path = { namespace2, typeName2, feature2_1.getIdentifier().getID() };
 
-        assertEquals(expected, logged);
+        List<RevCommit> feature2_1Commits = toList(logOp.addPath(path).call());
+        assertEquals(1, feature2_1Commits.size());
+        assertEquals(Collections.singletonList(expectedCommit), feature2_1Commits);
+    }
+
+    public void testPathFilterByTypeName() throws Exception {
+
+        List<Feature> features = Arrays.asList(feature1_1, feature2_1, feature1_2, feature2_2,
+                feature1_3, feature2_3);
+        LinkedList<RevCommit> commits = new LinkedList<RevCommit>();
+
+        Set<RevCommit> typeName1Commits = new HashSet<RevCommit>();
+
+        for (Feature f : features) {
+            Name name = f.getType().getName();
+            String namespaceURI = name.getNamespaceURI();
+            String localPart = name.getLocalPart();
+            String id = f.getIdentifier().getID();
+            index.inserted(new FeatureWriter(f), namespaceURI, localPart, id);
+            final RevCommit commit = ggit.commit().call();
+            commits.addFirst(commit);
+            if (typeName1.equals(f.getType().getName().getLocalPart())) {
+                typeName1Commits.add(commit);
+            }
+        }
+
+        // path to filter commits on type1
+        String[] path = { namespace1, typeName1 };
+
+        List<RevCommit> logCommits = toList(logOp.addPath(path).call());
+        assertEquals(typeName1Commits.size(), logCommits.size());
+        assertEquals(typeName1Commits, new HashSet<RevCommit>(logCommits));
+    }
+
+    public void testLimit() throws Exception {
+
+        List<Feature> features = Arrays.asList(feature1_1, feature2_1, feature1_2, feature2_2,
+                feature1_3, feature2_3);
+
+        for (Feature f : features) {
+            Name name = f.getType().getName();
+            String namespaceURI = name.getNamespaceURI();
+            String localPart = name.getLocalPart();
+            String id = f.getIdentifier().getID();
+            index.inserted(new FeatureWriter(f), namespaceURI, localPart, id);
+            ggit.commit().call();
+        }
+
+        assertEquals(3, Iterators.size(logOp.setLimit(3).call()));
+        assertEquals(1, Iterators.size(logOp.setLimit(1).call()));
+        assertEquals(4, Iterators.size(logOp.setLimit(4).call()));
     }
 
     public void testTemporalConstraint() throws Exception {
@@ -139,8 +194,7 @@ public class LogOpTest extends RepositoryTestCase {
             String id = f.getIdentifier().getID();
             index.inserted(new FeatureWriter(f), namespaceURI, localPart, id);
             final RevCommit commit = ggit.commit().setTimestamp(timestamp).call();
-            // adLast cause we'll ask for logOp.setAscending(true)
-            allCommits.addLast(commit);
+            allCommits.addFirst(commit);
         }
 
         // test time range exclusive
@@ -148,8 +202,7 @@ public class LogOpTest extends RepositoryTestCase {
         boolean maxInclusive = false;
         Range<Date> commitRange = new Range<Date>(Date.class, new Date(2000), minInclusive,
                 new Date(5000), maxInclusive);
-        logOp.setCommitRangeTime(commitRange);
-        logOp.setAscending(true);
+        logOp.setTimeRange(commitRange);
 
         List<RevCommit> logged = toList(logOp.call());
         List<RevCommit> expected = allCommits.subList(2, 4);
@@ -160,15 +213,14 @@ public class LogOpTest extends RepositoryTestCase {
         maxInclusive = true;
         commitRange = new Range<Date>(Date.class, new Date(2000), minInclusive, new Date(5000),
                 maxInclusive);
-        logOp = ggit.log().setAscending(true).setCommitRangeTime(commitRange);
+        logOp = ggit.log().setTimeRange(commitRange);
 
         logged = toList(logOp.call());
         expected = allCommits.subList(1, 5);
         assertEquals(expected, logged);
 
         // test reset time range
-        logOp = ggit.log().setAscending(true).setCommitRangeTime(commitRange)
-                .setCommitRangeTime(null);
+        logOp = ggit.log().setTimeRange(commitRange).setTimeRange(null);
         logged = toList(logOp.call());
         expected = allCommits;
         assertEquals(expected, logged);

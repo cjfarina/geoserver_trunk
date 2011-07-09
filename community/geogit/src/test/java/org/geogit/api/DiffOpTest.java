@@ -37,6 +37,65 @@ public class DiffOpTest extends RepositoryTestCase {
         assertFalse(difflist.hasNext());
     }
 
+    public void testNoChangeSameCommit() throws Exception {
+
+        final ObjectId newOid = insert(feature1_1);
+        final RevCommit commit = ggit.commit().setAll(true).call();
+
+        assertFalse(diffOp.setOldVersion(commit.getId()).setNewVersion(commit.getId()).call()
+                .hasNext());
+    }
+
+    public void testFilterNamespaceNoChanges() throws Exception {
+
+        // two commits on different trees
+        insert(feature1_1);
+        final RevCommit commit1 = ggit.commit().setAll(true).call();
+
+        insert(feature2_1);
+        final RevCommit commit2 = ggit.commit().setAll(true).call();
+
+        diffOp.setOldVersion(commit1.getId()).setNewVersion(commit2.getId());
+        diffOp.setFilter(namespace1);
+
+        Iterator<DiffEntry> diffs = diffOp.call();
+        assertFalse(diffs.hasNext());
+    }
+
+    public void testFilterTypeNameNoChanges() throws Exception {
+
+        // two commits on different trees
+        insert(feature1_1);
+        final RevCommit commit1 = ggit.commit().setAll(true).call();
+
+        insert(feature2_1);
+        final RevCommit commit2 = ggit.commit().setAll(true).call();
+
+        diffOp.setOldVersion(commit1.getId()).setNewVersion(commit2.getId());
+        diffOp.setFilter(namespace1, typeName1);
+
+        Iterator<DiffEntry> diffs = diffOp.call();
+        assertFalse(diffs.hasNext());
+    }
+
+    public void testFilterFeatureIdNoChanges() throws Exception {
+
+        // two commits on different trees
+        insert(feature1_1);
+        final RevCommit commit1 = ggit.commit().setAll(true).call();
+
+        insert(feature2_1);
+        final RevCommit commit2 = ggit.commit().setAll(true).call();
+
+        // filter on feature1_1, it didn't change between commit2 and commit1
+
+        diffOp.setOldVersion(commit1.getId()).setNewVersion(commit2.getId());
+        diffOp.setFilter(namespace1, typeName1, feature1_1.getIdentifier().getID());
+
+        Iterator<DiffEntry> diffs = diffOp.call();
+        assertFalse(diffs.hasNext());
+    }
+
     public void testSingleAddition() throws Exception {
 
         final ObjectId newOid = insert(feature1_1);

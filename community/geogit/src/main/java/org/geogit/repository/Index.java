@@ -120,7 +120,7 @@ public class Index {
         final String typeName = path[1];
         final String nsuri = path[0];
 
-        final ObjectId typeTreeId = repository.getChildTreeId(nsuri, typeName);
+        final ObjectId typeTreeId = repository.getTreeChildId(nsuri, typeName);
         if (typeTreeId == null) {
             return false;
         }
@@ -248,7 +248,7 @@ public class Index {
             final ObjectId newTypeTreeId = objectInserter.insert(new RevTreeWriter(typeNameTree));
             RevTree nsTree = nsTrees.get(nsUri);
             if (nsTree == null) {
-                ObjectId nsTreeId = repository.getChildTreeId(root, nsUri);
+                ObjectId nsTreeId = repository.getTreeChildId(root, nsUri);
                 if (nsTreeId == null) {
                     nsTree = repository.newTree();
                 } else {
@@ -275,7 +275,7 @@ public class Index {
     private RevTree findOrCreateTypeNameTree(RevTree root, ObjectInserter objectInserter,
             String nsUri, String typeName) throws Exception {
 
-        ObjectId typeNameTreeId = repository.getChildTreeId(root, nsUri, typeName);
+        ObjectId typeNameTreeId = repository.getTreeChildId(root, nsUri, typeName);
         RevTree typeNameTree;
         if (typeNameTreeId == null) {
             typeNameTree = repository.newTree();

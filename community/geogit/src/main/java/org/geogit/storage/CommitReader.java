@@ -32,6 +32,14 @@ public final class CommitReader implements ObjectReader<RevCommit> {
         final BxmlStreamReader r = inputFactory.createScanner(raw);
         CommitBuilder builder = new CommitBuilder();
 
+        r.nextTag();
+        try {
+            r.require(EventType.START_ELEMENT, COMMIT.getNamespaceURI(), COMMIT.getLocalPart());
+        } catch (IllegalStateException e) {
+            throw new IllegalArgumentException("Object is not a commit: "
+                    + r.getElementName().getLocalPart(), e);
+        }
+
         EventType event;
         QName name;
         while ((event = r.next()) != EventType.END_DOCUMENT) {

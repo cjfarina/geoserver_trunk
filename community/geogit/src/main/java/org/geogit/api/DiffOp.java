@@ -1,6 +1,7 @@
 package org.geogit.api;
 
 import java.util.Iterator;
+import java.util.List;
 
 import org.geogit.repository.Repository;
 
@@ -21,13 +22,6 @@ public class DiffOp extends AbstractGeoGitOp<Iterator<DiffEntry>> {
     }
 
     /**
-     * @return the oldVersion
-     */
-    public ObjectId getOldVersion() {
-        return oldVersion;
-    }
-
-    /**
      * @param oldTreeId
      *            the oldVersion to set
      * @return
@@ -35,13 +29,6 @@ public class DiffOp extends AbstractGeoGitOp<Iterator<DiffEntry>> {
     public DiffOp setOldVersion(ObjectId oldTreeId) {
         this.oldVersion = oldTreeId;
         return this;
-    }
-
-    /**
-     * @return the newVersion
-     */
-    public ObjectId getNewVersion() {
-        return newVersion;
     }
 
     /**
@@ -54,8 +41,13 @@ public class DiffOp extends AbstractGeoGitOp<Iterator<DiffEntry>> {
         return this;
     }
 
-    public DiffOp setFiler(String... pathFilter) {
+    public DiffOp setFilter(String... pathFilter) {
         this.pathFilter = pathFilter;
+        return this;
+    }
+
+    public DiffOp setFilter(List<String> pathFilter) {
+        this.pathFilter = pathFilter.toArray(new String[pathFilter.size()]);
         return this;
     }
 
@@ -71,6 +63,14 @@ public class DiffOp extends AbstractGeoGitOp<Iterator<DiffEntry>> {
              */
             Ref head = repo.getRef(Ref.HEAD);
             newVersion = head.getObjectId();
+        }
+        if (!oldVersion.isNull() && !repo.commitExists(oldVersion)) {
+            throw new IllegalArgumentException("Oldest commit set to diff op does not exist: "
+                    + oldVersion.toString());
+        }
+        if (!newVersion.isNull() && !repo.commitExists(newVersion)) {
+            throw new IllegalArgumentException("Newest commit set to diff op does not exist: "
+                    + newVersion.toString());
         }
 
         DiffTreeWalk diffReader = new DiffTreeWalk(repo, oldVersion, newVersion);

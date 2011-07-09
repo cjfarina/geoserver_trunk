@@ -116,9 +116,9 @@ public class WorkingTree {
         } finally {
             iterator.close();
         }
-        t = System.currentTimeMillis() - t;
-        System.err.println("Imported " + size + " features from " + typeName.getLocalPart()
-                + " in " + t + "ms");
+        // t = System.currentTimeMillis() - t;
+        // System.err.println("Imported " + size + " features from " + typeName.getLocalPart()
+        // + " in " + t + "ms");
         return fids;
     }
 
@@ -132,7 +132,7 @@ public class WorkingTree {
     public boolean hasRoot(final Name typeName) {
         String namespaceURI = typeName.getNamespaceURI() == null ? "" : typeName.getNamespaceURI();
         String localPart = typeName.getLocalPart();
-        ObjectId typeNameTreeId = repository.getChildTreeId(namespaceURI, localPart);
+        ObjectId typeNameTreeId = repository.getTreeChildId(namespaceURI, localPart);
         return typeNameTreeId != null;
     }
 

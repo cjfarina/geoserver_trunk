@@ -85,6 +85,13 @@ public class ObjectDatabase {
         return OperationStatus.SUCCESS == status;
     }
 
+    /**
+     * @param id
+     * @return
+     * @throws IOException
+     * @throws IllegalArgumentException
+     *             if an object with such id does not exist
+     */
     public InputStream getRaw(final ObjectId id) throws IOException {
         Assert.notNull(id, "id");
         DatabaseEntry key = new DatabaseEntry(id.getRawValue());
@@ -92,7 +99,10 @@ public class ObjectDatabase {
 
         final LockMode lockMode = LockMode.READ_COMMITTED;
         Transaction transaction = txn.getTransaction();
-        objectDb.get(transaction, key, data, lockMode);
+        OperationStatus operationStatus = objectDb.get(transaction, key, data, lockMode);
+        if (OperationStatus.NOTFOUND.equals(operationStatus)) {
+            throw new IllegalArgumentException("Object does not exist: " + id.toString());
+        }
         final byte[] cData = data.getData();
 
         // return new GZIPInputStream(new ByteArrayInputStream(cData));
@@ -100,6 +110,15 @@ public class ObjectDatabase {
         return new LZFInputStream(new ByteArrayInputStream(cData));
     }
 
+    /**
+     * @param <T>
+     * @param id
+     * @param reader
+     * @return
+     * @throws IOException
+     * @throws IllegalArgumentException
+     *             if an object with such id does not exist
+     */
     public <T> T get(final ObjectId id, final ObjectReader<T> reader) throws IOException {
         Assert.notNull(id, "id");
         Assert.notNull(reader, "reader");

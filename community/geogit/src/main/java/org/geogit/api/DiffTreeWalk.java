@@ -59,6 +59,9 @@ class DiffTreeWalk {
         if ((oldObject != null && oldObject.getType() == TYPE.BLOB)
                 || (newObject != null && newObject.getType() == TYPE.BLOB)) {
 
+            if (oldObject != null && newObject != null && oldObject.equals(newObject)) {
+                return Iterators.emptyIterator();
+            }
             DiffEntry entry = DiffEntry.newInstance(fromCommit, toCommit, oldObject, newObject,
                     basePath);
             return Collections.singleton(entry).iterator();

@@ -108,6 +108,11 @@ public class DiffEntry {
         } else if (newObject == null) {
             type = ChangeType.DELETE;
         } else {
+            if (oldObject.equals(newObject)) {
+                throw new IllegalArgumentException(
+                        "Trying to create a DiffEntry for the same object id, means the object didn't change: "
+                                + oldObject.toString());
+            }
             type = ChangeType.MODIFY;
         }
 
