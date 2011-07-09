@@ -1,6 +1,8 @@
 package org.geoserver.gss.impl;
 
 import java.util.Date;
+import java.util.Iterator;
+import java.util.LinkedList;
 import java.util.List;
 
 import org.geogit.api.GeoGIT;
@@ -12,6 +14,12 @@ import org.geotools.util.Range;
 import org.opengis.filter.Filter;
 import org.opengis.filter.sort.SortOrder;
 
+/**
+ * Builds a feed of entries for the RESOLUTION FEED based on the given filtering criteria.
+ * 
+ * @author groldan
+ * 
+ */
 class CommitsEntryListBuilder {
 
     private final GeoGIT geoGit;
@@ -76,9 +84,14 @@ class CommitsEntryListBuilder {
         filter.accept(timeConstraintExtractor, null);
         final Range<Date> commitRange = timeConstraintExtractor.getValidTimeWindow();
 
-        final Iterable<RevCommit> commits = geoGit.log()
-                .setAscending(sortOrder == SortOrder.ASCENDING).setCommitRangeTime(commitRange)
-                .call();
+        Iterator<RevCommit> commits = geoGit.log().setTimeRange(commitRange).call();
+        if (SortOrder.ASCENDING.equals(this.sortOrder)) {
+            LinkedList<RevCommit> list = new LinkedList<RevCommit>();
+            while (commits.hasNext()) {
+                list.addFirst(commits.next());
+            }
+            commits = list.iterator();
+        }
 
         Iterable<EntryImpl> entries = new CommitToEntryList(gss, commits, filter, startPosition,
                 maxEntries);

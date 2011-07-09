@@ -4,12 +4,12 @@ import static org.custommonkey.xmlunit.XMLAssert.assertXpathEvaluatesTo;
 import static org.custommonkey.xmlunit.XMLAssert.assertXpathExists;
 import junit.framework.Test;
 
-import org.geoserver.gss.GSSTestSupport;
 import org.geoserver.gss.internal.atom.Atom;
-import org.geoserver.gss.internal.atom.FeedImpl;
 import org.geotools.ows.v1_1.OWS;
 import org.w3c.dom.Document;
 import org.w3c.dom.Element;
+
+import com.mockrunner.mock.web.MockHttpServletResponse;
 
 /**
  * Functional test suite for the {@code GetEntries} GSS operation using KVP request encoding.
@@ -31,7 +31,7 @@ import org.w3c.dom.Element;
  * @author groldan
  * 
  */
-public class Query_OGC_KVP_Test extends GSSTestSupport {
+public class Query_OGC_KVP_Test extends GSSFunctionalTestSupport {
 
     private static final String BASE_REQUEST_PATH = "/ows?service=GSS&version=1.0.0&request=GetEntries";
 
@@ -55,9 +55,22 @@ public class Query_OGC_KVP_Test extends GSSTestSupport {
     }
 
     /**
+     * 9.3.3.3 Response encoding: The response to a GetEntries operation, using the default output
+     * format, shall be an ATOM feed (see IETF RFC 4287) with the mime type of application/atom+xml.
+     * 
+     * @throws Exception
+     */
+    public void testResponseCodeAndMimeType() throws Exception {
+        final String request = REPLICATION_FEED_BASE;
+        MockHttpServletResponse response = super.getAsServletResponse(request);
+        assertEquals(200, response.getStatusCode());
+        assertEquals("application/atom+xml", response.getContentType());
+    }
+
+    /**
      * Only mandatory param besides service/request/version is FEED.
      */
-    public void testEmptyFeed() throws Exception {
+    public void testBaseRequest() throws Exception {
         final String request = REPLICATION_FEED_BASE;
         Document dom = super.getAsDOM(request);
         print(dom);
@@ -65,7 +78,49 @@ public class Query_OGC_KVP_Test extends GSSTestSupport {
         String nodeName = root.getLocalName();
         assertEquals(Atom.NAMESPACE, root.getNamespaceURI());
         assertEquals("feed", nodeName);
-        assertXpathEvaluatesTo(FeedImpl.NULL_ID, "atom:feed/atom:id", dom);
+        assertXpathExists("atom:feed/atom:id", dom);
         assertXpathExists("atom:feed/atom:updated", dom);
+
+        assertXpathEvaluatesTo("2", "count(atom:feed/atom:entry)", dom);
+
+        assertXpathExists("atom:feed/atom:entry[1]/atom:title", dom);
+        assertXpathExists("atom:feed/atom:entry[1]/atom:summary", dom);
+        assertXpathExists("atom:feed/atom:entry[1]/atom:updated", dom);
+        assertXpathExists("atom:feed/atom:entry[1]/atom:author/atom:name", dom);
+        assertXpathExists("atom:feed/atom:entry[1]/atom:contributor/atom:name", dom);
+        assertXpathExists("atom:feed/atom:entry[1]/atom:content", dom);
+        assertXpathExists("atom:feed/atom:entry[1]/atom:content/wfs:Insert", dom);
+
+        assertXpathExists("atom:feed/atom:entry[2]/atom:title", dom);
+        assertXpathExists("atom:feed/atom:entry[2]/atom:summary", dom);
+        assertXpathExists("atom:feed/atom:entry[2]/atom:updated", dom);
+        assertXpathExists("atom:feed/atom:entry[2]/atom:author/atom:name", dom);
+        assertXpathExists("atom:feed/atom:entry[2]/atom:contributor/atom:name", dom);
+        assertXpathExists("atom:feed/atom:entry[2]/atom:content", dom);
+        assertXpathExists("atom:feed/atom:entry[2]/atom:content/wfs:Update", dom);
+    }
+
+    /**
+     * Only mandatory param besides service/request/version is FEED.
+     */
+    public void testEntryIdFilter() throws Exception {
+        final String request = REPLICATION_FEED_BASE;
+        Document dom = super.getAsDOM(request);
+        // print(dom);
+        final String insertId = xpath.evaluate("atom:feed/atom:entry[1]/atom:id", dom);
+        final String updateId = xpath.evaluate("atom:feed/atom:entry[2]/atom:id", dom);
+        assertTrue(insertId != null && updateId != null && !insertId.equals(updateId));
+
+        final String queryById1 = REPLICATION_FEED_BASE + "&ENTRYID=" + insertId;
+        final Document response1 = super.getAsDOM(queryById1);
+        print(response1);
+        assertXpathEvaluatesTo("1", "count(atom:feed/atom:entry)", response1);
+        assertXpathExists("atom:feed/atom:entry[1]/atom:content/wfs:Insert", dom);
+
+        final String queryById2 = REPLICATION_FEED_BASE + "&ENTRYID=" + updateId;
+        final Document response2 = super.getAsDOM(queryById2);
+        print(response2);
+        assertXpathEvaluatesTo("1", "count(atom:feed/atom:entry)", response2);
+        assertXpathExists("atom:feed/atom:entry[1]/atom:content/wfs:Update", dom);
     }
 }

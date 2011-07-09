@@ -20,6 +20,7 @@ import org.geoserver.gss.config.GSSXStreamLoader;
 import org.geoserver.gss.xml.GSSConfiguration;
 import org.geoserver.test.GeoServerTestSupport;
 import org.geotools.factory.CommonFactoryFinder;
+import org.geotools.util.logging.Logging;
 import org.geotools.xml.Parser;
 import org.opengis.filter.FilterFactory;
 import org.w3c.dom.Document;
@@ -33,9 +34,9 @@ import com.mockrunner.mock.web.MockHttpServletResponse;
  */
 public abstract class GSSTestSupport extends GeoServerTestSupport {
 
-    static XpathEngine xpath;
+    protected static XpathEngine xpath;
 
-    FilterFactory ff = CommonFactoryFinder.getFilterFactory(null);
+    protected FilterFactory ff = CommonFactoryFinder.getFilterFactory(null);
 
     // @Override
     // public TestData buildTestData() throws Exception {
@@ -55,6 +56,7 @@ public abstract class GSSTestSupport extends GeoServerTestSupport {
     @Override
     protected void oneTimeSetUp() throws Exception {
         super.oneTimeSetUp();
+        Logging.ALL.forceMonolineConsoleOutput();
 
         // configure the GSS service
         GeoServer gs = getGeoServer();

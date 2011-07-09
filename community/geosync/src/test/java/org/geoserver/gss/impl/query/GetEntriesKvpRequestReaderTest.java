@@ -1,4 +1,4 @@
-package org.geoserver.gss.impl.getentries;
+package org.geoserver.gss.impl.query;
 
 import java.util.Arrays;
 import java.util.HashMap;
@@ -7,7 +7,6 @@ import java.util.Map;
 
 import junit.framework.Test;
 
-import org.geoserver.gss.impl.query.GetEntriesKvpRequestReader;
 import org.geoserver.gss.service.FeedType;
 import org.geoserver.gss.service.GetEntries;
 import org.geoserver.ows.util.CaseInsensitiveMap;
@@ -560,5 +559,19 @@ public class GetEntriesKvpRequestReaderTest extends KvpRequestReaderTestSupport 
             assertEquals("InvalidParameterValue", e.getCode());
             assertEquals("TEMPORALOP", e.getLocator());
         }
+    }
+
+    /**
+     * @throws Exception
+     */
+    public void testEntryId_KVP() throws Exception {
+        rawKvp.put("entryId", "test-entry-id");
+        kvp = parseKvp(rawKvp);
+
+        GetEntries request = reader.read(reader.createRequest(), kvp, rawKvp);
+        assertTrue(request.getFilter() instanceof Id);
+        Id idFilter = (Id) request.getFilter();
+        assertEquals(1, idFilter.getIdentifiers().size());
+        assertEquals("test-entry-id", idFilter.getIdentifiers().iterator().next().getID());
     }
 }

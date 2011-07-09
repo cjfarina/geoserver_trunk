@@ -11,10 +11,14 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Properties;
 import java.util.Set;
+import java.util.concurrent.Future;
 import java.util.logging.Logger;
 
+import org.geogit.api.DiffEntry;
+import org.geogit.api.DiffEntry.ChangeType;
 import org.geogit.api.GeoGIT;
 import org.geogit.api.LogOp;
+import org.geogit.api.ObjectId;
 import org.geogit.api.WorkingTree;
 import org.geogit.repository.Index;
 import org.geogit.repository.Repository;
@@ -45,9 +49,6 @@ import org.opengis.filter.Filter;
 import org.opengis.filter.expression.PropertyName;
 import org.opengis.filter.sort.SortOrder;
 import org.springframework.beans.factory.DisposableBean;
-import org.springframework.security.core.Authentication;
-import org.springframework.security.core.context.SecurityContextHolder;
-import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.util.Assert;
 
 import com.sleepycat.je.Environment;
@@ -70,6 +71,8 @@ public class GSS implements DisposableBean {
 
     private static final String GSS_REPO = "gss_repo";
 
+    private AuthenticationResolver authResolver;
+
     private final Catalog catalog;
 
     private final GeoGIT geoGit;
@@ -78,6 +81,7 @@ public class GSS implements DisposableBean {
 
     public GSS(final Catalog catalog, final GeoServerDataDirectory dataDir) throws IOException {
         this.catalog = catalog;
+        this.authResolver = new AuthenticationResolver();
         final File geogitRepo = dataDir.findOrCreateDataDir(GSS_DATA_ROOT, GSS_GEOGIT_REPO);
 
         EnvironmentBuilder esb = new EnvironmentBuilder(new EntityStoreConfig());
@@ -124,10 +128,11 @@ public class GSS implements DisposableBean {
      * branch.
      * 
      * @param featureTypeName
+     * @return
      * @throws Exception
      */
     @SuppressWarnings("rawtypes")
-    public void initialize(final Name featureTypeName) throws Exception {
+    public Future<Void> initialize(final Name featureTypeName) throws Exception {
         final String user = getCurrentUserName();
         Assert.notNull(user, "This operation shall be invoked by a logged in user");
 
@@ -147,7 +152,8 @@ public class GSS implements DisposableBean {
         ImportVersionedLayerTask importTask;
         importTask = new ImportVersionedLayerTask(user, featureSource, geoGit);
         LongTaskMonitor monitor = GeoServerExtensions.bean(LongTaskMonitor.class);
-        monitor.dispatch(importTask);
+        Future<Void> future = monitor.dispatch(importTask);
+        return future;
     }
 
     public boolean isReplicated(final Name featureTypeName) {
@@ -226,7 +232,7 @@ public class GSS implements DisposableBean {
     public void commitChangeSet(final String gssTransactionID, final String commitMsg)
             throws Exception {
         String userName = getCurrentUserName();
-        System.err.println("Committing changeset " + gssTransactionID + " by user " + userName);
+        LOGGER.info("Committing changeset " + gssTransactionID + " by user " + userName);
 
         // final Ref branch = geoGit.checkout().setName(gssTransactionID).call();
         // commit to the branch
@@ -262,16 +268,16 @@ public class GSS implements DisposableBean {
     /**
      * @return {@code null} if annonymous, the name of the current user otherwise
      */
-    private String getCurrentUserName() {
-        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
-        String userName = null;// annonymous
-        {
-            Object principal = authentication.getPrincipal();
-            if (principal instanceof UserDetails) {
-                userName = ((UserDetails) principal).getUsername();
-            }
-        }
-        return userName;
+    public String getCurrentUserName() {
+        return authResolver.getCurrentUserName();
+    }
+
+    /**
+     * Set an alternate auth resolver, mainly used to aid in unit testing code that depends on this
+     * class.
+     */
+    public void setAuthenticationResolver(AuthenticationResolver resolver) {
+        this.authResolver = resolver;
     }
 
     public LogOp log() {
@@ -307,14 +313,16 @@ public class GSS implements DisposableBean {
      * @throws Exception
      * @see {@link DiffEntryListBuilder}
      */
-    public FeedImpl queryReplicationFeed(List<String> searchTerms, Filter filter,
-            Long startPosition, Long maxEntries) throws ServiceException {
+    public FeedImpl queryReplicationFeed(final List<String> searchTerms, final Filter filter,
+            final Long startPosition, final Long maxEntries, final SortOrder sortOrder)
+            throws ServiceException {
 
         DiffEntryListBuilder diffEntryListBuilder = new DiffEntryListBuilder(this, geoGit);
         diffEntryListBuilder.setSearchTerms(searchTerms);
         diffEntryListBuilder.setFilter(filter);
         diffEntryListBuilder.setStartPosition(startPosition);
         diffEntryListBuilder.setMaxEntries(maxEntries);
+        diffEntryListBuilder.setSortOrder(sortOrder);
 
         FeedImpl feed;
         try {
@@ -330,8 +338,16 @@ public class GSS implements DisposableBean {
         throw new UnsupportedOperationException("Not yet implemented");
     }
 
-    public FeedImpl queryResolutionFeed(List<String> searchTerms, Filter filter,
-            Long startPosition, Long maxEntries, SortOrder sortOrder) {
+    /**
+     * @param searchTerms
+     * @param filter
+     * @param startPosition
+     * @param maxEntries
+     * @param sortOrder
+     * @return
+     */
+    public FeedImpl queryResolutionFeed(final List<String> searchTerms, final Filter filter,
+            final Long startPosition, final Long maxEntries, final SortOrder sortOrder) {
 
         CommitsEntryListBuilder commitEntryListBuilder = new CommitsEntryListBuilder(this, geoGit);
         commitEntryListBuilder.setSearchTerms(searchTerms);
@@ -372,6 +388,35 @@ public class GSS implements DisposableBean {
         }
 
         return supportedFormats;
+    }
+
+    /**
+     * Returns a UUID for a GSS atom entry for the replication feed, creating it if needed.
+     * 
+     * @param diffEnty
+     * @return
+     * @see #getEntryByUUID
+     */
+    public String getGssEntryId(final DiffEntry diffEnty) {
+        // NOTE: this is not really what the atom:entry should be, as if someone requested an entry
+        // by it this wouldn't indicate whether it's a feature insert,update,or delete. But this is
+        // a concept of GSS exclusively, as we can't use the commit id to refer to a single feature
+        // change neither, so the mapping from entry id to DiffEntry should be in the GSS database,
+        // and a new atom:entry id should be automatically generated as stated in the spec
+        ObjectId objectId = diffEnty.getType() == ChangeType.DELETE ? diffEnty.getOldObjectId()
+                : diffEnty.getNewObjectId();
+
+        // return gssDb.getOrCreateEntryUUID();
+        return objectId.toString();
+    }
+
+    /**
+     * @param uuid
+     * @return
+     * @see #getGssEntryId
+     */
+    public DiffEntry getEntryByUUID(final String uuid) {
+        return null;
     }
 
 }

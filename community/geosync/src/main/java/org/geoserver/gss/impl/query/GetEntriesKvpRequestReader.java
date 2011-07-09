@@ -88,10 +88,12 @@ public class GetEntriesKvpRequestReader extends KvpRequestReader {
                     + "are mutually exclusive", "InvalidParameterValue", "FILTER");
         }
 
+        Filter filter = ff.and(Arrays.asList(entryIdFitler, temporalFitler, spatialParamsFilter,
+                generalizedPredicate));
+
         SimplifyingFilterVisitor visitor = new SimplifyingFilterVisitor();
-        final Filter filter = (Filter) ff.and(
-                Arrays.asList(entryIdFitler, temporalFitler, spatialParamsFilter,
-                        generalizedPredicate)).accept(visitor, null);
+        filter = (Filter) filter.accept(visitor, null);
+
         request.setFilter(filter);
 
         return request;

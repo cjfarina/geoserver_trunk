@@ -16,7 +16,7 @@ import org.opengis.filter.Id;
  */
 class CommitToEntryList implements Iterable<EntryImpl> {
 
-    private final Iterable<RevCommit> commits;
+    private final Iterator<RevCommit> commits;
 
     private final GSS gss;
 
@@ -26,7 +26,7 @@ class CommitToEntryList implements Iterable<EntryImpl> {
 
     private final Filter filter;
 
-    public CommitToEntryList(final GSS gss, final Iterable<RevCommit> commits,
+    public CommitToEntryList(final GSS gss, final Iterator<RevCommit> commits,
             final Filter entryFilter, final Long startPosition, final Long maxEntries) {
         this.gss = gss;
         this.commits = commits;
@@ -39,8 +39,7 @@ class CommitToEntryList implements Iterable<EntryImpl> {
      * @see java.lang.Iterable#iterator()
      */
     public Iterator<EntryImpl> iterator() {
-        Iterator<RevCommit> sourceIterator = commits.iterator();
-        Iterator<EntryImpl> targetIterator = new CommitToEntryIterator(gss, sourceIterator, filter,
+        Iterator<EntryImpl> targetIterator = new CommitToEntryIterator(gss, commits, filter,
                 startPosition, maxEntries);
         return targetIterator;
     }

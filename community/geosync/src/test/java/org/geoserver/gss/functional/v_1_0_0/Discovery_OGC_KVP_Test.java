@@ -13,7 +13,7 @@ import org.w3c.dom.Element;
 import org.w3c.dom.NamedNodeMap;
 import org.w3c.dom.Node;
 
-public class Discovery_OGC_KVP_Test extends GSSTestSupport {
+public class Discovery_OGC_KVP_Test extends GSSFunctionalTestSupport {
 
     private static final String BASE_REQUEST_PATH = "/ows?service=GSS&version=1.0.0&request=GetCapabilities";
 

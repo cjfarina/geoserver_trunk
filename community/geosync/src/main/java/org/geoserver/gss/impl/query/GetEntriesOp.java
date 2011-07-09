@@ -59,7 +59,8 @@ public class GetEntriesOp {
                     SortOrder.ASCENDING);
             break;
         case REPLICATIONFEED:
-            response = gss.queryReplicationFeed(searchTerms, filter, startPosition, maxEntries);
+            response = gss.queryReplicationFeed(searchTerms, filter, startPosition, maxEntries,
+                    SortOrder.ASCENDING);
             break;
         default:
             throw new IllegalArgumentException("Unknown feed type: " + feed);

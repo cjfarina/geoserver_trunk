@@ -90,15 +90,9 @@ class DiffToEntry implements Function<DiffEntry, EntryImpl> {
 
         EntryImpl atomEntry = new EntryImpl();
 
-        // NOTE: this is not really what the atom:entry should be, as if someone requested an entry
-        // by it this wouldn't indicate whether it's a feature insert,update,or delete. But this is
-        // a concept of GSS exclusively, as we can't use the commit id to refer to a single feature
-        // change neither, so the mapping from entry id to DiffEntry should be in the GSS database,
-        // and a new atom:entry id should be automatically generated as stated in the spec
-        ObjectId objectId = diffEnty.getType() == ChangeType.DELETE ? diffEnty.getOldObjectId()
-                : diffEnty.getNewObjectId();
+        final String atomEntryId = gss.getGssEntryId(diffEnty);
 
-        atomEntry.setId(objectId.toString());// TODO: convert to UUID
+        atomEntry.setId(atomEntryId);
         atomEntry.setTitle(title(diffEnty));
         atomEntry.setSummary(newCommit.getMessage());
         atomEntry.setUpdated(new Date(newCommit.getTimestamp()));
