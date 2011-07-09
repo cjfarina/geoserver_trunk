@@ -226,4 +226,50 @@ public class LogOpTest extends RepositoryTestCase {
         assertEquals(expected, logged);
     }
 
+    public void testSinceUntil() throws Exception {
+        final ObjectId oid1_1 = insert(feature1_1);
+        final RevCommit commit1_1 = ggit.commit().call();
+
+        final ObjectId oid1_2 = insert(feature1_2);
+        final RevCommit commit1_2 = ggit.commit().call();
+
+        final ObjectId oid2_1 = insert(feature2_1);
+        final RevCommit commit2_1 = ggit.commit().call();
+
+        final ObjectId oid2_2 = insert(feature2_2);
+        final RevCommit commit2_2 = ggit.commit().call();
+
+        try {
+            logOp.setSince(oid1_1).call();
+            fail("Expected ISE as since is not a commit");
+        } catch (IllegalStateException e) {
+            assertTrue(e.getMessage().contains("since"));
+        }
+
+        try {
+            logOp.setSince(null).setUntil(oid2_2).call();
+            fail("Expected ISE as until is not a commit");
+        } catch (IllegalStateException e) {
+            assertTrue(e.getMessage().contains("until"));
+        }
+
+        List<RevCommit> logs;
+        List<RevCommit> expected;
+
+        logs = toList(logOp.setSince(commit1_2.getId()).setUntil(null).call());
+        expected = Arrays.asList(commit2_2, commit2_1, commit1_2);
+        assertEquals(expected, logs);
+
+        logs = toList(logOp.setSince(commit2_2.getId()).setUntil(null).call());
+        expected = Arrays.asList(commit2_2);
+        assertEquals(expected, logs);
+
+        logs = toList(logOp.setSince(commit1_2.getId()).setUntil(commit2_1.getId()).call());
+        expected = Arrays.asList(commit2_1, commit1_2);
+        assertEquals(expected, logs);
+
+        logs = toList(logOp.setSince(null).setUntil(commit2_1.getId()).call());
+        expected = Arrays.asList(commit2_1, commit1_2, commit1_1);
+        assertEquals(expected, logs);
+    }
 }

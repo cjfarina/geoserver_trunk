@@ -65,11 +65,11 @@ public class DiffOp extends AbstractGeoGitOp<Iterator<DiffEntry>> {
             newVersion = head.getObjectId();
         }
         if (!oldVersion.isNull() && !repo.commitExists(oldVersion)) {
-            throw new IllegalArgumentException("Oldest commit set to diff op does not exist: "
+            throw new IllegalArgumentException("oldVersion commit set to diff op does not exist: "
                     + oldVersion.toString());
         }
         if (!newVersion.isNull() && !repo.commitExists(newVersion)) {
-            throw new IllegalArgumentException("Newest commit set to diff op does not exist: "
+            throw new IllegalArgumentException("newVersion commit set to diff op does not exist: "
                     + newVersion.toString());
         }
 

@@ -59,9 +59,11 @@ class DiffTreeWalk {
         if ((oldObject != null && oldObject.getType() == TYPE.BLOB)
                 || (newObject != null && newObject.getType() == TYPE.BLOB)) {
 
+            // but addressed object didn't change
             if (oldObject != null && newObject != null && oldObject.equals(newObject)) {
                 return Iterators.emptyIterator();
             }
+            // ok, found change between new and old version of the filter addressed object
             DiffEntry entry = DiffEntry.newInstance(fromCommit, toCommit, oldObject, newObject,
                     basePath);
             return Collections.singleton(entry).iterator();
@@ -216,6 +218,10 @@ class DiffTreeWalk {
 
     /**
      * Iterator over the differences between two trees
+     * <p>
+     * This tree walk depends on {@link RevTree#iterator(Predicate)} returning results in consistent
+     * order.
+     * </p>
      * 
      * @author groldan
      * 
@@ -278,6 +284,7 @@ class DiffTreeWalk {
                 final String newEntryName = newEntry.getName();
 
                 if (oldEntryName.equals(newEntryName)) {
+                    // both tree iterators gave the same entry
                     if (oldEntry.getObjectId().equals(newEntry.getObjectId())) {
                         // same object, skip it
                         continue;
@@ -309,6 +316,7 @@ class DiffTreeWalk {
                     Assert.isTrue(comparison != 0, "Comparison can't be 0 if reached this point!");
 
                     if (comparison < 0) {
+                        //something was deleted in oldVersion
                         if (oldEntry.getType().equals(RevObject.TYPE.TREE)) {
                             final String name = oldEntryName;
                             List<String> childTreePath = path(name);
