@@ -1,14 +1,12 @@
 package org.geoserver.bxml.filter_1_1;
 
 import static org.geotools.filter.v1_1.OGC.FeatureId;
-import static org.geotools.filter.v1_1.OGC.FID;
 
 import java.util.Map;
 
 import javax.xml.namespace.QName;
 
 import org.geoserver.bxml.AbstractDecoder;
-import org.geoserver.gss.internal.atom.Atom;
 import org.geotools.factory.CommonFactoryFinder;
 import org.geotools.factory.GeoTools;
 import org.gvsig.bxml.stream.BxmlStreamReader;

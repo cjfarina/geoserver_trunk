@@ -26,6 +26,6 @@ public class OrFilterDecoder extends FilterLinkDecoder {
 
     @Override
     protected Filter buildResult() {
-        return ff.or(params.get(0), params.get(1));
+        return ff.or(params);
     }
 }

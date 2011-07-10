@@ -20,15 +20,42 @@
                 </fes:PropertyIsEqualTo>
                 <fes:Not>
                     <fes:And>
+                        <fes:PropertyIsEqualTo>
+                            <fes:PropertyName>street</fes:PropertyName>
+                            <fes:Literal>Street1</fes:Literal>
+                        </fes:PropertyIsEqualTo>
+                        <fes:PropertyIsNotEqualTo>
+                            <fes:PropertyName>name</fes:PropertyName>
+                            <fes:Literal>Name1</fes:Literal>
+                        </fes:PropertyIsNotEqualTo>
+                        <fes:PropertyIsLessThan>
+                            <fes:PropertyName>age</fes:PropertyName>
+                            <fes:Literal>26</fes:Literal>
+                        </fes:PropertyIsLessThan>
+                        <fes:PropertyIsGreaterThan>
+                            <fes:PropertyName>age2</fes:PropertyName>
+                            <fes:Literal>30</fes:Literal>
+                        </fes:PropertyIsGreaterThan>
+                        <fes:PropertyIsLessThanOrEqualTo>
+                            <fes:PropertyName>age4</fes:PropertyName>
+                            <fes:Literal>37</fes:Literal>
+                        </fes:PropertyIsLessThanOrEqualTo>
+                        <fes:PropertyIsGreaterThanOrEqualTo>
+                            <fes:PropertyName>age5</fes:PropertyName>
+                            <fes:Literal>45</fes:Literal>
+                        </fes:PropertyIsGreaterThanOrEqualTo>
+                        <fes:PropertyIsLike>
+                            <fes:PropertyName>name7</fes:PropertyName>
+                            <fes:Literal>albert</fes:Literal>
+                        </fes:PropertyIsLike>
+                        <fes:PropertyIsNull>
+                            <fes:PropertyName>propertyNull</fes:PropertyName>
+                        </fes:PropertyIsNull>
                         <fes:PropertyIsBetween>
                             <fes:PropertyName>depth</fes:PropertyName>
                             <fes:LowerBoundary><fes:Literal>100</fes:Literal></fes:LowerBoundary>
                             <fes:UpperBoundary><fes:Literal>200</fes:Literal></fes:UpperBoundary>
                         </fes:PropertyIsBetween>
-                        <fes:PropertyIsEqualTo>
-                            <fes:PropertyName>street</fes:PropertyName>
-                            <fes:Literal>Street1</fes:Literal>
-                        </fes:PropertyIsEqualTo>
                     </fes:And>
                 </fes:Not>
             </fes:Or>

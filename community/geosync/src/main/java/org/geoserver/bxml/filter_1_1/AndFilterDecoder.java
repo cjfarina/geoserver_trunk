@@ -26,7 +26,7 @@ public class AndFilterDecoder extends FilterLinkDecoder {
 
     @Override
     protected Filter buildResult() {
-        return ff.and(params.get(0), params.get(1));
+        return ff.and(params);
     }
 
 }
