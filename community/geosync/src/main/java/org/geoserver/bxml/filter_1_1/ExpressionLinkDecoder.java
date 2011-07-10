@@ -1,7 +1,5 @@
 package org.geoserver.bxml.filter_1_1;
 
-import java.io.IOException;
-
 import javax.xml.namespace.QName;
 
 import org.geoserver.bxml.AbstractDecoder;
@@ -27,7 +25,7 @@ public abstract class ExpressionLinkDecoder extends AbstractDecoder<Expression> 
         this.expressionLink = filterLink;
     }
 
-    public Expression decode(final BxmlStreamReader r) throws IOException {
+    public Expression decode(final BxmlStreamReader r) throws Exception {
         QName name = r.getElementName();
 
         if (this.name.equals(name)) {

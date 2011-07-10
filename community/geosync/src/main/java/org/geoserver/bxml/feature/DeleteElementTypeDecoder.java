@@ -3,7 +3,6 @@ package org.geoserver.bxml.feature;
 import static org.geoserver.wfs.xml.v1_1_0.WFS.DELETE;
 import static org.geotools.filter.v1_1.OGC.Filter;
 
-import java.io.IOException;
 import java.util.Map;
 
 import javax.xml.namespace.QName;
@@ -28,9 +27,9 @@ public class DeleteElementTypeDecoder extends AbstractDecoder<DeleteElementType>
     }
 
     @Override
-    protected void decodeElement(BxmlStreamReader r) throws IOException {
+    protected void decodeElement(BxmlStreamReader r) throws Exception {
         QName name = r.getElementName();
-        
+
         if (Filter.equals(name)) {
             FilterChainDecoder filterDecoder = new FilterChainDecoder(Filter);
             element.setFilter(filterDecoder.decode(r));
@@ -40,16 +39,16 @@ public class DeleteElementTypeDecoder extends AbstractDecoder<DeleteElementType>
     @Override
     protected void decodeAttributtes(BxmlStreamReader r, Map<QName, String> attributes) {
         QName name = r.getElementName();
-        
+
         String namespaceURI = r.getNamespaceURI("f");
-        
+
         QName typeName = new QName(Atom.NAMESPACE, "typeName");
-        
-        if(DELETE.equals(name)){
+
+        if (DELETE.equals(name)) {
             if (attributes.get(typeName) != null) {
-                
+
                 String value = attributes.get(typeName);
-                if(value.startsWith("f:")){
+                if (value.startsWith("f:")) {
                     value = value.substring(2);
                 }
                 QName typeNameValue = new QName(namespaceURI, value);

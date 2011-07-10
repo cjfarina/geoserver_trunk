@@ -1,23 +1,21 @@
 package org.geoserver.bxml.filter_1_1;
 
-import java.io.IOException;
-
 import javax.xml.namespace.QName;
 
 import org.geoserver.bxml.AbstractDecoder;
 import org.gvsig.bxml.stream.BxmlStreamReader;
 import org.opengis.filter.expression.Expression;
 
-public class BoundaryFilterDecoder extends AbstractDecoder<Expression>{
+public class BoundaryFilterDecoder extends AbstractDecoder<Expression> {
 
     private Expression expression = null;
-    
+
     public BoundaryFilterDecoder(final QName name) {
         super(name);
     }
-    
+
     @Override
-    protected void decodeElement(BxmlStreamReader r) throws IOException {
+    protected void decodeElement(BxmlStreamReader r) throws Exception {
         expression = new ExpressionChainDecoder().decode(r);
     }
 

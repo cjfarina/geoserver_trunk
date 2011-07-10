@@ -3,8 +3,6 @@ package org.geoserver.bxml.atom;
 import static org.geoserver.gss.internal.atom.Atom.email;
 import static org.geoserver.gss.internal.atom.Atom.uri;
 
-import java.io.IOException;
-
 import javax.xml.namespace.QName;
 
 import org.geoserver.bxml.AbstractDecoder;
@@ -22,9 +20,9 @@ public class PersonDecoder extends AbstractDecoder<PersonImpl> {
     }
 
     @Override
-    protected void decodeElement(BxmlStreamReader r) throws IOException {
+    protected void decodeElement(BxmlStreamReader r) throws Exception {
         QName name = r.getElementName();
-        
+
         if (Atom.name.equals(name)) {
             person.setName(readStringValue(r, Atom.name));
         }
@@ -42,5 +40,5 @@ public class PersonDecoder extends AbstractDecoder<PersonImpl> {
     protected PersonImpl buildResult() {
         return person;
     }
-    
+
 }

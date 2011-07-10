@@ -3,7 +3,6 @@ package org.geoserver.bxml.atom;
 import static org.geoserver.gss.internal.atom.Atom.uri;
 import static org.geoserver.gss.internal.atom.Atom.version;
 
-import java.io.IOException;
 import java.util.Map;
 
 import javax.xml.namespace.QName;
@@ -24,7 +23,7 @@ public class GeneratorDecoder extends AbstractDecoder<GeneratorImpl> {
 
     @Override
     protected void decodeAttributtes(BxmlStreamReader r, Map<QName, String> attributes)
-            throws IOException {
+            throws Exception {
         generator.setUri(attributes.get(uri));
         generator.setVersion(attributes.get(version));
     }
@@ -34,7 +33,7 @@ public class GeneratorDecoder extends AbstractDecoder<GeneratorImpl> {
     }
 
     @Override
-    protected void decodeElement(BxmlStreamReader r) throws IOException {
+    protected void decodeElement(BxmlStreamReader r) throws Exception {
         QName name = r.getElementName();
 
         if (generator.equals(name)) {

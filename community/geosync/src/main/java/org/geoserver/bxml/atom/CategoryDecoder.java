@@ -3,7 +3,6 @@ package org.geoserver.bxml.atom;
 import static org.geoserver.gss.internal.atom.Atom.scheme;
 import static org.geoserver.gss.internal.atom.Atom.term;
 
-import java.io.IOException;
 import java.util.Map;
 
 import javax.xml.namespace.QName;
@@ -24,13 +23,13 @@ public class CategoryDecoder extends AbstractDecoder<CategoryImpl> {
 
     @Override
     protected void decodeAttributtes(BxmlStreamReader r, Map<QName, String> attributes)
-            throws IOException {
+            throws Exception {
         category.setScheme(attributes.get(scheme));
         category.setTerm(attributes.get(term));
     }
 
     @Override
-    protected void decodeElement(BxmlStreamReader r) throws IOException {
+    protected void decodeElement(BxmlStreamReader r) throws Exception {
     }
 
     @Override

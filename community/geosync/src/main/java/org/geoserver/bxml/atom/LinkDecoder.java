@@ -7,7 +7,6 @@ import static org.geoserver.gss.internal.atom.Atom.rel;
 import static org.geoserver.gss.internal.atom.Atom.title;
 import static org.geoserver.gss.internal.atom.Atom.type;
 
-import java.io.IOException;
 import java.util.Map;
 import java.util.logging.Logger;
 
@@ -33,7 +32,7 @@ public class LinkDecoder extends AbstractDecoder<LinkImpl> {
 
     @Override
     protected void decodeAttributtes(BxmlStreamReader r, Map<QName, String> attributes)
-            throws IOException {
+            throws Exception {
         link.setHref(attributes.get(href));
         link.setRel(attributes.get(rel));
         link.setType(attributes.get(type));
@@ -45,7 +44,7 @@ public class LinkDecoder extends AbstractDecoder<LinkImpl> {
     }
 
     @Override
-    protected void decodeElement(BxmlStreamReader r) throws IOException {
+    protected void decodeElement(BxmlStreamReader r) throws Exception {
         QName name = r.getElementName();
 
         if (href.equals(name)) {

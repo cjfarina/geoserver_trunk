@@ -4,7 +4,6 @@ import static org.geoserver.gss.internal.atom.Atom.source;
 import static org.geoserver.gss.internal.atom.Atom.type;
 import static org.geoserver.wfs.xml.v1_1_0.WFS.DELETE;
 
-import java.io.IOException;
 import java.util.Map;
 
 import javax.xml.namespace.QName;
@@ -25,7 +24,7 @@ public class ContentDecoder extends AbstractDecoder<ContentImpl> {
     }
 
     @Override
-    protected void decodeElement(BxmlStreamReader r) throws IOException {
+    protected void decodeElement(BxmlStreamReader r) throws Exception {
         QName name = r.getElementName();
 
         if (DELETE.equals(name)) {
@@ -36,7 +35,7 @@ public class ContentDecoder extends AbstractDecoder<ContentImpl> {
 
     @Override
     protected void decodeAttributtes(BxmlStreamReader r, Map<QName, String> attributes)
-            throws IOException {
+            throws Exception {
         QName name = r.getElementName();
         if (Atom.content.equals(name)) {
             if (attributes.get(type) != null) {

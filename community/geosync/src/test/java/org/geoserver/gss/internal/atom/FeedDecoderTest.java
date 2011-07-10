@@ -9,13 +9,11 @@ import java.util.TimeZone;
 import javax.xml.namespace.QName;
 
 import junit.framework.TestCase;
-
 import net.opengis.wfs.DeleteElementType;
 
 import org.geoserver.bxml.atom.FeedDecoder;
 import org.geotools.filter.AttributeExpressionImpl;
 import org.geotools.filter.LiteralExpressionImpl;
-import org.geotools.filter.OrImpl;
 import org.gvsig.bxml.stream.BxmlFactoryFinder;
 import org.gvsig.bxml.stream.BxmlInputFactory;
 import org.gvsig.bxml.stream.BxmlStreamReader;
@@ -25,8 +23,6 @@ import org.opengis.filter.Not;
 import org.opengis.filter.Or;
 import org.opengis.filter.PropertyIsBetween;
 import org.opengis.filter.PropertyIsEqualTo;
-import org.opengis.filter.expression.Literal;
-import org.opengis.filter.expression.PropertyName;
 
 public class FeedDecoderTest extends TestCase {
 

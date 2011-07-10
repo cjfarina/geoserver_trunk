@@ -19,24 +19,24 @@ public abstract class AbstractDecoder<T> {
     private static final Logger LOGGER = Logging.getLogger(AbstractEncoder.class);
 
     protected final QName name;
-    
+
     public AbstractDecoder(final QName name) {
         this.name = name;
     }
-    
-    protected void decodeElement(final BxmlStreamReader r) throws IOException {
+
+    protected void decodeElement(final BxmlStreamReader r) throws Exception {
     }
 
     protected void decodeAttributtes(final BxmlStreamReader r, Map<QName, String> attributes)
-            throws IOException {
+            throws Exception {
     }
 
     protected abstract T buildResult();
 
-    protected void setStringValue(String value) throws IOException {
+    protected void setStringValue(String value) throws Exception {
     }
 
-    public T decode(BxmlStreamReader r) throws IOException {
+    public T decode(BxmlStreamReader r) throws Exception {
         r.require(EventType.START_ELEMENT, name.getNamespaceURI(), name.getLocalPart());
 
         EventType event;

@@ -23,7 +23,12 @@
     <content>
       <wfs:Delete xmlns:f="http://opengeo.org/osm" typeName="f:planet_osm_point">
         <fes:Filter>
-          <fes:FeatureId fid="planet_osm_point.100"></fes:FeatureId>
+          <fes:FeatureId fes:fid="planet_osm_point.100"></fes:FeatureId>
+          <fes:FeatureId fes:fid="planet_osm_point.101"></fes:FeatureId>
+          <fes:FeatureId fes:fid="planet_osm_point.102"></fes:FeatureId>
+          <fes:FeatureId fes:fid="planet_osm_point.103"></fes:FeatureId>
+          <fes:FeatureId fes:fid="planet_osm_point.104"></fes:FeatureId>
+          <fes:FeatureId fes:fid="planet_osm_point.105"></fes:FeatureId>
         </fes:Filter>
       </wfs:Delete>
     </content>

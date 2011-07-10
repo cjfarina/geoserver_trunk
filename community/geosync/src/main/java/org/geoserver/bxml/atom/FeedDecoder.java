@@ -57,7 +57,7 @@ public class FeedDecoder extends AbstractDecoder<FeedImpl> {
                 EntryImpl entry = null;
                 try {
                     entry = new EntryDecoder().decode(input);
-                } catch (IOException e) {
+                } catch (Exception e) {
                     Throwables.propagate(e);
                 }
                 return entry;
@@ -66,7 +66,7 @@ public class FeedDecoder extends AbstractDecoder<FeedImpl> {
     }
 
     @Override
-    public FeedImpl decode(BxmlStreamReader r) throws IOException {
+    public FeedImpl decode(BxmlStreamReader r) throws Exception {
         EventType event;
         while ((event = r.next()) != EventType.END_DOCUMENT) {
             if (EventType.START_ELEMENT != event) {
@@ -85,7 +85,7 @@ public class FeedDecoder extends AbstractDecoder<FeedImpl> {
     }
 
     @Override
-    protected void decodeElement(BxmlStreamReader r) throws IOException {
+    protected void decodeElement(BxmlStreamReader r) throws Exception {
         QName name = r.getElementName();
 
         if (id.equals(name)) {

@@ -1,7 +1,5 @@
 package org.geoserver.bxml.filter_1_1;
 
-import java.io.IOException;
-
 import javax.xml.namespace.QName;
 
 import org.geoserver.bxml.AbstractDecoder;
@@ -14,26 +12,26 @@ import org.opengis.filter.FilterFactory2;
 public abstract class FilterLinkDecoder extends AbstractDecoder<Filter> {
 
     protected FilterLinkDecoder filterLink;
-    
+
     protected static FilterFactory2 ff = CommonFactoryFinder.getFilterFactory2(GeoTools
             .getDefaultHints());
-    
-    public FilterLinkDecoder(final QName name){
+
+    public FilterLinkDecoder(final QName name) {
         super(name);
     }
-    
+
     public FilterLinkDecoder(final QName name, final FilterLinkDecoder filterLink) {
         this(name);
         this.filterLink = filterLink;
     }
-    
+
     @Override
-    public Filter decode(final BxmlStreamReader r) throws IOException {
+    public Filter decode(final BxmlStreamReader r) throws Exception {
         QName name = r.getElementName();
-        
-        if(this.name.equals(name)){
+
+        if (this.name.equals(name)) {
             return super.decode(r);
-        } else if(filterLink != null) {
+        } else if (filterLink != null) {
             return filterLink.decode(r);
         } else {
             return null;

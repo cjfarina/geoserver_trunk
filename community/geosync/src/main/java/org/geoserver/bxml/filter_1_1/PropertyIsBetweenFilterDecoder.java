@@ -2,7 +2,6 @@ package org.geoserver.bxml.filter_1_1;
 
 import static org.geotools.filter.v1_1.OGC.PropertyIsBetween;
 
-import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -14,29 +13,29 @@ import org.opengis.filter.Filter;
 import org.opengis.filter.expression.Expression;
 
 public class PropertyIsBetweenFilterDecoder extends FilterLinkDecoder {
-    
+
     private final List<Expression> expresions = new ArrayList<Expression>();
-    
+
     public static final QName LowerBoundary = new QName(OGC.NAMESPACE, "LowerBoundary");
-    
+
     public static final QName UpperBoundary = new QName(OGC.NAMESPACE, "UpperBoundary");
-    
+
     public PropertyIsBetweenFilterDecoder() {
         super(PropertyIsBetween);
     }
-    
+
     @Override
-    protected void decodeElement(final BxmlStreamReader r) throws IOException {
+    protected void decodeElement(final BxmlStreamReader r) throws Exception {
         QName name = r.getElementName();
-        
-        if(LowerBoundary.equals(name)){
+
+        if (LowerBoundary.equals(name)) {
             expresions.add(new BoundaryFilterDecoder(LowerBoundary).decode(r));
-        } else if(UpperBoundary.equals(name)){
+        } else if (UpperBoundary.equals(name)) {
             expresions.add(new BoundaryFilterDecoder(UpperBoundary).decode(r));
         } else {
             expresions.add(new ExpressionChainDecoder().decode(r));
         }
-        
+
     }
 
     @Override
