@@ -25,6 +25,10 @@ import org.opengis.filter.PropertyIsLessThanOrEqualTo;
 import org.opengis.filter.PropertyIsLike;
 import org.opengis.filter.PropertyIsNotEqualTo;
 import org.opengis.filter.PropertyIsNull;
+import org.opengis.filter.expression.Add;
+import org.opengis.filter.expression.Divide;
+import org.opengis.filter.expression.Multiply;
+import org.opengis.filter.expression.Subtract;
 
 public class FilterDecoderTest extends TestCase {
 
@@ -70,7 +74,7 @@ public class FilterDecoderTest extends TestCase {
         And andFilter = (And) notFilter.getFilter();
 
         List<Filter> andFilterChildrens = andFilter.getChildren();
-        assertEquals(9, andFilterChildrens.size());
+        assertEquals(13, andFilterChildrens.size());
 
         PropertyIsEqualTo propertyIsEqualTo2 = (PropertyIsEqualTo) andFilterChildrens.get(0);
         assertEquals("street",
@@ -135,6 +139,42 @@ public class FilterDecoderTest extends TestCase {
         assertEquals("200",
                 ((LiteralExpressionImpl) propertyIsBetween1.getUpperBoundary()).getValue());
 
+        PropertyIsEqualTo propertyIsEqualTo3 = (PropertyIsEqualTo) andFilterChildrens.get(9);
+        assertEquals("addFilter",
+                ((AttributeExpressionImpl) propertyIsEqualTo3.getExpression1()).getPropertyName());
+        Add add = (Add)propertyIsEqualTo3.getExpression2();
+        assertEquals("property1",
+                ((AttributeExpressionImpl) add.getExpression1()).getPropertyName());
+        assertEquals("100",
+                ((LiteralExpressionImpl) add.getExpression2()).getValue());
+        
+        PropertyIsEqualTo propertyIsEqualTo4 = (PropertyIsEqualTo) andFilterChildrens.get(10);
+        assertEquals("subFilter",
+                ((AttributeExpressionImpl) propertyIsEqualTo4.getExpression1()).getPropertyName());
+        Subtract sub = (Subtract)propertyIsEqualTo4.getExpression2();
+        assertEquals("property2",
+                ((AttributeExpressionImpl) sub.getExpression1()).getPropertyName());
+        assertEquals("159",
+                ((LiteralExpressionImpl) sub.getExpression2()).getValue());
+        
+        PropertyIsEqualTo propertyIsEqualTo5 = (PropertyIsEqualTo) andFilterChildrens.get(11);
+        assertEquals("mulFilter",
+                ((AttributeExpressionImpl) propertyIsEqualTo5.getExpression1()).getPropertyName());
+        Multiply mul = (Multiply)propertyIsEqualTo5.getExpression2();
+        assertEquals("property3",
+                ((AttributeExpressionImpl) mul.getExpression1()).getPropertyName());
+        assertEquals("543",
+                ((LiteralExpressionImpl) mul.getExpression2()).getValue());
+        
+        PropertyIsEqualTo propertyIsEqualTo6 = (PropertyIsEqualTo) andFilterChildrens.get(12);
+        assertEquals("divFilter",
+                ((AttributeExpressionImpl) propertyIsEqualTo6.getExpression1()).getPropertyName());
+        Divide div = (Divide)propertyIsEqualTo6.getExpression2();
+        assertEquals("property4",
+                ((AttributeExpressionImpl) div.getExpression1()).getPropertyName());
+        assertEquals("45",
+                ((LiteralExpressionImpl) div.getExpression2()).getValue());
+        
         reader.close();
 
     }

@@ -1,6 +1,5 @@
 package org.geoserver.bxml.filter_1_1;
 
-import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -18,7 +17,7 @@ public abstract class ArithmeticOperator extends ExpressionLinkDecoder {
     }
     
     @Override
-    protected void decodeElement(final BxmlStreamReader r) throws IOException {
+    protected void decodeElement(final BxmlStreamReader r) throws Exception {
         expresions.add(new ExpressionChainDecoder().decode(r));
     }
     

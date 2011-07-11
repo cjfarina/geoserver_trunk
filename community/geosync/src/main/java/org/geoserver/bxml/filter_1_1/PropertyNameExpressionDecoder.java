@@ -9,7 +9,7 @@ public class PropertyNameExpressionDecoder extends ExpressionLinkDecoder {
     private String property;
 
     public PropertyNameExpressionDecoder() {
-        super(PropertyName);
+        super(PropertyName, new AddExpressionDecoder());
     }
 
     @Override

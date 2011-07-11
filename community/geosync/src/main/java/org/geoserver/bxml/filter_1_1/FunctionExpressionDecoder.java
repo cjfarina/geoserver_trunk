@@ -1,5 +1,7 @@
 package org.geoserver.bxml.filter_1_1;
 
+import static org.geotools.filter.v1_1.OGC.Function;
+
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
@@ -11,9 +13,6 @@ import org.geotools.filter.v1_1.OGC;
 import org.gvsig.bxml.stream.BxmlStreamReader;
 import org.opengis.filter.expression.Expression;
 
-import static org.geotools.filter.v1_1.OGC.Function;
-import static org.geotools.filter.v1_1.OGC.FunctionNameType;
-
 public class FunctionExpressionDecoder extends ExpressionLinkDecoder {
 
     public static final QName name = new QName(OGC.NAMESPACE, "name");
@@ -23,11 +22,11 @@ public class FunctionExpressionDecoder extends ExpressionLinkDecoder {
     private String functionName = null;
     
     public FunctionExpressionDecoder() {
-        super(Function, new FunctionExpressionDecoder());
+        super(Function);
     }
     
     @Override
-    protected void decodeElement(final BxmlStreamReader r) throws IOException {
+    protected void decodeElement(final BxmlStreamReader r) throws Exception {
         expresions.add(new ExpressionChainDecoder().decode(r));
     }
     

@@ -56,6 +56,34 @@
                             <fes:LowerBoundary><fes:Literal>100</fes:Literal></fes:LowerBoundary>
                             <fes:UpperBoundary><fes:Literal>200</fes:Literal></fes:UpperBoundary>
                         </fes:PropertyIsBetween>
+                        <fes:PropertyIsEqualTo>
+                            <fes:PropertyName>addFilter</fes:PropertyName>
+                            <fes:Add>
+								<fes:PropertyName>property1</fes:PropertyName>
+								<fes:Literal>100</fes:Literal>
+							</fes:Add>
+                        </fes:PropertyIsEqualTo>
+                        <fes:PropertyIsEqualTo>
+                            <fes:PropertyName>subFilter</fes:PropertyName>
+                            <fes:Sub>
+								<fes:PropertyName>property2</fes:PropertyName>
+								<fes:Literal>159</fes:Literal>
+							</fes:Sub>
+                        </fes:PropertyIsEqualTo>
+                        <fes:PropertyIsEqualTo>
+                            <fes:PropertyName>mulFilter</fes:PropertyName>
+                            <fes:Mul>
+								<fes:PropertyName>property3</fes:PropertyName>
+								<fes:Literal>543</fes:Literal>
+							</fes:Mul>
+                        </fes:PropertyIsEqualTo>
+                        <fes:PropertyIsEqualTo>
+                            <fes:PropertyName>divFilter</fes:PropertyName>
+                            <fes:Div>
+								<fes:PropertyName>property4</fes:PropertyName>
+								<fes:Literal>45</fes:Literal>
+							</fes:Div>
+                        </fes:PropertyIsEqualTo>
                     </fes:And>
                 </fes:Not>
             </fes:Or>
