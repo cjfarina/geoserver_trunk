@@ -97,22 +97,34 @@ public class DiffEntry {
             final Ref oldObject, final Ref newObject, final List<String> path) {
 
         Assert.isTrue(oldObject != null || newObject != null);
+        if (oldObject != null && oldObject.equals(newObject)) {
+            throw new IllegalArgumentException(
+                    "Trying to create a DiffEntry for the same object id, means the object didn't change: "
+                            + oldObject.toString());
+        }
 
         ObjectId oldVersion = oldObject == null ? ObjectId.NULL : oldObject.getObjectId();
         ObjectId newVersion = newObject == null ? ObjectId.NULL : newObject.getObjectId();
 
+        return newInstance(fromCommit, toCommit, oldVersion, newVersion, path);
+    }
+
+    public static DiffEntry newInstance(final ObjectId fromCommit, final ObjectId toCommit,
+            final ObjectId oldVersion, final ObjectId newVersion, final List<String> path) {
+
+        if (oldVersion != null && oldVersion.equals(newVersion)) {
+            throw new IllegalArgumentException(
+                    "Trying to create a DiffEntry for the same object id, means the object didn't change: "
+                            + oldVersion.toString());
+        }
+
         ChangeType type;
 
-        if (oldObject == null) {
+        if (oldVersion == null || ObjectId.NULL.equals(oldVersion)) {
             type = ChangeType.ADD;
-        } else if (newObject == null) {
+        } else if (newVersion == null || ObjectId.NULL.equals(newVersion)) {
             type = ChangeType.DELETE;
         } else {
-            if (oldObject.equals(newObject)) {
-                throw new IllegalArgumentException(
-                        "Trying to create a DiffEntry for the same object id, means the object didn't change: "
-                                + oldObject.toString());
-            }
             type = ChangeType.MODIFY;
         }
 

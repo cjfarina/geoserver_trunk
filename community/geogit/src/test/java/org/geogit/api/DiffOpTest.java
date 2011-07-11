@@ -396,7 +396,7 @@ public class DiffOpTest extends RepositoryTestCase {
         assertEquals(2, diffs.size());
         assertEquals(ChangeType.DELETE, diffs.get(0).getType());
         assertEquals(ChangeType.DELETE, diffs.get(1).getType());
-        
+
         assertEquals(oid11, diffs.get(0).getOldObjectId());
         assertEquals(oid13, diffs.get(1).getOldObjectId());
     }
@@ -425,6 +425,6 @@ public class DiffOpTest extends RepositoryTestCase {
         diffOp.setFilter(namespace1);
 
         diffs = toList(diffOp.call());
-        assertEquals(0, diffs.size());
+        assertEquals(3, diffs.size());
     }
 }

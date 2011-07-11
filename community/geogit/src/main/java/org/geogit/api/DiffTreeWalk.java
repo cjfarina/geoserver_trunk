@@ -4,8 +4,8 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.Iterator;
+import java.util.LinkedList;
 import java.util.List;
-import java.util.NoSuchElementException;
 
 import org.geogit.api.DiffEntry.ChangeType;
 import org.geogit.api.RevObject.TYPE;
@@ -13,8 +13,8 @@ import org.geogit.repository.DepthSearch;
 import org.geogit.repository.Repository;
 import org.springframework.util.Assert;
 
-import com.google.common.base.Function;
 import com.google.common.base.Predicate;
+import com.google.common.collect.AbstractIterator;
 import com.google.common.collect.Iterators;
 
 class DiffTreeWalk {
@@ -28,6 +28,10 @@ class DiffTreeWalk {
     private List<String> basePath;
 
     public DiffTreeWalk(final Repository repo, final ObjectId fromCommit, final ObjectId toCommit) {
+        Assert.notNull(repo);
+        Assert.notNull(fromCommit);
+        Assert.notNull(toCommit);
+
         this.repo = repo;
         this.fromCommit = fromCommit;
         this.toCommit = toCommit;
@@ -77,7 +81,7 @@ class DiffTreeWalk {
         Assert.isTrue(oldTree.isNormalized());
         Assert.isTrue(newTree.isNormalized());
 
-        return new TreeDiffEntryIterator(basePath, fromCommit, toCommit, oldTree, newTree);
+        return new TreeDiffEntryIterator(basePath, fromCommit, toCommit, oldTree, newTree, repo);
 
     }
 
@@ -103,19 +107,15 @@ class DiffTreeWalk {
      * @author groldan
      * 
      */
-    private static abstract class AbstractDiffIterator implements Iterator<DiffEntry> {
+    private static abstract class AbstractDiffIterator extends AbstractIterator<DiffEntry> {
 
         protected final List<String> basePath;
 
         public AbstractDiffIterator(final List<String> basePath) {
-            this.basePath = basePath;
+            this.basePath = Collections.unmodifiableList(basePath);
         }
 
-        public void remove() {
-            throw new UnsupportedOperationException();
-        }
-
-        protected List<String> path(final String name) {
+        protected List<String> childPath(final String name) {
             List<String> path = new ArrayList<String>(this.basePath.size() + 1);
             path.addAll(basePath);
             path.add(name);
@@ -128,7 +128,7 @@ class DiffTreeWalk {
      * 
      * @author groldan
      */
-    private class AddRemoveAllTreeIterator extends AbstractDiffIterator {
+    private static class AddRemoveAllTreeIterator extends AbstractDiffIterator {
 
         private final ObjectId oldCommit;
 
@@ -138,95 +138,79 @@ class DiffTreeWalk {
 
         private final DiffEntry.ChangeType changeType;
 
+        private final Repository repo;
+
         public AddRemoveAllTreeIterator(final DiffEntry.ChangeType changeType,
                 final List<String> basePath, final ObjectId fromCommit, final ObjectId toCommit,
-                final RevTree tree) {
-            this(changeType, basePath, fromCommit, toCommit, tree.iterator(null));
+                final RevTree tree, final Repository repo) {
+            this(changeType, basePath, fromCommit, toCommit, tree.iterator(null), repo);
         }
 
         public AddRemoveAllTreeIterator(final DiffEntry.ChangeType changeType,
                 final List<String> basePath, final ObjectId fromCommit, final ObjectId toCommit,
-                final Iterator<Ref> treeIterator) {
+                final Iterator<Ref> treeIterator, final Repository repo) {
             super(basePath);
-            oldCommit = fromCommit;
-            newCommit = toCommit;
+            this.oldCommit = fromCommit;
+            this.newCommit = toCommit;
             this.treeIterator = treeIterator;
             this.changeType = changeType;
+            this.repo = repo;
         }
 
-        private Object cachedNext;
-
-        /**
-         * @see java.util.Iterator#hasNext()
-         */
-        public boolean hasNext() {
-            if (cachedNext != null) {
-                return true;
-            }
+        @Override
+        protected DiffEntry computeNext() {
             if (!treeIterator.hasNext()) {
-                return false;
+                return endOfData();
             }
 
-            Object nextObj = treeIterator.next();
-            if (nextObj instanceof Ref) {
-                Ref next = (Ref) nextObj;
-                if (TYPE.TREE.equals(next.getType())) {
-                    RevTree tree = repo.getTree(next.getObjectId());
-                    Predicate<Ref> filter = null;// TODO: propagate filter
-                    List<String> childPath = path(next.getName());
-                    Iterator<?> childTreeIterator;
-                    childTreeIterator = new AddRemoveAllTreeIterator(changeType, childPath,
-                            oldCommit, newCommit, tree);
-                    this.treeIterator = Iterators.concat(childTreeIterator, this.treeIterator);
-                    return hasNext();
-                }
+            final Object nextObj = treeIterator.next();
+            if (nextObj instanceof DiffEntry) {
+                return (DiffEntry) nextObj;
             }
-            cachedNext = nextObj;
-            return true;
+
+            Assert.isTrue(nextObj instanceof Ref);
+
+            final Ref next = (Ref) nextObj;
+            final List<String> childPath = childPath(next.getName());
+
+            if (TYPE.TREE.equals(next.getType())) {
+                RevTree tree = repo.getTree(next.getObjectId());
+                Predicate<Ref> filter = null;// TODO: propagate filter?
+                Iterator<?> childTreeIterator;
+                childTreeIterator = new AddRemoveAllTreeIterator(this.changeType, childPath,
+                        oldCommit, newCommit, tree, repo);
+                this.treeIterator = Iterators.concat(childTreeIterator, this.treeIterator);
+                return computeNext();
+            }
+
+            Assert.isTrue(TYPE.BLOB.equals(next.getType()));
+
+            Ref oldObject = null;
+            Ref newObject = null;
+            String name = next.getName();
+            if (changeType == ChangeType.ADD) {
+                newObject = next;
+            } else {
+                oldObject = next;
+            }
+            DiffEntry diffEntry;
+            diffEntry = DiffEntry
+                    .newInstance(oldCommit, newCommit, oldObject, newObject, childPath);
+            return diffEntry;
         }
 
-        /**
-         * @see java.util.Iterator#next()
-         */
-        public DiffEntry next() {
-            if (hasNext()) {
-                Object currObj = cachedNext;
-                cachedNext = null;
-                if (currObj instanceof DiffEntry) {
-                    return (DiffEntry) currObj;
-                } else {
-                    final Ref curr = (Ref) currObj;
-                    Ref oldObject = null;
-                    Ref newObject = null;
-                    String name = curr.getName();
-                    if (changeType == ChangeType.ADD) {
-                        newObject = curr;
-                    } else {
-                        oldObject = curr;
-                    }
-                    List<String> path = path(name);
-                    return DiffEntry.newInstance(oldCommit, newCommit, oldObject, newObject, path);
-                }
-            }
-            throw new NoSuchElementException();
-        }
-
-        public void remove() {
-            throw new UnsupportedOperationException();
-        }
     }
 
     /**
-     * Iterator over the differences between two trees
-     * <p>
-     * This tree walk depends on {@link RevTree#iterator(Predicate)} returning results in consistent
-     * order.
-     * </p>
+     * Traverses the direct children iterators of both trees (fromTree and toTree) simultaneously.
+     * If the current children is named the same for both iterators, finds out whether the two
+     * children are changed. If the two elements of the current iteration are not the same, find out
+     * whether it's an addition or a deletion.
      * 
      * @author groldan
      * 
      */
-    private class TreeDiffEntryIterator extends AbstractDiffIterator {
+    private static class TreeDiffEntryIterator extends AbstractDiffIterator {
 
         private final ObjectId oldCommit;
 
@@ -238,163 +222,168 @@ class DiffTreeWalk {
 
         private Iterator<DiffEntry> currSubTree;
 
-        private Iterator<Ref> oldEntries;
+        private RewindableIterator<Ref> oldEntries;
 
-        private Iterator<Ref> newEntries;
+        private RewindableIterator<Ref> newEntries;
+
+        private final Repository repo;
 
         public TreeDiffEntryIterator(final List<String> basePath, final ObjectId fromCommit,
-                final ObjectId toCommit, final RevTree fromTree, final RevTree toTree) {
+                final ObjectId toCommit, final RevTree fromTree, final RevTree toTree,
+                final Repository repo) {
             super(basePath);
-            oldCommit = fromCommit;
-            newCommit = toCommit;
-            oldTree = fromTree;
-            newTree = toTree;
-            oldEntries = oldTree.iterator(null);
-            newEntries = newTree.iterator(null);
+            this.oldCommit = fromCommit;
+            this.newCommit = toCommit;
+            this.oldTree = fromTree;
+            this.newTree = toTree;
+            this.repo = repo;
+            this.oldEntries = new RewindableIterator<Ref>(oldTree.iterator(null));
+            this.newEntries = new RewindableIterator<Ref>(newTree.iterator(null));
         }
 
-        /**
-         * @see java.util.Iterator#hasNext()
-         */
-        public boolean hasNext() {
+        @Override
+        protected DiffEntry computeNext() {
             if (currSubTree != null && currSubTree.hasNext()) {
-                return true;
+                return currSubTree.next();
             }
             if (!oldEntries.hasNext() && !newEntries.hasNext()) {
-                return false;
+                return endOfData();
             }
             if (oldEntries.hasNext() && !newEntries.hasNext()) {
-                currSubTree = new AddRemoveAllTreeIterator(ChangeType.DELETE, super.basePath,
-                        oldCommit, newCommit, oldEntries);
-                return true;
+                currSubTree = new AddRemoveAllTreeIterator(ChangeType.DELETE, this.basePath,
+                        this.oldCommit, this.newCommit, this.oldEntries, this.repo);
+                return computeNext();
             }
             if (!oldEntries.hasNext() && newEntries.hasNext()) {
-                currSubTree = new AddRemoveAllTreeIterator(ChangeType.ADD, super.basePath,
-                        oldCommit, newCommit, newEntries);
-                return true;
+                currSubTree = new AddRemoveAllTreeIterator(ChangeType.ADD, basePath, oldCommit,
+                        newCommit, newEntries, repo);
+                return computeNext();
+            }
+            Assert.isTrue(currSubTree == null || !currSubTree.hasNext());
+            Assert.isTrue(oldEntries.hasNext() && newEntries.hasNext());
+            final Ref nextOld = oldEntries.next();
+            final Ref nextNew = newEntries.next();
+
+            if (nextOld.equals(nextNew)) {
+                // no change, keep going
+                return computeNext();
             }
 
-            // ok, both have next
-            Ref oldEntry;
-            Ref newEntry;
-            while (oldEntries.hasNext() && newEntries.hasNext()) {
-                oldEntry = oldEntries.next();
-                newEntry = newEntries.next();
-                final String oldEntryName = oldEntry.getName();
-                final String newEntryName = newEntry.getName();
+            final String oldEntryName = nextOld.getName();
+            final String newEntryName = nextNew.getName();
 
-                if (oldEntryName.equals(newEntryName)) {
-                    // both tree iterators gave the same entry
-                    if (oldEntry.getObjectId().equals(newEntry.getObjectId())) {
-                        // same object, skip it
-                        continue;
-                    } else {
-                        // found single content modification, could be a blob or a tree
-                        if (oldEntry.getType().equals(RevObject.TYPE.TREE)) {
-                            Assert.isTrue(newEntry.getType().equals(RevObject.TYPE.TREE));
-                            final String name = oldEntryName;
-                            List<String> childTreePath = path(name);
-                            RevTree oldChildTree = repo.getTree(oldEntry.getObjectId());
-                            RevTree newChildTree = repo.getTree(newEntry.getObjectId());
-                            this.currSubTree = new TreeDiffEntryIterator(childTreePath, oldCommit,
-                                    newCommit, oldChildTree, newChildTree);
-                        } else {
-                            // single feature modification
-                            Assert.isTrue(oldEntry.getType().equals(RevObject.TYPE.BLOB));
-                            Assert.isTrue(newEntry.getType().equals(RevObject.TYPE.BLOB));
-                            List<String> path = path(oldEntryName);
-                            DiffEntry next = DiffEntry.newInstance(oldCommit, newCommit, oldEntry,
-                                    newEntry, path);
-                            currSubTree = Collections.singleton(next).iterator();
-                        }
-                    }
+            final ChangeType changeType;
+            final ObjectId oldObject, newObject;
+            final RevObject.TYPE objectType;
+            final List<String> childPath;
+
+            if (oldEntryName.equals(newEntryName)) {
+                // same child name, found a changed object
+                childPath = childPath(oldEntryName);
+                changeType = ChangeType.MODIFY;
+                objectType = nextOld.getType();
+                oldObject = nextOld.getObjectId();
+                newObject = nextNew.getObjectId();
+
+            } else {
+                // not the same object (blob or tree), find out whether it's an addition or a
+                // deletion. Uses the same ordering than RevTree's iteration order to perform the
+                // comparison
+                final int comparison = ObjectId.forString(oldEntryName).compareTo(
+                        ObjectId.forString(newEntryName));
+                Assert.isTrue(comparison != 0, "Comparison can't be 0 if reached this point!");
+
+                if (comparison < 0) {
+                    // something was deleted in oldVersion, return a delete diff from oldVersion and
+                    // return the item to the "newVersion" iterator for the next round of
+                    // pair-to-pair comparisons
+                    newEntries.returnElement(nextNew);
+                    changeType = ChangeType.DELETE;
+                    childPath = childPath(oldEntryName);
+                    objectType = nextOld.getType();
+                    oldObject = nextOld.getObjectId();
+                    newObject = ObjectId.NULL;
                 } else {
-                    // not the same feature/tree, find out whether it's an addition or a
-                    // deletion
-                    final int comparison = ObjectId.forString(oldEntryName).compareTo(
-                            ObjectId.forString(newEntryName));
-                    Assert.isTrue(comparison != 0, "Comparison can't be 0 if reached this point!");
-
-                    if (comparison < 0) {
-                        //something was deleted in oldVersion
-                        if (oldEntry.getType().equals(RevObject.TYPE.TREE)) {
-                            final String name = oldEntryName;
-                            List<String> childTreePath = path(name);
-                            RevTree oldChildTree = repo.getTree(oldEntry.getObjectId());
-                            ChangeType changeType = ChangeType.DELETE;
-                            this.currSubTree = new AddRemoveAllTreeIterator(changeType,
-                                    childTreePath, oldCommit, newCommit, oldChildTree);
-                        } else {
-                            Assert.isTrue(oldEntry.getType().equals(RevObject.TYPE.BLOB));
-                            List<String> path = path(oldEntryName);
-                            DiffEntry next = DiffEntry.newInstance(oldCommit, newCommit, oldEntry,
-                                    null, path);
-                            currSubTree = Collections.singleton(next).iterator();
-                        }
-                        // need to "return" newEntry for the next iteration
-                        this.newEntries = Iterators.concat(Collections.singleton(newEntry)
-                                .iterator(), this.newEntries);
-                    } else {
-                        if (newEntry.getType().equals(RevObject.TYPE.TREE)) {
-                            final String name = newEntryName;
-                            List<String> childTreePath = path(name);
-                            RevTree newChildTree = repo.getTree(newEntry.getObjectId());
-                            ChangeType changeType = ChangeType.ADD;
-                            this.currSubTree = new AddRemoveAllTreeIterator(changeType,
-                                    childTreePath, oldCommit, newCommit, newChildTree);
-                        } else {
-                            Assert.isTrue(newEntry.getType().equals(RevObject.TYPE.BLOB));
-                            List<String> path = path(newEntryName);
-                            DiffEntry next = DiffEntry.newInstance(oldCommit, newCommit, null,
-                                    newEntry, path);
-                            currSubTree = Collections.singleton(next).iterator();
-                        }
-                        // need to "return" oldEntry for the next iteration
-                        this.oldEntries = Iterators.concat(Collections.singleton(oldEntry)
-                                .iterator(), this.oldEntries);
-                    }
+                    // something was added in newVersion, return an "add diff" for newVersion and
+                    // return the item to the "oldVersion" iterator for the next rounds of
+                    // pair-to-pair comparisons
+                    oldEntries.returnElement(nextOld);
+                    changeType = ChangeType.ADD;
+                    childPath = childPath(newEntryName);
+                    objectType = nextNew.getType();
+                    oldObject = ObjectId.NULL;
+                    newObject = nextNew.getObjectId();
                 }
+
             }
 
-            return hasNext();
+            if (RevObject.TYPE.BLOB.equals(objectType)) {
+                DiffEntry singleChange = DiffEntry.newInstance(oldCommit, newCommit, oldObject,
+                        newObject, childPath);
+                return singleChange;
+            }
+
+            Assert.isTrue(RevObject.TYPE.TREE.equals(objectType));
+
+            Iterator<DiffEntry> changesIterator;
+
+            switch (changeType) {
+            case ADD:
+            case DELETE: {
+                ObjectId treeId = ObjectId.NULL.equals(oldObject) ? newObject : oldObject;
+                RevTree childTree = repo.getTree(treeId);
+                changesIterator = new AddRemoveAllTreeIterator(changeType, childPath, oldCommit,
+                        newCommit, childTree, repo);
+                break;
+            }
+            case MODIFY: {
+                Assert.isTrue(RevObject.TYPE.TREE.equals(nextOld.getType()));
+                Assert.isTrue(RevObject.TYPE.TREE.equals(nextNew.getType()));
+                RevTree oldChildTree = repo.getTree(oldObject);
+                RevTree newChildTree = repo.getTree(newObject);
+                changesIterator = new TreeDiffEntryIterator(childPath, oldCommit, newCommit,
+                        oldChildTree, newChildTree, repo);
+                break;
+            }
+            default:
+                throw new IllegalStateException("Unrecognized change type: " + changeType);
+            }
+            if (this.currSubTree == null || !this.currSubTree.hasNext()) {
+                this.currSubTree = changesIterator;
+            } else {
+                this.currSubTree = Iterators.concat(changesIterator, this.currSubTree);
+            }
+            return computeNext();
         }
 
-        /**
-         * @see java.util.Iterator#next()
-         */
-        public DiffEntry next() {
-            return currSubTree.next();
-        }
     }
 
-    private static class RefPairToDiffEntry implements Function<Ref[], DiffEntry> {
+    private static class RewindableIterator<T> extends AbstractIterator<T> {
 
-        private final ObjectId oldCommit;
+        private Iterator<T> subject;
 
-        private final ObjectId newCommit;
+        private LinkedList<T> returnQueue;
 
-        private final List<String> parentPath;
-
-        public RefPairToDiffEntry(final List<String> parentPath, final ObjectId oldCommit,
-                final ObjectId newCommit) {
-            this.parentPath = Collections.unmodifiableList(parentPath);
-            this.oldCommit = oldCommit;
-            this.newCommit = newCommit;
+        public RewindableIterator(Iterator<T> subject) {
+            this.subject = subject;
+            this.returnQueue = new LinkedList<T>();
         }
 
-        /**
-         * @see com.google.common.base.Function#apply(java.lang.Object)
-         */
-        public DiffEntry apply(Ref[] input) {
-            final Ref oldObject = input[0];
-            final Ref newObject = input[1];
-            List<String> path = new ArrayList<String>(parentPath);
-            String refName = oldObject == null ? newObject.getName() : oldObject.getName();
-            path.add(refName);
-
-            DiffEntry entry = DiffEntry.newInstance(oldCommit, newCommit, oldObject, newObject,
-                    path);
-            return entry;
+        public void returnElement(T element) {
+            this.returnQueue.offer(element);
         }
+
+        @Override
+        protected T computeNext() {
+            T peak = returnQueue.poll();
+            if (peak != null) {
+                return peak;
+            }
+            if (!subject.hasNext()) {
+                return endOfData();
+            }
+            return subject.next();
+        }
+
     }
 }
