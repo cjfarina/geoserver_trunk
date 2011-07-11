@@ -44,7 +44,7 @@ public class RevTreeReader implements ObjectReader<RevTree> {
             throw new IllegalArgumentException(e.getMessage());
         }
         EventType event;
-        RevSHA1Tree tree = new RevSHA1Tree(objectDb, order);
+        RevSHA1Tree tree = new RevSHA1Tree(id, objectDb, order);
         while ((event = r.next()) != EventType.END_DOCUMENT) {
             if (EventType.START_ELEMENT.equals(event)) {
                 if (ENTRY.equals(r.getElementName())) {
