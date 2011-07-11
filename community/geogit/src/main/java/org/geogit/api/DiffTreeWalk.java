@@ -261,12 +261,17 @@ class DiffTreeWalk {
             }
             Assert.isTrue(currSubTree == null || !currSubTree.hasNext());
             Assert.isTrue(oldEntries.hasNext() && newEntries.hasNext());
-            final Ref nextOld = oldEntries.next();
-            final Ref nextNew = newEntries.next();
+            Ref nextOld = oldEntries.next();
+            Ref nextNew = newEntries.next();
 
-            if (nextOld.equals(nextNew)) {
-                // no change, keep going
-                return computeNext();
+            while (nextOld.equals(nextNew)) {
+                // no change, keep going, but avoid too much recursion
+                if (oldEntries.hasNext() && newEntries.hasNext()) {
+                    nextOld = oldEntries.next();
+                    nextNew = newEntries.next();
+                } else {
+                    return computeNext();
+                }
             }
 
             final String oldEntryName = nextOld.getName();
