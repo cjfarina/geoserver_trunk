@@ -30,11 +30,9 @@ public class ReplicationFeedResponse extends AbstractGetEntriesResponse {
 
         final FeedImpl feed = response.getResult();
         FeedEncoder encoder = new FeedEncoder(w);
-        try {
-            encoder.encode(feed);
-        } finally {
-            w.flush();
-        }
+
+        encoder.encode(feed);
+        w.flush();
     }
 
 }

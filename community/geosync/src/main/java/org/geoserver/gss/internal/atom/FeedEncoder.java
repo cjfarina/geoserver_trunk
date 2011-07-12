@@ -13,12 +13,19 @@ import static org.geoserver.gss.internal.atom.Atom.updated;
 
 import java.io.IOException;
 import java.util.Iterator;
+import java.util.concurrent.BlockingQueue;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
+import java.util.concurrent.Future;
+import java.util.concurrent.LinkedBlockingQueue;
 
 import javax.xml.namespace.QName;
 
 import org.geoserver.wfs.xml.v1_1_0.WFS;
 import org.geotools.gml3.GML;
 import org.gvsig.bxml.stream.BxmlStreamWriter;
+
+import com.google.common.base.Throwables;
 
 public class FeedEncoder extends AbstractEncoder {
 
@@ -113,11 +120,48 @@ public class FeedEncoder extends AbstractEncoder {
         // Icon?
         // Logo?
 
-        EntryEncoder entryEncoder = new EntryEncoder(w);
-        Iterator<EntryImpl> entries = feed.getEntry();
-        for (; entries.hasNext();) {
-            EntryImpl entry = entries.next();
-            entryEncoder.encode(entry);
+        final Iterator<EntryImpl> entries = feed.getEntry();
+        final EntryEncoder entryEncoder = new EntryEncoder(w);
+        EntryImpl entry;
+        // for (; entries.hasNext();) {
+        // entry = entries.next();
+        // entryEncoder.encode(entry);
+        // }
+
+        final BlockingQueue<EntryImpl> queue = new LinkedBlockingQueue<EntryImpl>(10);
+        final ExecutorService executorService = Executors.newSingleThreadExecutor();
+        final Future<?> readTask = executorService.submit(new Runnable() {
+            @Override
+            public void run() {
+                final BlockingQueue<EntryImpl> pool = queue;
+                final Iterator<EntryImpl> iterator = entries;
+                EntryImpl entry;
+                while (iterator.hasNext()) {
+                    entry = iterator.next();
+                    try {
+                        pool.put(entry);
+                    } catch (InterruptedException e) {
+                        break;
+                    }
+                }
+            }
+        });
+
+        try {
+            while (!readTask.isDone()) {
+                entry = queue.take();
+                if (entry == null) {
+                    break;
+                }
+                entryEncoder.encode(entry);
+                w.flush();
+            }
+        } catch (IOException e) {
+            readTask.cancel(true);
+            throw e;
+        } catch (Throwable t) {
+            readTask.cancel(true);
+            Throwables.propagate(t);
         }
 
         w.writeEndElement();
