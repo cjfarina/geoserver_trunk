@@ -84,6 +84,26 @@
 								<fes:Literal>45</fes:Literal>
 							</fes:Div>
                         </fes:PropertyIsEqualTo>
+                        <fes:Equals>
+							<fes:PropertyName>geometry</fes:PropertyName>
+							<gml:Polygon srsName="http://www.opengis.net/gml/srs/epsg.xml#63266405">
+								<gml:exterior>
+									<gml:LinearRing>
+									    <gml:posList>10 10 20 20 30 30 40 40 10 10</gml:posList>
+									</gml:LinearRing>
+								</gml:exterior>
+								<gml:interior>
+									<gml:LinearRing>
+									    <gml:posList>10 10 20 20 30 30 40 40 10 10</gml:posList>
+									</gml:LinearRing>
+								</gml:interior>
+								<gml:interior>
+									<gml:LinearRing>
+									    <gml:posList>10 10 20 20 30 30 40 40 10 10</gml:posList>
+									</gml:LinearRing>
+								</gml:interior>
+							</gml:Polygon>
+						</fes:Equals>
                     </fes:And>
                 </fes:Not>
             </fes:Or>

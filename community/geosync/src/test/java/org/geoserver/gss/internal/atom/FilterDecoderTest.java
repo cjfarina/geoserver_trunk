@@ -29,6 +29,7 @@ import org.opengis.filter.expression.Add;
 import org.opengis.filter.expression.Divide;
 import org.opengis.filter.expression.Multiply;
 import org.opengis.filter.expression.Subtract;
+import org.opengis.filter.spatial.Equals;
 
 public class FilterDecoderTest extends TestCase {
 
@@ -166,14 +167,9 @@ public class FilterDecoderTest extends TestCase {
         assertEquals("543",
                 ((LiteralExpressionImpl) mul.getExpression2()).getValue());
         
-        PropertyIsEqualTo propertyIsEqualTo6 = (PropertyIsEqualTo) andFilterChildrens.get(12);
-        assertEquals("divFilter",
-                ((AttributeExpressionImpl) propertyIsEqualTo6.getExpression1()).getPropertyName());
-        Divide div = (Divide)propertyIsEqualTo6.getExpression2();
-        assertEquals("property4",
-                ((AttributeExpressionImpl) div.getExpression1()).getPropertyName());
-        assertEquals("45",
-                ((LiteralExpressionImpl) div.getExpression2()).getValue());
+        Equals equals1 = (Equals) andFilterChildrens.get(13);
+        assertEquals("geometry",
+                ((AttributeExpressionImpl) equals1.getExpression1()).getPropertyName());
         
         reader.close();
 
