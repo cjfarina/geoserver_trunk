@@ -7,7 +7,7 @@ import java.util.List;
 
 import javax.xml.namespace.QName;
 
-import org.geoserver.bxml.filter_1_1.spatial.EqualsDecoderFilter;
+import org.geoserver.bxml.filter_1_1.spatial.EqualsFilterDecoder;
 import org.geotools.filter.v1_1.OGC;
 import org.gvsig.bxml.stream.BxmlStreamReader;
 import org.opengis.filter.Filter;
@@ -22,7 +22,7 @@ public class PropertyIsBetweenFilterDecoder extends FilterLinkDecoder {
     public static final QName UpperBoundary = new QName(OGC.NAMESPACE, "UpperBoundary");
 
     public PropertyIsBetweenFilterDecoder() {
-        super(PropertyIsBetween, new EqualsDecoderFilter());
+        super(PropertyIsBetween, new EqualsFilterDecoder());
     }
 
     @Override

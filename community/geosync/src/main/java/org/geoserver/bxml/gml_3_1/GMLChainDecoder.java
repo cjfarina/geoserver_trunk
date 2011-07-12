@@ -6,7 +6,7 @@ import com.vividsolutions.jts.geom.Geometry;
 
 public class GMLChainDecoder {
 
-    private PolygonDecoder link;
+    private PolygonDecoder link = new PolygonDecoder();
     
     public Geometry decode(final BxmlStreamReader r) throws Exception {
         return link.decode(r);

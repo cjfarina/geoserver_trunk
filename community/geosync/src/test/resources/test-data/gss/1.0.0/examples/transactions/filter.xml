@@ -94,16 +94,119 @@
 								</gml:exterior>
 								<gml:interior>
 									<gml:LinearRing>
-									    <gml:posList>10 10 20 20 30 30 40 40 10 10</gml:posList>
+									    <gml:posList>15 16 17 18 19 20 21 21 15 16</gml:posList>
 									</gml:LinearRing>
 								</gml:interior>
 								<gml:interior>
 									<gml:LinearRing>
-									    <gml:posList>10 10 20 20 30 30 40 40 10 10</gml:posList>
+										<gml:pos> 5 5</gml:pos>
+										<gml:pos>7 7</gml:pos>
+										<gml:pos>11 11</gml:pos>
+										<gml:pos>13 13</gml:pos>
+										<gml:pos>5 5</gml:pos>
 									</gml:LinearRing>
 								</gml:interior>
 							</gml:Polygon>
 						</fes:Equals>
+                        <fes:Disjoint>
+							<fes:PropertyName>geometry2</fes:PropertyName>
+							<gml:Polygon srsName="http://www.opengis.net/gml/srs/epsg.xml#63266405">
+								<gml:exterior>
+									<gml:LinearRing>
+									    <gml:posList>10 10 20 20 30 30 40 40 10 10</gml:posList>
+									</gml:LinearRing>
+								</gml:exterior>
+							</gml:Polygon>
+						</fes:Disjoint>
+                        <fes:Touches>
+							<fes:PropertyName>geometry3</fes:PropertyName>
+							<gml:Polygon srsName="http://www.opengis.net/gml/srs/epsg.xml#63266405">
+								<gml:exterior>
+									<gml:LinearRing>
+									    <gml:posList>10 10 20 20 30 30 40 40 10 10</gml:posList>
+									</gml:LinearRing>
+								</gml:exterior>
+							</gml:Polygon>
+						</fes:Touches>
+                        <fes:Within>
+							<fes:PropertyName>geometry4</fes:PropertyName>
+							<gml:Polygon srsName="http://www.opengis.net/gml/srs/epsg.xml#63266405">
+								<gml:exterior>
+									<gml:LinearRing>
+									    <gml:posList>10 10 20 20 30 30 40 40 10 10</gml:posList>
+									</gml:LinearRing>
+								</gml:exterior>
+							</gml:Polygon>
+						</fes:Within>
+                        <fes:Overlaps>
+							<fes:PropertyName>geometry5</fes:PropertyName>
+							<gml:Polygon srsName="http://www.opengis.net/gml/srs/epsg.xml#63266405">
+								<gml:exterior>
+									<gml:LinearRing>
+									    <gml:posList>10 10 20 20 30 30 40 40 10 10</gml:posList>
+									</gml:LinearRing>
+								</gml:exterior>
+							</gml:Polygon>
+						</fes:Overlaps>
+                        <fes:Crosses>
+							<fes:PropertyName>geometry6</fes:PropertyName>
+							<gml:Polygon srsName="http://www.opengis.net/gml/srs/epsg.xml#63266405">
+								<gml:exterior>
+									<gml:LinearRing>
+									    <gml:posList>10 10 20 20 30 30 40 40 10 10</gml:posList>
+									</gml:LinearRing>
+								</gml:exterior>
+							</gml:Polygon>
+						</fes:Crosses>
+                        <fes:Intersects>
+							<fes:PropertyName>geometry7</fes:PropertyName>
+							<gml:Polygon srsName="http://www.opengis.net/gml/srs/epsg.xml#63266405">
+								<gml:exterior>
+									<gml:LinearRing>
+									    <gml:posList>10 10 20 20 30 30 40 40 10 10</gml:posList>
+									</gml:LinearRing>
+								</gml:exterior>
+							</gml:Polygon>
+						</fes:Intersects>
+                        <fes:Contains>
+							<fes:PropertyName>geometry8</fes:PropertyName>
+							<gml:Polygon srsName="http://www.opengis.net/gml/srs/epsg.xml#63266405">
+								<gml:exterior>
+									<gml:LinearRing>
+									    <gml:posList>10 10 20 20 30 30 40 40 10 10</gml:posList>
+									</gml:LinearRing>
+								</gml:exterior>
+							</gml:Polygon>
+						</fes:Contains>
+						<fes:DWithin> 
+			                <fes:PropertyName>geometry9</fes:PropertyName> 
+							<gml:Polygon srsName="http://www.opengis.net/gml/srs/epsg.xml#63266405">
+								<gml:exterior>
+									<gml:LinearRing>
+									    <gml:posList>10 10 20 20 30 30 40 40 10 10</gml:posList>
+									</gml:LinearRing>
+								</gml:exterior>
+							</gml:Polygon>
+			                <fes:Distance units="deg">101.25</fes:Distance> 
+			            </fes:DWithin> 
+						<fes:Beyond> 
+			                <fes:PropertyName>geometry10</fes:PropertyName> 
+							<gml:Polygon srsName="http://www.opengis.net/gml/srs/epsg.xml#63266405">
+								<gml:exterior>
+									<gml:LinearRing>
+									    <gml:posList>10 10 20 20 30 30 40 40 10 10</gml:posList>
+									</gml:LinearRing>
+								</gml:exterior>
+							</gml:Polygon>
+			                <fes:Distance units="deg">142.23</fes:Distance> 
+			            </fes:Beyond> 
+			            <BBOX>
+							<PropertyName>Geometry</PropertyName>
+							<gml:Envelope srsName="http://www.opengis.net/gml/srs/epsg.xml#63266405">
+								<gml:lowerCorner>13.0983 31.5899</gml:lowerCorner>
+								<gml:upperCorner>35.5472 42.8143</gml:upperCorner>
+							</gml:Envelope>	
+						</BBOX>	            
                     </fes:And>
                 </fes:Not>
             </fes:Or>

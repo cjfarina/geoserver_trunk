@@ -7,32 +7,27 @@ import java.util.Map;
 import javax.xml.namespace.QName;
 
 import org.geoserver.bxml.AbstractDecoder;
-import org.geotools.factory.CommonFactoryFinder;
-import org.geotools.factory.GeoTools;
 import org.geotools.referencing.CRS;
 import org.geotools.referencing.crs.DefaultGeographicCRS;
 import org.gvsig.bxml.stream.BxmlStreamReader;
-import org.opengis.filter.Filter;
-import org.opengis.filter.FilterFactory2;
 import org.opengis.referencing.FactoryException;
 import org.opengis.referencing.NoSuchAuthorityCodeException;
 import org.opengis.referencing.crs.CoordinateReferenceSystem;
 
-import com.vividsolutions.jts.geom.GeometryFactory;
-
 import com.vividsolutions.jts.geom.Geometry;
+import com.vividsolutions.jts.geom.GeometryFactory;
 
 public abstract class GMLLinkDecoder extends AbstractDecoder<Geometry> {
 
     public static final QName srsDimension = new QName("http://www.opengis.net/gml", "srsDimension");
-    
-    protected GMLLinkDecoder link;
-    
-    protected CoordinateReferenceSystem crs;
-    
-    protected int crsDimension;
 
     protected static final GeometryFactory gf = new GeometryFactory();
+
+    protected GMLLinkDecoder link;
+
+    private CoordinateReferenceSystem crs;
+
+    private int dimension = -1;
 
     public GMLLinkDecoder(final QName name) {
         super(name);
@@ -58,8 +53,12 @@ public abstract class GMLLinkDecoder extends AbstractDecoder<Geometry> {
 
     protected void decodeAttributtes(final BxmlStreamReader r, Map<QName, String> attributes)
             throws Exception {
-        crs = parseCrs(attributes.get(srsName));
-        crsDimension = parseCrsDimension(attributes.get(srsDimension));
+        if (crs == null) {
+            crs = parseCrs(attributes.get(srsName));
+        }
+        if (dimension == -1) {
+            dimension = parseCrsDimension(attributes.get(srsDimension));
+        }
     }
 
     protected CoordinateReferenceSystem parseCrs(String srsName)
@@ -77,5 +76,21 @@ public abstract class GMLLinkDecoder extends AbstractDecoder<Geometry> {
         }
         int dimension = Integer.valueOf(srsDimension);
         return dimension;
+    }
+    
+    public CoordinateReferenceSystem getCrs() {
+        return crs;
+    }
+
+    public void setCrs(CoordinateReferenceSystem crs) {
+        this.crs = crs;
+    }
+
+    public int getDimension() {
+        return dimension;
+    }
+
+    public void setDimension(int dimension) {
+        this.dimension = dimension;
     }
 }

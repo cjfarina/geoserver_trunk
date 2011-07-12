@@ -29,7 +29,20 @@ import org.opengis.filter.expression.Add;
 import org.opengis.filter.expression.Divide;
 import org.opengis.filter.expression.Multiply;
 import org.opengis.filter.expression.Subtract;
-import org.opengis.filter.spatial.Equals;
+import org.opengis.filter.spatial.Beyond;
+import org.opengis.filter.spatial.BinarySpatialOperator;
+import org.opengis.filter.spatial.Contains;
+import org.opengis.filter.spatial.Crosses;
+import org.opengis.filter.spatial.DWithin;
+import org.opengis.filter.spatial.Disjoint;
+import org.opengis.filter.spatial.Intersects;
+import org.opengis.filter.spatial.Overlaps;
+import org.opengis.filter.spatial.Touches;
+import org.opengis.filter.spatial.Within;
+
+import com.vividsolutions.jts.geom.Coordinate;
+import com.vividsolutions.jts.geom.LineString;
+import com.vividsolutions.jts.geom.Polygon;
 
 public class FilterDecoderTest extends TestCase {
 
@@ -75,7 +88,7 @@ public class FilterDecoderTest extends TestCase {
         And andFilter = (And) notFilter.getFilter();
 
         List<Filter> andFilterChildrens = andFilter.getChildren();
-        assertEquals(13, andFilterChildrens.size());
+        assertEquals(23, andFilterChildrens.size());
 
         PropertyIsEqualTo propertyIsEqualTo2 = (PropertyIsEqualTo) andFilterChildrens.get(0);
         assertEquals("street",
@@ -104,10 +117,10 @@ public class FilterDecoderTest extends TestCase {
                 ((LiteralExpressionImpl) propertyIsGreaterThan.getExpression2()).getValue());
 
         PropertyIsLessThanOrEqualTo propertyIsLessThanOrEqualTo = (PropertyIsLessThanOrEqualTo) andFilterChildrens
-        .get(4);
+                .get(4);
         assertEquals("age4",
                 ((AttributeExpressionImpl) propertyIsLessThanOrEqualTo.getExpression1())
-                .getPropertyName());
+                        .getPropertyName());
         assertEquals("37",
                 ((LiteralExpressionImpl) propertyIsLessThanOrEqualTo.getExpression2()).getValue());
 
@@ -117,21 +130,18 @@ public class FilterDecoderTest extends TestCase {
                 ((AttributeExpressionImpl) propertyIsGreaterThanOrEqualTo.getExpression1())
                         .getPropertyName());
         assertEquals("45",
-                ((LiteralExpressionImpl) propertyIsGreaterThanOrEqualTo.getExpression2()).getValue());
-        
-        PropertyIsLike propertyIsLike = (PropertyIsLike) andFilterChildrens
-        .get(6);
+                ((LiteralExpressionImpl) propertyIsGreaterThanOrEqualTo.getExpression2())
+                        .getValue());
+
+        PropertyIsLike propertyIsLike = (PropertyIsLike) andFilterChildrens.get(6);
         assertEquals("name7",
-                ((AttributeExpressionImpl) propertyIsLike.getExpression())
-                .getPropertyName());
+                ((AttributeExpressionImpl) propertyIsLike.getExpression()).getPropertyName());
         assertEquals("albert", propertyIsLike.getLiteral());
-        
-        PropertyIsNull propertyIsNull = (PropertyIsNull) andFilterChildrens
-        .get(7);
+
+        PropertyIsNull propertyIsNull = (PropertyIsNull) andFilterChildrens.get(7);
         assertEquals("propertyNull",
-                ((AttributeExpressionImpl) propertyIsNull.getExpression())
-                .getPropertyName());
-        
+                ((AttributeExpressionImpl) propertyIsNull.getExpression()).getPropertyName());
+
         PropertyIsBetween propertyIsBetween1 = (PropertyIsBetween) andFilterChildrens.get(8);
         assertEquals("depth",
                 ((AttributeExpressionImpl) propertyIsBetween1.getExpression()).getPropertyName());
@@ -143,35 +153,113 @@ public class FilterDecoderTest extends TestCase {
         PropertyIsEqualTo propertyIsEqualTo3 = (PropertyIsEqualTo) andFilterChildrens.get(9);
         assertEquals("addFilter",
                 ((AttributeExpressionImpl) propertyIsEqualTo3.getExpression1()).getPropertyName());
-        Add add = (Add)propertyIsEqualTo3.getExpression2();
+        Add add = (Add) propertyIsEqualTo3.getExpression2();
         assertEquals("property1",
                 ((AttributeExpressionImpl) add.getExpression1()).getPropertyName());
-        assertEquals("100",
-                ((LiteralExpressionImpl) add.getExpression2()).getValue());
-        
+        assertEquals("100", ((LiteralExpressionImpl) add.getExpression2()).getValue());
+
         PropertyIsEqualTo propertyIsEqualTo4 = (PropertyIsEqualTo) andFilterChildrens.get(10);
         assertEquals("subFilter",
                 ((AttributeExpressionImpl) propertyIsEqualTo4.getExpression1()).getPropertyName());
-        Subtract sub = (Subtract)propertyIsEqualTo4.getExpression2();
+        Subtract sub = (Subtract) propertyIsEqualTo4.getExpression2();
         assertEquals("property2",
                 ((AttributeExpressionImpl) sub.getExpression1()).getPropertyName());
-        assertEquals("159",
-                ((LiteralExpressionImpl) sub.getExpression2()).getValue());
-        
+        assertEquals("159", ((LiteralExpressionImpl) sub.getExpression2()).getValue());
+
         PropertyIsEqualTo propertyIsEqualTo5 = (PropertyIsEqualTo) andFilterChildrens.get(11);
         assertEquals("mulFilter",
                 ((AttributeExpressionImpl) propertyIsEqualTo5.getExpression1()).getPropertyName());
-        Multiply mul = (Multiply)propertyIsEqualTo5.getExpression2();
+        Multiply mul = (Multiply) propertyIsEqualTo5.getExpression2();
         assertEquals("property3",
                 ((AttributeExpressionImpl) mul.getExpression1()).getPropertyName());
-        assertEquals("543",
-                ((LiteralExpressionImpl) mul.getExpression2()).getValue());
-        
-        Equals equals1 = (Equals) andFilterChildrens.get(13);
+        assertEquals("543", ((LiteralExpressionImpl) mul.getExpression2()).getValue());
+
+        PropertyIsEqualTo propertyIsEqualTo6 = (PropertyIsEqualTo) andFilterChildrens.get(12);
+        assertEquals("divFilter",
+                ((AttributeExpressionImpl) propertyIsEqualTo6.getExpression1()).getPropertyName());
+        Divide div = (Divide) propertyIsEqualTo6.getExpression2();
+        assertEquals("property4",
+                ((AttributeExpressionImpl) div.getExpression1()).getPropertyName());
+        assertEquals("45", ((LiteralExpressionImpl) div.getExpression2()).getValue());
+
+        PropertyIsEqualTo propertyIsEqualTo = (PropertyIsEqualTo) andFilterChildrens.get(13);
         assertEquals("geometry",
-                ((AttributeExpressionImpl) equals1.getExpression1()).getPropertyName());
+                ((AttributeExpressionImpl) propertyIsEqualTo.getExpression1()).getPropertyName());
+
+        Polygon p = (Polygon) ((LiteralExpressionImpl) propertyIsEqualTo.getExpression2())
+                .getValue();
+        LineString exteriorRing = p.getExteriorRing();
+        testLineRing(exteriorRing, new float[][] { { 10, 10 }, { 20, 20 }, { 30, 30 }, { 40, 40 },
+                { 10, 10 } });
+        testLineRing(p.getInteriorRingN(0), new float[][] { { 15, 16 }, { 17, 18 }, { 19, 20 },
+                { 21, 21 }, { 15, 16 } });
+        testLineRing(p.getInteriorRingN(1), new float[][] { { 5, 5 }, { 7, 7 }, { 11, 11 },
+                { 13, 13 }, { 5, 5 } });
+
+        testSpatialBinaryOperation((Disjoint) andFilterChildrens.get(14), "geometry2",
+                new float[][] { { 10, 10 }, { 20, 20 }, { 30, 30 }, { 40, 40 } });
+
+        testSpatialBinaryOperation((Touches) andFilterChildrens.get(15), "geometry3",
+                new float[][] { { 10, 10 }, { 20, 20 }, { 30, 30 }, { 40, 40 } });
+
+        testSpatialBinaryOperation((Within) andFilterChildrens.get(16), "geometry4", new float[][] {
+                { 10, 10 }, { 20, 20 }, { 30, 30 }, { 40, 40 } });
+
+        testSpatialBinaryOperation((Overlaps) andFilterChildrens.get(17), "geometry5",
+                new float[][] { { 10, 10 }, { 20, 20 }, { 30, 30 }, { 40, 40 } });
+
+        testSpatialBinaryOperation((Crosses) andFilterChildrens.get(18), "geometry6",
+                new float[][] { { 10, 10 }, { 20, 20 }, { 30, 30 }, { 40, 40 } });
+
+        testSpatialBinaryOperation((Intersects) andFilterChildrens.get(19), "geometry7",
+                new float[][] { { 10, 10 }, { 20, 20 }, { 30, 30 }, { 40, 40 } });
+
+        testSpatialBinaryOperation((Contains) andFilterChildrens.get(20), "geometry8",
+                new float[][] { { 10, 10 }, { 20, 20 }, { 30, 30 }, { 40, 40 } });
+
+        DWithin dWithin = (DWithin) andFilterChildrens.get(21);
+        assertEquals("geometry9",
+                ((AttributeExpressionImpl) dWithin.getExpression1()).getPropertyName());
+
+        Polygon p2 = (Polygon) ((LiteralExpressionImpl) dWithin.getExpression2()).getValue();
+        LineString exteriorRing3 = p2.getExteriorRing();
+        testLineRing(exteriorRing3, new float[][] { { 10, 10 }, { 20, 20 }, { 30, 30 }, { 40, 40 },
+                { 10, 10 } });
+        assertEquals(101.25, dWithin.getDistance());
+        assertEquals("deg", dWithin.getDistanceUnits());
+        
+        Beyond beyond = (Beyond) andFilterChildrens.get(22);
+        assertEquals("geometry10",
+                ((AttributeExpressionImpl) beyond.getExpression1()).getPropertyName());
+        
+        Polygon p3 = (Polygon) ((LiteralExpressionImpl) beyond.getExpression2()).getValue();
+        LineString exteriorRing4 = p3.getExteriorRing();
+        testLineRing(exteriorRing4, new float[][] { { 10, 10 }, { 20, 20 }, { 30, 30 }, { 40, 40 },
+                { 10, 10 } });
+        assertEquals(142.23, beyond.getDistance());
+        assertEquals("deg", beyond.getDistanceUnits());
         
         reader.close();
 
     }
+
+    private void testSpatialBinaryOperation(BinarySpatialOperator comparisonOperator,
+            String property, float[][] fs) {
+        assertEquals(property,
+                ((AttributeExpressionImpl) comparisonOperator.getExpression1()).getPropertyName());
+        Polygon p = (Polygon) ((LiteralExpressionImpl) comparisonOperator.getExpression2())
+                .getValue();
+        LineString exteriorRing = p.getExteriorRing();
+        testLineRing(exteriorRing, fs);
+
+    }
+
+    private void testLineRing(LineString exteriorRing, float[][] fs) {
+        for (int i = 0; i < fs.length; i++) {
+            Coordinate coordinate = exteriorRing.getCoordinateN(i);
+            assertEquals(fs[i][0], coordinate.x, 0.01);
+            assertEquals(fs[i][1], coordinate.y, 0.01);
+        }
+    }
+
 }
