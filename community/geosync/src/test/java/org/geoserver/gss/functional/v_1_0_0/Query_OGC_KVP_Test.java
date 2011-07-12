@@ -100,27 +100,30 @@ public class Query_OGC_KVP_Test extends GSSFunctionalTestSupport {
         assertXpathExists("atom:feed/atom:entry[2]/atom:content/wfs:Update", dom);
     }
 
-    /**
-     * Only mandatory param besides service/request/version is FEED.
-     */
     public void testEntryIdFilter() throws Exception {
-        final String request = REPLICATION_FEED_BASE;
-        Document dom = super.getAsDOM(request);
-        // print(dom);
-        final String insertId = xpath.evaluate("atom:feed/atom:entry[1]/atom:id", dom);
-        final String updateId = xpath.evaluate("atom:feed/atom:entry[2]/atom:id", dom);
-        assertTrue(insertId != null && updateId != null && !insertId.equals(updateId));
-
-        final String queryById1 = REPLICATION_FEED_BASE + "&ENTRYID=" + insertId;
-        final Document response1 = super.getAsDOM(queryById1);
-        print(response1);
-        assertXpathEvaluatesTo("1", "count(atom:feed/atom:entry)", response1);
-        assertXpathExists("atom:feed/atom:entry[1]/atom:content/wfs:Insert", dom);
-
-        final String queryById2 = REPLICATION_FEED_BASE + "&ENTRYID=" + updateId;
-        final Document response2 = super.getAsDOM(queryById2);
-        print(response2);
-        assertXpathEvaluatesTo("1", "count(atom:feed/atom:entry)", response2);
-        assertXpathExists("atom:feed/atom:entry[1]/atom:content/wfs:Update", dom);
+        final String insertId;
+        final String updateId;
+        {
+            final String request = REPLICATION_FEED_BASE;
+            Document dom = super.getAsDOM(request);
+            // print(dom);
+            insertId = xpath.evaluate("atom:feed/atom:entry[1]/atom:id", dom);
+            updateId = xpath.evaluate("atom:feed/atom:entry[2]/atom:id", dom);
+            assertTrue(insertId != null && updateId != null && !insertId.equals(updateId));
+        }
+        {
+            final String queryById1 = REPLICATION_FEED_BASE + "&ENTRYID=" + insertId;
+            final Document response1 = super.getAsDOM(queryById1);
+            print(response1);
+            assertXpathEvaluatesTo("1", "count(atom:feed/atom:entry)", response1);
+            assertXpathExists("atom:feed/atom:entry[1]/atom:content/wfs:Insert", response1);
+        }
+        {
+            final String queryById2 = REPLICATION_FEED_BASE + "&ENTRYID=" + updateId;
+            final Document response2 = super.getAsDOM(queryById2);
+            print(response2);
+            assertXpathEvaluatesTo("1", "count(atom:feed/atom:entry)", response2);
+            assertXpathExists("atom:feed/atom:entry[1]/atom:content/wfs:Update", response2);
+        }
     }
 }

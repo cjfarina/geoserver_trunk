@@ -17,6 +17,7 @@ import org.opengis.filter.Filter;
 import org.opengis.filter.sort.SortOrder;
 
 import com.google.common.base.Function;
+import com.google.common.base.Predicate;
 import com.google.common.collect.Iterators;
 
 /**
@@ -114,29 +115,31 @@ class DiffEntryListBuilder {
         }
 
         @SuppressWarnings("unchecked")
-        Iterator<DiffEntry>[] array = iterators.toArray(new Iterator[iterators.size()]);
-
-        Iterator<DiffEntry> diffEntries = Iterators.concat(array);
-        if (maxEntries != null) {
-            diffEntries = Iterators.limit(diffEntries, maxEntries.intValue());
-        }
+        final Iterator<DiffEntry>[] array = iterators.toArray(new Iterator[iterators.size()]);
+        final Iterator<DiffEntry> diffEntries = Iterators.concat(array);
 
         Function<DiffEntry, EntryImpl> diffToEntryFunction = new DiffToEntry(gss);
 
         Iterator<EntryImpl> entries = Iterators.transform(diffEntries, diffToEntryFunction);
+        if (!Filter.INCLUDE.equals(filter)) {
+            EntryFilter entryFilter = new EntryFilter(filter);
+            entries = Iterators.filter(entries, entryFilter);
+        }
+        if (maxEntries != null) {
+            entries = Iterators.limit(entries, maxEntries.intValue());
+        }
 
-        FeedImpl feed = buildFeedImpl(newest);
-        feed.setEntry(entries);
+        FeedImpl feed = buildFeed(newest, entries);
 
         return feed;
     }
 
-    private FeedImpl buildFeedImpl(RevCommit newest) {
+    private FeedImpl buildFeed(final RevCommit newestCommit, final Iterator<EntryImpl> entries) {
         FeedImpl feed = new FeedImpl();
         feed.setStartPosition(startPosition);
         feed.setMaxEntries(maxEntries);
 
-        if (newest == null) {
+        if (newestCommit == null) {
             // request didn't match any commit, lets just inform the state of the feed with no
             // entries
             final Ref head = geoGit.getRepository().getRef(Ref.HEAD);
@@ -146,10 +149,29 @@ class DiffEntryListBuilder {
                 feed.setUpdated(new Date());
             }
         } else {
-            feed.setId(newest.getId().toString());
-            feed.setUpdated(new Date(newest.getTimestamp()));
+            feed.setId(newestCommit.getId().toString());
+            feed.setUpdated(new Date(newestCommit.getTimestamp()));
         }
+
+        feed.setEntry(entries);
+
         return feed;
+    }
+
+    private static final class EntryFilter implements Predicate<EntryImpl> {
+
+        private final Filter filter;
+
+        public EntryFilter(final Filter ogcFilter) {
+            this.filter = ogcFilter;
+        }
+
+        @Override
+        public boolean apply(final EntryImpl input) {
+            boolean applies = filter.evaluate(input);
+            return applies;
+        }
+
     }
 
 }
