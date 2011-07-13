@@ -23,9 +23,9 @@ import org.geogit.api.WorkingTree;
 import org.geogit.repository.Index;
 import org.geogit.repository.Repository;
 import org.geogit.storage.RepositoryDatabase;
-import org.geogit.storage.bdbje.BDBRepositoryDatabase;
 import org.geogit.storage.bdbje.EntityStoreConfig;
 import org.geogit.storage.bdbje.EnvironmentBuilder;
+import org.geogit.storage.fs.FileSystemRepositoryDatabase;
 import org.geoserver.catalog.Catalog;
 import org.geoserver.catalog.FeatureTypeInfo;
 import org.geoserver.config.GeoServer;
@@ -85,13 +85,21 @@ public class GSS implements DisposableBean {
         final File geogitRepo = dataDir.findOrCreateDataDir(GSS_DATA_ROOT, GSS_GEOGIT_REPO);
 
         EnvironmentBuilder esb = new EnvironmentBuilder(new EntityStoreConfig());
+
         Properties bdbEnvProperties = null;
-        Environment geogitEnvironment = esb.buildEnvironment(geogitRepo, bdbEnvProperties);
-        RepositoryDatabase ggitRepoDb = new BDBRepositoryDatabase(geogitEnvironment);
+        // Environment geogitEnvironment = esb.buildEnvironment(geogitRepo, bdbEnvProperties);
+        // RepositoryDatabase ggitRepoDb = new JERepositoryDatabase(geogitEnvironment);
+
+        RepositoryDatabase ggitRepoDb = new FileSystemRepositoryDatabase(geogitRepo);
+
         Repository repository = new Repository(ggitRepoDb);
         repository.create();
 
         this.geoGit = new GeoGIT(repository);
+
+        // StatsConfig config = new StatsConfig();
+        // config.setClear(true);
+        // System.err.println(geogitEnvironment.getStats(config));
 
         final File gssRepo = dataDir.findOrCreateDataDir(GSS_DATA_ROOT, GSS_REPO);
         Environment gssEnvironment = esb.buildEnvironment(gssRepo, bdbEnvProperties);

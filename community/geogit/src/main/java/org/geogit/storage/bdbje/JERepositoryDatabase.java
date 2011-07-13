@@ -1,22 +1,21 @@
 package org.geogit.storage.bdbje;
 
-import org.geogit.storage.ObjectDatabase;
 import org.geogit.storage.RefDatabase;
 import org.geogit.storage.RepositoryDatabase;
 
 import com.sleepycat.je.Environment;
 
-public class BDBRepositoryDatabase implements RepositoryDatabase {
+public class JERepositoryDatabase implements RepositoryDatabase {
 
     private final Environment environment;
 
-    private ObjectDatabase objectDatabase;
+    private JEObjectDatabase objectDatabase;
 
     private RefDatabase referenceDatabase;
 
-    public BDBRepositoryDatabase(final Environment environment) {
+    public JERepositoryDatabase(final Environment environment) {
         this.environment = environment;
-        objectDatabase = new ObjectDatabase(environment);
+        objectDatabase = new JEObjectDatabase(environment);
         referenceDatabase = new RefDatabase(objectDatabase);
     }
 
@@ -47,7 +46,7 @@ public class BDBRepositoryDatabase implements RepositoryDatabase {
     /**
      * @see org.geogit.storage.RepositoryDatabase#getObjectDatabase()
      */
-    public ObjectDatabase getObjectDatabase() {
+    public JEObjectDatabase getObjectDatabase() {
         return objectDatabase;
     }
 
