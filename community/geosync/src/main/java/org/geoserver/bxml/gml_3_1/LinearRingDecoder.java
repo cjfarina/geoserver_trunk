@@ -21,9 +21,11 @@ public class LinearRingDecoder extends GMLLinkDecoder {
         super(LinearRing);
     }
 
+    @SuppressWarnings("unchecked")
     protected void decodeElement(final BxmlStreamReader r) throws Exception {
         QName name = r.getElementName();
-        coordinates.addAll(new CoordinatePostListParser(name, getDimension()).decode(r));
+        Object postList = new CoordinatePostListParser(name, getDimension()).decode(r);
+        coordinates.addAll((List<Coordinate>)postList);
     }
 
     protected void decodeAttributtes(final BxmlStreamReader r, Map<QName, String> attributes)

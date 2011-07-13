@@ -89,9 +89,13 @@
       </wfs:Delete>
     </content>
     <georss:where>
-      <gml:Point>
-        <gml:pos gml:srsName="urn:x-ogc:def:crs:EPSG:900913">-8426039.54737222 4836029.24787362</gml:pos>
-      </gml:Point>
+      <gml:Polygon srsName="http://www.opengis.net/gml/srs/epsg.xml#63266405">
+          <gml:exterior>
+              <gml:LinearRing>
+                  <gml:posList>10 10 20 20 30 30 40 40 10 10</gml:posList>
+              </gml:LinearRing>
+          </gml:exterior>
+      </gml:Polygon>
     </georss:where>
   </entry>
 </feed>

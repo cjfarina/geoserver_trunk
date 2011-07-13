@@ -36,6 +36,8 @@ public class EntryBuilder {
     private String title;
 
     private Date updated;
+    
+    private Object where;
 
     public EntryImpl build() {
         Assert.notNull(id, "Id can't be null");
@@ -53,6 +55,7 @@ public class EntryBuilder {
         entry.setSummary(summary);
         entry.setTitle(title);
         entry.setUpdated(updated);
+        entry.setWhere(where);
 
         return entry;
     }
@@ -167,6 +170,14 @@ public class EntryBuilder {
 
     public void setUpdated(Date updated) {
         this.updated = updated;
+    }
+
+    public Object getWhere() {
+        return where;
+    }
+
+    public void setWhere(Object where) {
+        this.where = where;
     }
 
 }

@@ -1,25 +1,23 @@
 package org.geoserver.bxml.gml_3_1;
 
+import static org.geotools.gml3.GML.pos;
+
 import java.util.ArrayList;
 import java.util.List;
 
 import javax.xml.namespace.QName;
 
-import org.geoserver.bxml.AbstractDecoder;
 import org.gvsig.bxml.stream.BxmlStreamReader;
-import static org.geotools.gml3.GML.pos;
 
 import com.vividsolutions.jts.geom.Coordinate;
 
-public class CoordinatePostListParser extends AbstractDecoder<List<Coordinate>> {
+public class CoordinatePostListParser extends GMLLinkDecoder {
 
     private List<Coordinate> coordinates = new ArrayList<Coordinate>();
     
-    private int dimension;
-    
     public CoordinatePostListParser(final QName name, final int dimension) {
         super(name);
-        this.dimension = dimension;
+        this.setDimension(dimension);
     }
     
     @Override
@@ -42,6 +40,7 @@ public class CoordinatePostListParser extends AbstractDecoder<List<Coordinate>> 
         value = value.replaceAll("\r", " ");
         String[] split = value.trim().split(" +");
         final int ordinatesLength = split.length;
+        int dimension = getDimension();
         if (ordinatesLength % dimension != 0) {
             throw new IllegalArgumentException("Number of ordinates (" + ordinatesLength
                     + ") does not match crs dimension: " + dimension);
@@ -65,7 +64,7 @@ public class CoordinatePostListParser extends AbstractDecoder<List<Coordinate>> 
     }
 
     @Override
-    protected List<Coordinate> buildResult() {
+    protected Object buildResult() {
         return coordinates;
     }
 }

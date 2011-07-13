@@ -12,6 +12,7 @@ import static org.geoserver.gss.internal.atom.Atom.source;
 import static org.geoserver.gss.internal.atom.Atom.summary;
 import static org.geoserver.gss.internal.atom.Atom.title;
 import static org.geoserver.gss.internal.atom.Atom.updated;
+import static org.geoserver.gss.internal.atom.GeoRSS.where;
 
 import javax.xml.namespace.QName;
 
@@ -84,6 +85,10 @@ public class EntryDecoder extends AbstractDecoder<EntryImpl> {
         if (content.equals(name)) {
             ContentDecoder contentDecoder = new ContentDecoder();
             builder.setContent(contentDecoder.decode(r));
+        }
+
+        if (where.equals(name)) {
+            builder.setWhere(new WhereDecoder().decode(r));
         }
 
     }

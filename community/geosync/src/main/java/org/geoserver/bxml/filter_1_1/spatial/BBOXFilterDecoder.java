@@ -29,7 +29,7 @@ public class BBOXFilterDecoder extends FilterLinkDecoder {
     protected void decodeElement(final BxmlStreamReader r) throws Exception {
         QName name = r.getElementName();
 
-        if (OGC.NAMESPACE.equals(name)) {
+        if (OGC.NAMESPACE.equals(name.getNamespaceURI())) {
             AttributeExpressionImpl expression = (AttributeExpressionImpl) new ExpressionChainDecoder()
                     .decode(r);
             propertyName = expression.getPropertyName();
@@ -40,7 +40,7 @@ public class BBOXFilterDecoder extends FilterLinkDecoder {
 
     @Override
     protected Filter buildResult() {
-        //TODO: CRS CAN NOT BE NULL
+        //TODO: SRS CAN NOT BE NULL
         return ff.bbox(propertyName, envelope.getMinX(), envelope.getMinY(),
                 envelope.getMaxX(), envelope.getMaxY(), null);
     }

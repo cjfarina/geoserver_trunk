@@ -41,7 +41,7 @@
           </wfs:Value>
         </wfs:Property>
         <fes:Filter>
-          <fes:FeatureId fid="planet_osm_polygon.100"></fes:FeatureId>
+          <fes:FeatureId fes:fid="planet_osm_polygon.100"></fes:FeatureId>
         </fes:Filter>
       </wfs:Update>
     </content>

@@ -3,7 +3,6 @@ package org.geoserver.gss.internal.atom;
 import java.io.InputStream;
 import java.util.List;
 
-import junit.framework.TestCase;
 import net.opengis.wfs.DeleteElementType;
 
 import org.geoserver.bxml.atom.FeedDecoder;
@@ -29,8 +28,8 @@ import org.opengis.filter.expression.Add;
 import org.opengis.filter.expression.Divide;
 import org.opengis.filter.expression.Multiply;
 import org.opengis.filter.expression.Subtract;
+import org.opengis.filter.spatial.BBOX;
 import org.opengis.filter.spatial.Beyond;
-import org.opengis.filter.spatial.BinarySpatialOperator;
 import org.opengis.filter.spatial.Contains;
 import org.opengis.filter.spatial.Crosses;
 import org.opengis.filter.spatial.DWithin;
@@ -40,11 +39,10 @@ import org.opengis.filter.spatial.Overlaps;
 import org.opengis.filter.spatial.Touches;
 import org.opengis.filter.spatial.Within;
 
-import com.vividsolutions.jts.geom.Coordinate;
 import com.vividsolutions.jts.geom.LineString;
 import com.vividsolutions.jts.geom.Polygon;
 
-public class FilterDecoderTest extends TestCase {
+public class FilterDecoderTest extends BXMLDecoderTest {
 
     public void testFilterDecoder() throws Exception {
 
@@ -88,7 +86,7 @@ public class FilterDecoderTest extends TestCase {
         And andFilter = (And) notFilter.getFilter();
 
         List<Filter> andFilterChildrens = andFilter.getChildren();
-        assertEquals(23, andFilterChildrens.size());
+        assertEquals(24, andFilterChildrens.size());
 
         PropertyIsEqualTo propertyIsEqualTo2 = (PropertyIsEqualTo) andFilterChildrens.get(0);
         assertEquals("street",
@@ -239,27 +237,19 @@ public class FilterDecoderTest extends TestCase {
         assertEquals(142.23, beyond.getDistance());
         assertEquals("deg", beyond.getDistanceUnits());
         
+        BBOX bbox = (BBOX) andFilterChildrens.get(23);
+        assertEquals("geometry11",
+                ((AttributeExpressionImpl) bbox.getExpression1()).getPropertyName());
+        
+        //TODO: Resolve this
+        /*BoundingBox bb = (BoundingBox) ((LiteralExpressionImpl) bbox.getExpression2()).getValue();
+        assertEquals(13.0983, bb.getMinX());
+        assertEquals(31.5899, bb.getMinY());
+        assertEquals(35.5472, bb.getMaxX());
+        assertEquals(42.8143, bb.getMaxY());*/
+        
         reader.close();
 
-    }
-
-    private void testSpatialBinaryOperation(BinarySpatialOperator comparisonOperator,
-            String property, float[][] fs) {
-        assertEquals(property,
-                ((AttributeExpressionImpl) comparisonOperator.getExpression1()).getPropertyName());
-        Polygon p = (Polygon) ((LiteralExpressionImpl) comparisonOperator.getExpression2())
-                .getValue();
-        LineString exteriorRing = p.getExteriorRing();
-        testLineRing(exteriorRing, fs);
-
-    }
-
-    private void testLineRing(LineString exteriorRing, float[][] fs) {
-        for (int i = 0; i < fs.length; i++) {
-            Coordinate coordinate = exteriorRing.getCoordinateN(i);
-            assertEquals(fs[i][0], coordinate.x, 0.01);
-            assertEquals(fs[i][1], coordinate.y, 0.01);
-        }
     }
 
 }

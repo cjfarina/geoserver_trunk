@@ -3,6 +3,7 @@ package org.geoserver.bxml.atom;
 import static org.geoserver.gss.internal.atom.Atom.source;
 import static org.geoserver.gss.internal.atom.Atom.type;
 import static org.geoserver.wfs.xml.v1_1_0.WFS.DELETE;
+import static org.geoserver.wfs.xml.v1_1_0.WFS.UPDATE;
 
 import java.util.Map;
 
@@ -10,6 +11,7 @@ import javax.xml.namespace.QName;
 
 import org.geoserver.bxml.AbstractDecoder;
 import org.geoserver.bxml.feature.DeleteElementTypeDecoder;
+import org.geoserver.bxml.feature.UpdateElementTypeDecoder;
 import org.geoserver.gss.internal.atom.Atom;
 import org.geoserver.gss.internal.atom.ContentImpl;
 import org.gvsig.bxml.stream.BxmlStreamReader;
@@ -28,8 +30,11 @@ public class ContentDecoder extends AbstractDecoder<ContentImpl> {
         QName name = r.getElementName();
 
         if (DELETE.equals(name)) {
-            DeleteElementTypeDecoder deleteElementTypeDecoder = new DeleteElementTypeDecoder();
-            content.setValue(deleteElementTypeDecoder.decode(r));
+            content.setValue(new DeleteElementTypeDecoder().decode(r));
+        }
+        
+        if(UPDATE.equals(name)){
+            content.setValue(new UpdateElementTypeDecoder().decode(r));
         }
     }
 

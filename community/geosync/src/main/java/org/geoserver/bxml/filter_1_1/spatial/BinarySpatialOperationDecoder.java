@@ -35,7 +35,7 @@ public abstract class BinarySpatialOperationDecoder extends FilterLinkDecoder {
                     .decode(r);
             propertyName = expression.getPropertyName();
         } else if (name.getNamespaceURI().equals(GML.NAMESPACE)) {
-            geometry = new GMLChainDecoder().decode(r);
+            geometry = (Geometry)new GMLChainDecoder().decode(r);
         }
     }
 

@@ -37,7 +37,7 @@ public abstract class DistanceBufferFilterDecoder extends FilterLinkDecoder {
         } else if (name.getNamespaceURI().equals(OGC.NAMESPACE)) {
             expression = new ExpressionChainDecoder().decode(r);
         } else if (name.getNamespaceURI().equals(GML.NAMESPACE)) {
-            geometry = new GMLChainDecoder().decode(r);
+            geometry = (Geometry)new GMLChainDecoder().decode(r);
         }
     }
 }

@@ -14,10 +14,9 @@ import org.opengis.referencing.FactoryException;
 import org.opengis.referencing.NoSuchAuthorityCodeException;
 import org.opengis.referencing.crs.CoordinateReferenceSystem;
 
-import com.vividsolutions.jts.geom.Geometry;
 import com.vividsolutions.jts.geom.GeometryFactory;
 
-public abstract class GMLLinkDecoder extends AbstractDecoder<Geometry> {
+public abstract class GMLLinkDecoder extends AbstractDecoder<Object> {
 
     public static final QName srsDimension = new QName("http://www.opengis.net/gml", "srsDimension");
 
@@ -39,7 +38,7 @@ public abstract class GMLLinkDecoder extends AbstractDecoder<Geometry> {
     }
 
     @Override
-    public Geometry decode(final BxmlStreamReader r) throws Exception {
+    public Object decode(final BxmlStreamReader r) throws Exception {
         QName name = r.getElementName();
 
         if (this.name.equals(name)) {

@@ -200,13 +200,13 @@
 							</gml:Polygon>
 			                <fes:Distance units="deg">142.23</fes:Distance> 
 			            </fes:Beyond> 
-			            <BBOX>
-							<PropertyName>Geometry</PropertyName>
+			            <fes:BBOX>
+							<fes:PropertyName>geometry11</fes:PropertyName>
 							<gml:Envelope srsName="http://www.opengis.net/gml/srs/epsg.xml#63266405">
 								<gml:lowerCorner>13.0983 31.5899</gml:lowerCorner>
 								<gml:upperCorner>35.5472 42.8143</gml:upperCorner>
 							</gml:Envelope>	
-						</BBOX>	            
+						</fes:BBOX>	            
                     </fes:And>
                 </fes:Not>
             </fes:Or>

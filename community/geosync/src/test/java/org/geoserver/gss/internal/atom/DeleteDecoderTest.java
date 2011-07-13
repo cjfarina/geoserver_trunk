@@ -2,13 +2,10 @@ package org.geoserver.gss.internal.atom;
 
 import java.io.InputStream;
 import java.util.Calendar;
-import java.util.Date;
 import java.util.List;
-import java.util.TimeZone;
 
 import javax.xml.namespace.QName;
 
-import junit.framework.TestCase;
 import net.opengis.wfs.DeleteElementType;
 
 import org.geoserver.bxml.atom.FeedDecoder;
@@ -25,7 +22,10 @@ import org.opengis.filter.Or;
 import org.opengis.filter.PropertyIsBetween;
 import org.opengis.filter.PropertyIsEqualTo;
 
-public class FeedDecoderTest extends TestCase {
+import com.vividsolutions.jts.geom.LineString;
+import com.vividsolutions.jts.geom.Polygon;
+
+public class DeleteDecoderTest extends BXMLDecoderTest {
 
     public void testFeedDecodeDelete() throws Exception {
 
@@ -226,6 +226,10 @@ public class FeedDecoderTest extends TestCase {
         assertEquals("Street1",
                 ((LiteralExpressionImpl) propertyIsEqualTo2.getExpression2()).getValue());
 
+        Polygon where = (Polygon)entry.getWhere();
+        LineString exteriorRing4 = where.getExteriorRing();
+        testLineRing(exteriorRing4, new float[][] { { 10, 10 }, { 20, 20 }, { 30, 30 }, { 40, 40 },
+                { 10, 10 } });
         reader.close();
 
     }
@@ -265,10 +269,6 @@ public class FeedDecoderTest extends TestCase {
 
         reader.close();
 
-    }
-
-    private int getTimeZone() {
-        return TimeZone.getDefault().getOffset(new Date().getTime()) / 3600000;
     }
 
 }
