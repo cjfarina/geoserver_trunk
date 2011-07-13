@@ -5,6 +5,7 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Iterator;
 import java.util.List;
+import java.util.Properties;
 
 import junit.framework.TestCase;
 
@@ -16,7 +17,9 @@ import org.geogit.repository.Index;
 import org.geogit.repository.Repository;
 import org.geogit.storage.FeatureWriter;
 import org.geogit.storage.RepositoryDatabase;
-import org.geogit.storage.fs.FileSystemRepositoryDatabase;
+import org.geogit.storage.bdbje.EntityStoreConfig;
+import org.geogit.storage.bdbje.EnvironmentBuilder;
+import org.geogit.storage.bdbje.JERepositoryDatabase;
 import org.geotools.data.DataUtilities;
 import org.geotools.feature.simple.SimpleFeatureBuilder;
 import org.geotools.geometry.jts.WKTReader2;
@@ -28,6 +31,7 @@ import org.opengis.feature.type.Name;
 
 import com.google.common.collect.Iterables;
 import com.google.common.collect.Iterators;
+import com.sleepycat.je.Environment;
 import com.vividsolutions.jts.io.ParseException;
 
 public abstract class RepositoryTestCase extends TestCase {
@@ -78,15 +82,16 @@ public abstract class RepositoryTestCase extends TestCase {
         FileUtils.deleteDirectory(envHome);
         envHome.mkdirs();
 
-        // EntityStoreConfig config = new EntityStoreConfig();
-        // config.setCacheMemoryPercentAllowed(50);
-        // EnvironmentBuilder esb = new EnvironmentBuilder(config);
-        // Properties bdbEnvProperties = null;
-        // Environment environment;
-        // environment = esb.buildEnvironment(envHome, bdbEnvProperties);
-        // repositoryDatabase = new JERepositoryDatabase(environment);
+        EntityStoreConfig config = new EntityStoreConfig();
+        config.setCacheMemoryPercentAllowed(50);
+        EnvironmentBuilder esb = new EnvironmentBuilder(config);
+        Properties bdbEnvProperties = null;
+        Environment environment;
+        environment = esb.buildEnvironment(envHome, bdbEnvProperties);
+        repositoryDatabase = new JERepositoryDatabase(environment);
 
-        repositoryDatabase = new FileSystemRepositoryDatabase(envHome);
+        // repositoryDatabase = new FileSystemRepositoryDatabase(envHome);
+
         repo = new Repository(repositoryDatabase);
 
         repo.create();

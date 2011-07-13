@@ -25,7 +25,7 @@ import org.geogit.repository.Repository;
 import org.geogit.storage.RepositoryDatabase;
 import org.geogit.storage.bdbje.EntityStoreConfig;
 import org.geogit.storage.bdbje.EnvironmentBuilder;
-import org.geogit.storage.fs.FileSystemRepositoryDatabase;
+import org.geogit.storage.bdbje.JERepositoryDatabase;
 import org.geoserver.catalog.Catalog;
 import org.geoserver.catalog.FeatureTypeInfo;
 import org.geoserver.config.GeoServer;
@@ -87,10 +87,10 @@ public class GSS implements DisposableBean {
         EnvironmentBuilder esb = new EnvironmentBuilder(new EntityStoreConfig());
 
         Properties bdbEnvProperties = null;
-        // Environment geogitEnvironment = esb.buildEnvironment(geogitRepo, bdbEnvProperties);
-        // RepositoryDatabase ggitRepoDb = new JERepositoryDatabase(geogitEnvironment);
+        Environment geogitEnvironment = esb.buildEnvironment(geogitRepo, bdbEnvProperties);
+        RepositoryDatabase ggitRepoDb = new JERepositoryDatabase(geogitEnvironment);
 
-        RepositoryDatabase ggitRepoDb = new FileSystemRepositoryDatabase(geogitRepo);
+        // RepositoryDatabase ggitRepoDb = new FileSystemRepositoryDatabase(geogitRepo);
 
         Repository repository = new Repository(ggitRepoDb);
         repository.create();
