@@ -11,11 +11,9 @@ import java.util.List;
 import java.util.Set;
 
 import org.geogit.repository.Index;
-import org.geogit.storage.FeatureWriter;
 import org.geogit.test.RepositoryTestCase;
 import org.geotools.util.Range;
 import org.opengis.feature.Feature;
-import org.opengis.feature.type.Name;
 
 import com.google.common.collect.Iterators;
 
@@ -42,8 +40,7 @@ public class LogOpTest extends RepositoryTestCase {
 
     public void testHeadWithSingleCommit() throws Exception {
 
-        index.inserted(new FeatureWriter(feature1_1), namespace1, typeName1, feature1_1
-                .getIdentifier().getID());
+        insert(feature1_1);
         final RevCommit firstCommit = ggit.commit().call();
 
         Iterator<RevCommit> iterator = logOp.call();
@@ -56,12 +53,10 @@ public class LogOpTest extends RepositoryTestCase {
 
     public void testHeadWithTwoCommits() throws Exception {
 
-        index.inserted(new FeatureWriter(feature1_1), namespace1, typeName1, feature1_1
-                .getIdentifier().getID());
+        insert(feature1_1);
         final RevCommit firstCommit = ggit.commit().call();
 
-        index.inserted(new FeatureWriter(feature2_1), namespace2, typeName2, feature2_1
-                .getIdentifier().getID());
+        insert(feature2_1);
         final RevCommit secondCommit = ggit.commit().call();
 
         Iterator<RevCommit> iterator = logOp.call();
@@ -84,11 +79,7 @@ public class LogOpTest extends RepositoryTestCase {
         LinkedList<RevCommit> expected = new LinkedList<RevCommit>();
 
         for (Feature f : features) {
-            Name name = f.getType().getName();
-            String namespaceURI = name.getNamespaceURI();
-            String localPart = name.getLocalPart();
-            String id = f.getIdentifier().getID();
-            index.inserted(new FeatureWriter(f), namespaceURI, localPart, id);
+            insert(f);
             final RevCommit commit = ggit.commit().call();
             expected.addFirst(commit);
         }
@@ -110,11 +101,8 @@ public class LogOpTest extends RepositoryTestCase {
         RevCommit expectedCommit = null;
 
         for (Feature f : features) {
-            Name name = f.getType().getName();
-            String namespaceURI = name.getNamespaceURI();
-            String localPart = name.getLocalPart();
+            insert(f);
             String id = f.getIdentifier().getID();
-            index.inserted(new FeatureWriter(f), namespaceURI, localPart, id);
             final RevCommit commit = ggit.commit().call();
             if (id.equals(feature2_1.getIdentifier().getID())) {
                 expectedCommit = commit;
@@ -137,11 +125,7 @@ public class LogOpTest extends RepositoryTestCase {
         Set<RevCommit> typeName1Commits = new HashSet<RevCommit>();
 
         for (Feature f : features) {
-            Name name = f.getType().getName();
-            String namespaceURI = name.getNamespaceURI();
-            String localPart = name.getLocalPart();
-            String id = f.getIdentifier().getID();
-            index.inserted(new FeatureWriter(f), namespaceURI, localPart, id);
+            insert(f);
             final RevCommit commit = ggit.commit().call();
             commits.addFirst(commit);
             if (typeName1.equals(f.getType().getName().getLocalPart())) {
@@ -163,11 +147,7 @@ public class LogOpTest extends RepositoryTestCase {
                 feature1_3, feature2_3);
 
         for (Feature f : features) {
-            Name name = f.getType().getName();
-            String namespaceURI = name.getNamespaceURI();
-            String localPart = name.getLocalPart();
-            String id = f.getIdentifier().getID();
-            index.inserted(new FeatureWriter(f), namespaceURI, localPart, id);
+            insert(f);
             ggit.commit().call();
         }
 
@@ -188,11 +168,7 @@ public class LogOpTest extends RepositoryTestCase {
         for (int i = 0; i < features.size(); i++) {
             Feature f = features.get(i);
             Long timestamp = timestamps.get(i);
-            Name name = f.getType().getName();
-            String namespaceURI = name.getNamespaceURI();
-            String localPart = name.getLocalPart();
-            String id = f.getIdentifier().getID();
-            index.inserted(new FeatureWriter(f), namespaceURI, localPart, id);
+            insert(f);
             final RevCommit commit = ggit.commit().setTimestamp(timestamp).call();
             allCommits.addFirst(commit);
         }

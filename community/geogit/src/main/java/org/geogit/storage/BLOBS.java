@@ -6,18 +6,28 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStreamWriter;
 import java.io.PrintStream;
+import java.util.Collections;
+import java.util.Map;
 
 import javax.xml.XMLConstants;
 import javax.xml.namespace.QName;
 
+import org.apache.commons.collections.map.LRUMap;
 import org.geogit.api.ObjectId;
+import org.geotools.geometry.jts.ReferencedEnvelope;
+import org.geotools.referencing.CRS;
 import org.gvsig.bxml.stream.BxmlFactoryFinder;
 import org.gvsig.bxml.stream.BxmlInputFactory;
 import org.gvsig.bxml.stream.BxmlOutputFactory;
 import org.gvsig.bxml.stream.BxmlStreamReader;
 import org.gvsig.bxml.stream.BxmlStreamWriter;
 import org.gvsig.bxml.stream.EventType;
+import org.opengis.geometry.BoundingBox;
+import org.opengis.referencing.FactoryException;
+import org.opengis.referencing.crs.CoordinateReferenceSystem;
+import org.springframework.util.Assert;
 
+import com.google.common.base.Throwables;
 import com.vividsolutions.jts.geom.Geometry;
 import com.vividsolutions.jts.io.ParseException;
 import com.vividsolutions.jts.io.WKBReader;
@@ -78,7 +88,9 @@ public class BLOBS {
 
     public static final QName BUCKET = new QName(NAMESPACE, "bucket");
 
-    public static final QName ENTRY = new QName(NAMESPACE, "entry");
+    public static final QName REF = new QName(NAMESPACE, "ref");
+
+    public static final QName WHERE = new QName(NAMESPACE, "where");
 
     public static final QName PARENT_IDS = new QName(NAMESPACE, "parentids");
 
@@ -305,5 +317,109 @@ public class BLOBS {
             }
             return reader.getEventType();
         }
+    }
+
+    /**
+     * If its a point bounds:
+     * 
+     * <pre>
+     * <code>
+     *   &lt;where epsg="xxxx"&gt;x y&lt;/where&gt;
+     * </code>
+     * </pre>
+     * 
+     * Otherwise:
+     * 
+     * <pre>
+     * <code>
+     *   &lt;where epsg="xxxx"&gt;minx miny maxx maxy&lt;/where&gt;
+     * </code>
+     * </pre>
+     * 
+     * @param w
+     * @param bounds
+     * @throws IOException
+     */
+    public static void writeWhere(final BxmlStreamWriter w, final BoundingBox bounds)
+            throws IOException {
+        Assert.notNull(bounds);
+        Assert.notNull(bounds.getCoordinateReferenceSystem());
+
+        final CoordinateReferenceSystem crs = bounds.getCoordinateReferenceSystem();
+        final Integer epsgCode = lookupIdentifier(crs);
+
+        w.writeStartElement(WHERE);
+        w.writeStartAttribute("", "epsg");
+        w.writeValue(epsgCode.intValue());
+        w.writeEndAttributes();
+
+        final double[] value = new double[] { bounds.getMinX(), bounds.getMinY(), bounds.getMaxX(),
+                bounds.getMaxY() };
+
+        final boolean isPoint = 0D == bounds.getWidth() && 0D == bounds.getHeight();
+        final int length = isPoint ? 2 : 4;
+        w.writeValue(value, 0, length);
+
+        w.writeEndElement();
+    }
+
+    public static BoundingBox parseWhere(final BxmlStreamReader r) throws IOException {
+        r.require(EventType.START_ELEMENT, WHERE.getNamespaceURI(), WHERE.getLocalPart());
+
+        final Integer epsgCode = Integer.valueOf(r.getAttributeValue(null, "epsg"));
+        final CoordinateReferenceSystem crs = lookupCrs(epsgCode);
+
+        r.next();
+        r.require(EventType.VALUE_DOUBLE, null, null);
+        final int length = r.getValueCount();
+        double value[] = new double[4];
+        r.getValue(value, 0, length);
+        r.nextTag();
+        r.require(EventType.END_ELEMENT, WHERE.getNamespaceURI(), WHERE.getLocalPart());
+
+        if (length == 2) {
+            value[2] = value[0];
+            value[3] = value[1];
+        }
+        ReferencedEnvelope bbox;
+        bbox = new ReferencedEnvelope(value[0], value[3], value[1], value[3], crs);
+        return bbox;
+    }
+
+    @SuppressWarnings("unchecked")
+    private static Map<CoordinateReferenceSystem, Integer> crsIdCache = Collections
+            .synchronizedMap(new LRUMap(3));
+
+    @SuppressWarnings("unchecked")
+    private static Map<Integer, CoordinateReferenceSystem> crsCache = Collections
+            .synchronizedMap(new LRUMap(3));
+
+    private static CoordinateReferenceSystem lookupCrs(final Integer epsgCode) {
+        CoordinateReferenceSystem crs = crsCache.get(epsgCode);
+        if (crs == null) {
+            try {
+                crs = CRS.decode("EPSG:" + epsgCode, false);
+                crsCache.put(epsgCode, crs);
+            } catch (Exception e) {
+                Throwables.propagate(e);
+            }
+        }
+        return crs;
+    }
+
+    private static Integer lookupIdentifier(CoordinateReferenceSystem crs) {
+        Integer epsgCode = crsIdCache.get(crs);
+        if (epsgCode == null) {
+            try {
+                epsgCode = CRS.lookupEpsgCode(crs, true);
+            } catch (FactoryException e) {
+                Throwables.propagate(e);
+            }
+            if (epsgCode == null) {
+                throw new IllegalArgumentException("Can't find EPSG code for CRS " + crs.toWKT());
+            }
+            crsIdCache.put(crs, epsgCode);
+        }
+        return epsgCode;
     }
 }

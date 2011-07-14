@@ -4,7 +4,6 @@ import java.util.List;
 
 import org.geogit.repository.Index;
 import org.geogit.storage.BLOBS;
-import org.geogit.storage.FeatureWriter;
 import org.geogit.test.RepositoryTestCase;
 
 public class CommitOpTest extends RepositoryTestCase {
@@ -32,12 +31,10 @@ public class CommitOpTest extends RepositoryTestCase {
 
         Index index = repo.getIndex();
 
-        ObjectId oid1 = index.inserted(new FeatureWriter(feature1_1), namespace1, typeName1,
-                feature1_1.getIdentifier().getID());
+        ObjectId oid1 = insert(feature1_1);
         // BLOBS.print(repo.getRawObject(insertedId1), System.err);
 
-        ObjectId oid2 = index.inserted(new FeatureWriter(feature1_2), namespace1, typeName1,
-                feature1_2.getIdentifier().getID());
+        ObjectId oid2 = insert(feature1_2);
         // BLOBS.print(repo.getRawObject(insertedId2), System.err);
 
         ggit.add().addPattern(".").call();
@@ -79,8 +76,7 @@ public class CommitOpTest extends RepositoryTestCase {
 
     public void testMultipleCommits() throws Exception {
 
-        final ObjectId oId1_1 = index.inserted(new FeatureWriter(feature1_1), namespace1,
-                typeName1, feature1_1.getIdentifier().getID());
+        final ObjectId oId1_1 = insert(feature1_1);
         // BLOBS.print(repo.getRawObject(oId1_1), System.err);
 
         // final ObjectId oId2_1 = index.inserted(new FeaturePersister(feature2_1), namespace2,
@@ -103,11 +99,9 @@ public class CommitOpTest extends RepositoryTestCase {
         assertNotNull(type1SubTreeId);
         // assertNotNull(type2SubTreeId);
 
-        final ObjectId oId1_2 = index.inserted(new FeatureWriter(feature1_2), namespace1,
-                typeName1, feature1_2.getIdentifier().getID());
+        final ObjectId oId1_2 = insert(feature1_2);
         // BLOBS.print(repo.getRawObject(oId1_2), System.err);
-        final ObjectId oId1_3 = index.inserted(new FeatureWriter(feature1_3), namespace1,
-                typeName1, feature1_3.getIdentifier().getID());
+        final ObjectId oId1_3 = insert(feature1_3);
         // BLOBS.print(repo.getRawObject(oId1_3), System.err);
 
         // final ObjectId oId2_2 = index.inserted(new FeaturePersister(feature2_2), namespace2,

@@ -43,7 +43,7 @@ public class EnvironmentBuilder {
         // check <http://www.oracle.com/technetwork/database/berkeleydb/je-faq-096044.html#35>
         envCfg.setConfigParam("je.evictor.lruOnly", "false");
         envCfg.setConfigParam("je.evictor.nodesPerScan", "100");
-        
+
         Integer cacheMemoryPercentAllowed = config.getCacheMemoryPercentAllowed();
         Integer cacheSizeMB = config.getCacheSizeMB();
         if (cacheMemoryPercentAllowed == null) {

@@ -17,6 +17,7 @@ import org.opengis.feature.type.FeatureType;
 import org.opengis.feature.type.Name;
 import org.opengis.filter.Filter;
 import org.opengis.filter.expression.PropertyName;
+import org.opengis.geometry.BoundingBox;
 import org.opengis.util.ProgressListener;
 import org.springframework.util.Assert;
 
@@ -96,9 +97,11 @@ public class WorkingTree {
                     return null;
                 }
                 Feature next = iterator.next();
+                BoundingBox bounds = next.getBounds();
+
                 String id = next.getIdentifier().getID();
                 FeatureWriter persister = new FeatureWriter(next);
-                index.inserted(persister, nsUri, localPart, id);
+                index.inserted(persister, bounds, nsUri, localPart, id);
                 fids.add(id);
                 count++;
                 if (listener.isCanceled()) {

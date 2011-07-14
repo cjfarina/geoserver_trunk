@@ -1,8 +1,6 @@
 package org.geogit.storage;
 
 import static org.geogit.storage.BLOBS.BUCKET;
-import static org.geogit.storage.BLOBS.ENTRY;
-import static org.geogit.storage.BLOBS.STRING;
 import static org.geogit.storage.BLOBS.TREE;
 
 import java.io.IOException;
@@ -14,6 +12,8 @@ import org.geogit.api.RevTree;
 import org.geogit.api.TreeVisitor;
 import org.gvsig.bxml.stream.BxmlOutputFactory;
 import org.gvsig.bxml.stream.BxmlStreamWriter;
+
+import com.google.common.base.Throwables;
 
 public class RevTreeWriter implements ObjectWriter<RevTree> {
 
@@ -51,8 +51,11 @@ public class RevTreeWriter implements ObjectWriter<RevTree> {
 
         private final BxmlStreamWriter writer;
 
+        private final RefWriter refWriter;
+
         public WriteTreeVisitor(final BxmlStreamWriter writer) {
             this.writer = writer;
+            this.refWriter = new RefWriter();
         }
 
         /**
@@ -60,20 +63,9 @@ public class RevTreeWriter implements ObjectWriter<RevTree> {
          */
         public boolean visitEntry(final Ref ref) {
             try {
-                writer.writeStartElement(ENTRY);
-                writer.writeStartAttribute("", "type");
-                writer.writeValue(ref.getType().value());
-                writer.writeEndAttributes();
-                {
-                    writer.writeStartElement(STRING);
-                    writer.writeValue(ref.getName());
-                    writer.writeEndElement();
-
-                    BLOBS.writeObjectId(writer, ref.getObjectId());
-                }
-                writer.writeEndElement();
+                refWriter.write(writer, ref);
             } catch (IOException e) {
-                e.printStackTrace();
+                Throwables.propagate(e);
             }
             return true;
         }

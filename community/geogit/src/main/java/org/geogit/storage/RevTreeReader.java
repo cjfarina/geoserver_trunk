@@ -1,7 +1,7 @@
 package org.geogit.storage;
 
 import static org.geogit.storage.BLOBS.BUCKET;
-import static org.geogit.storage.BLOBS.ENTRY;
+import static org.geogit.storage.BLOBS.REF;
 import static org.geogit.storage.BLOBS.TREE;
 
 import java.io.IOException;
@@ -9,7 +9,6 @@ import java.io.InputStream;
 
 import org.geogit.api.ObjectId;
 import org.geogit.api.Ref;
-import org.geogit.api.RevObject.TYPE;
 import org.geogit.api.RevTree;
 import org.gvsig.bxml.stream.BxmlInputFactory;
 import org.gvsig.bxml.stream.BxmlStreamReader;
@@ -21,6 +20,8 @@ public class RevTreeReader implements ObjectReader<RevTree> {
 
     private int order;
 
+    private final RefReader refReader;
+
     public RevTreeReader(ObjectDatabase objectDb) {
         this(objectDb, 0);
     }
@@ -28,6 +29,7 @@ public class RevTreeReader implements ObjectReader<RevTree> {
     public RevTreeReader(ObjectDatabase objectDb, int order) {
         this.objectDb = objectDb;
         this.order = order;
+        this.refReader = new RefReader();
     }
 
     /**
@@ -47,7 +49,7 @@ public class RevTreeReader implements ObjectReader<RevTree> {
         RevSHA1Tree tree = new RevSHA1Tree(id, objectDb, order);
         while ((event = r.next()) != EventType.END_DOCUMENT) {
             if (EventType.START_ELEMENT.equals(event)) {
-                if (ENTRY.equals(r.getElementName())) {
+                if (REF.equals(r.getElementName())) {
                     Ref entryRef = parseEntry(r);
                     tree.put(entryRef);
                 } else if (TREE.equals(r.getElementName())) {
@@ -80,19 +82,6 @@ public class RevTreeReader implements ObjectReader<RevTree> {
     }
 
     private Ref parseEntry(BxmlStreamReader r) throws IOException {
-        String childName;
-        ObjectId childObjectId;
-
-        r.require(EventType.START_ELEMENT, ENTRY.getNamespaceURI(), ENTRY.getLocalPart());
-        int typeCode = Integer.parseInt(r.getAttributeValue(0));
-        r.nextTag();
-        childName = BLOBS.parseString(r);
-        r.nextTag();
-        childObjectId = BLOBS.parseObjectId(r);
-        r.nextTag();
-        r.require(EventType.END_ELEMENT, ENTRY.getNamespaceURI(), ENTRY.getLocalPart());
-
-        TYPE type = TYPE.valueOf(typeCode);
-        return new Ref(childName, childObjectId, type);
+        return refReader.read(r);
     }
 }

@@ -191,7 +191,8 @@ public abstract class RepositoryTestCase extends TestCase {
         String namespaceURI = name.getNamespaceURI();
         String localPart = name.getLocalPart();
         String id = f.getIdentifier().getID();
-        ObjectId objectId = index.inserted(new FeatureWriter(f), namespaceURI, localPart, id);
+        ObjectId objectId = index.inserted(new FeatureWriter(f), f.getBounds(), namespaceURI,
+                localPart, id);
         return objectId;
     }
 

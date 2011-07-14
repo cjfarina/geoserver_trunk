@@ -14,10 +14,12 @@ import org.geogit.api.ObjectId;
 import org.geogit.api.Ref;
 import org.geogit.api.RevObject.TYPE;
 import org.geogit.api.RevTree;
+import org.geogit.api.SpatialRef;
 import org.geogit.storage.ObjectInserter;
 import org.geogit.storage.ObjectWriter;
 import org.geogit.storage.RevTreeWriter;
 import org.geotools.util.logging.Logging;
+import org.opengis.geometry.BoundingBox;
 import org.springframework.util.Assert;
 
 /**
@@ -89,8 +91,11 @@ public class Index {
 
         private Status status;
 
-        public Entry(ObjectId blobId, Status status) {
+        private BoundingBox bounds;
+
+        public Entry(ObjectId blobId, BoundingBox bounds, Status status) {
             this.blobId = blobId;
+            this.bounds = bounds;
             this.status = status;
         }
 
@@ -131,7 +136,7 @@ public class Index {
         }
 
         TreeMap<String, Entry> fidMap = getFidMap(nsuri, typeName);
-        fidMap.put(fid, new Entry(child.getObjectId(), Entry.Status.DELETED));
+        fidMap.put(fid, new Entry(child.getObjectId(), null, Entry.Status.DELETED));
         return true;
     }
 
@@ -141,7 +146,8 @@ public class Index {
      * @return
      * @throws Exception
      */
-    public ObjectId inserted(final ObjectWriter<?> object, final String... path) throws Exception {
+    public ObjectId inserted(final ObjectWriter<?> object, final BoundingBox bounds,
+            final String... path) throws Exception {
         Assert.notNull(object);
         Assert.notNull(path);
         Assert.noNullElements(path);
@@ -151,7 +157,7 @@ public class Index {
         final String featureId = path[path.length - 1];
 
         TreeMap<String, Entry> fidMap = getFidMap(path[0], path[1]);
-        fidMap.put(featureId, new Entry(blobId, Entry.Status.NEW));
+        fidMap.put(featureId, new Entry(blobId, bounds, Entry.Status.NEW));
 
         return blobId;
     }
@@ -230,7 +236,7 @@ public class Index {
                 if (entry.status == Entry.Status.DELETED) {
                     typeNameTree.remove(fid);
                 } else {
-                    typeNameTree.put(new Ref(fid, entry.blobId, TYPE.BLOB));
+                    typeNameTree.put(new SpatialRef(fid, entry.blobId, TYPE.BLOB, entry.bounds));
                 }
             }
         }

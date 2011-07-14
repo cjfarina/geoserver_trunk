@@ -8,7 +8,6 @@ import java.io.InputStream;
 
 import org.geogit.api.ObjectId;
 import org.geogit.api.ShowOp;
-import org.geogit.storage.FeatureWriter;
 import org.geogit.test.RepositoryTestCase;
 import org.geotools.data.DataUtilities;
 import org.geotools.feature.simple.SimpleFeatureBuilder;
@@ -16,7 +15,6 @@ import org.geotools.geometry.jts.WKTReader2;
 import org.opengis.feature.Feature;
 import org.opengis.feature.simple.SimpleFeature;
 import org.opengis.feature.simple.SimpleFeatureType;
-import org.opengis.feature.type.Name;
 
 public class IndexTest extends RepositoryTestCase {
 
@@ -29,13 +27,11 @@ public class IndexTest extends RepositoryTestCase {
 
     // two features with the same content and different fid should point to the same object
     public void testInsertIdenticalObjects() throws Exception {
-        ObjectId oId1 = index.inserted(new FeatureWriter(feature1_1), namespace1, typeName1,
-                feature1_1.getIdentifier().getID());
+        ObjectId oId1 = insert(feature1_1);
         Feature equalContentFeature = feature(featureType1, "DifferentId",
                 ((SimpleFeature) feature1_1).getAttributes().toArray());
 
-        ObjectId oId2 = index.inserted(new FeatureWriter(equalContentFeature), namespace1,
-                typeName1, equalContentFeature.getIdentifier().getID());
+        ObjectId oId2 = insert(equalContentFeature);
 
         // BLOBS.print(repo.getRawObject(insertedId1), System.err);
         // BLOBS.print(repo.getRawObject(insertedId2), System.err);
@@ -46,11 +42,9 @@ public class IndexTest extends RepositoryTestCase {
 
     // two features with different content should point to different objects
     public void testInsertNonEqualObjects() throws Exception {
-        ObjectId oId1 = index.inserted(new FeatureWriter(feature1_1), namespace1, typeName1,
-                feature1_1.getIdentifier().getID());
+        ObjectId oId1 = insert(feature1_1);
 
-        ObjectId oId2 = index.inserted(new FeatureWriter(feature1_2), namespace1, typeName1,
-                feature1_2.getIdentifier().getID());
+        ObjectId oId2 = insert(feature1_2);
         assertNotNull(oId1);
         assertNotNull(oId2);
         assertFalse(oId1.equals(oId2));
@@ -69,16 +63,18 @@ public class IndexTest extends RepositoryTestCase {
                 .read("LINESTRING(1 1, 2 2, 3 3, 4 4, 5 5, 6 6, 7 7, 8 8, 9 9 , 10 10)"));
 
         Feature feature1 = builder.buildFeature("TestType.feature.1");
+
+        // same data as above
+        builder = new SimpleFeatureBuilder(featureType);
+        builder.set("sp", "String Property");
+        builder.set("ip", Integer.valueOf(1000));
+        builder.set("pp", new WKTReader2()
+                .read("LINESTRING(1 1, 2 2, 3 3, 4 4, 5 5, 6 6, 7 7, 8 8, 9 9 , 10 10)"));
+
         Feature feature2 = builder.buildFeature("TestType.feature.2");
 
-        Name featureTypeName = featureType.getName();
-        String namespaceURI = featureTypeName.getNamespaceURI();
-        String localPart = featureTypeName.getLocalPart();
-
-        final ObjectId insertedId1 = index.inserted(new FeatureWriter(feature1), namespaceURI,
-                localPart, feature1.getIdentifier().getID());
-        final ObjectId insertedId2 = index.inserted(new FeatureWriter(feature1), namespaceURI,
-                localPart, feature2.getIdentifier().getID());
+        final ObjectId insertedId1 = insert(feature1);
+        final ObjectId insertedId2 = insert(feature2);
         assertEquals(insertedId1, insertedId2);
 
         Repository mockRepo = mock(Repository.class);

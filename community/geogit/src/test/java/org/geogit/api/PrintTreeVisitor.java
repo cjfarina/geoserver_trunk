@@ -5,7 +5,6 @@ import java.io.PrintWriter;
 
 import org.geogit.storage.ObjectDatabase;
 import org.geogit.storage.RevTreeReader;
-import org.geogit.storage.bdbje.JEObjectDatabase;
 
 public class PrintTreeVisitor implements TreeVisitor {
     private final ObjectDatabase odb;
