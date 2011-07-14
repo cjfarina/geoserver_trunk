@@ -1,12 +1,13 @@
-package org.geogit.api;
+package org.geogit.repository;
 
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Iterator;
 import java.util.List;
 
-import org.geogit.repository.Index;
-import org.geogit.repository.Repository;
+import org.geogit.api.ObjectId;
+import org.geogit.api.Ref;
+import org.geogit.api.RevTree;
 import org.geogit.storage.FeatureWriter;
 import org.geotools.feature.FeatureCollection;
 import org.geotools.feature.FeatureIterator;

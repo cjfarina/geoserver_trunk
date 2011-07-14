@@ -4,7 +4,7 @@ import java.util.logging.Logger;
 
 import org.geogit.api.GeoGIT;
 import org.geogit.api.RevCommit;
-import org.geogit.api.WorkingTree;
+import org.geogit.repository.WorkingTree;
 import org.geoserver.task.LongTask;
 import org.geotools.data.FeatureSource;
 import org.geotools.feature.FeatureCollection;

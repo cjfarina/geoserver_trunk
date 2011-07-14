@@ -10,7 +10,6 @@ import org.geogit.api.ObjectId;
 import org.geogit.api.Ref;
 import org.geogit.api.RevCommit;
 import org.geogit.api.RevTree;
-import org.geogit.api.WorkingTree;
 import org.geogit.storage.CommitReader;
 import org.geogit.storage.FeatureReader;
 import org.geogit.storage.ObjectDatabase;
