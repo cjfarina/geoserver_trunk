@@ -12,6 +12,7 @@ import org.gvsig.bxml.stream.BxmlStreamReader;
 
 import com.vividsolutions.jts.geom.Coordinate;
 import com.vividsolutions.jts.geom.Geometry;
+import com.vividsolutions.jts.geom.LinearRing;
 
 public class LinearRingDecoder extends GMLLinkDecoder {
 
@@ -24,7 +25,14 @@ public class LinearRingDecoder extends GMLLinkDecoder {
     @SuppressWarnings("unchecked")
     protected void decodeElement(final BxmlStreamReader r) throws Exception {
         QName name = r.getElementName();
-        Object postList = new CoordinatePostListParser(name, getDimension()).decode(r);
+        CoordinatePostListParser coordinatePostListParser = new CoordinatePostListParser(name, getDimension());
+        Object postList = coordinatePostListParser.decode(r);
+        if(getCrs() == null){
+            setCrs(coordinatePostListParser.getCrs());
+        }
+        if(getDimension() == -1){
+            setDimension(coordinatePostListParser.getDimension());
+        }
         coordinates.addAll((List<Coordinate>)postList);
     }
 
@@ -35,7 +43,9 @@ public class LinearRingDecoder extends GMLLinkDecoder {
 
     @Override
     protected Geometry buildResult() {
-        return gf.createLinearRing(coordinates.toArray(new Coordinate[coordinates.size()]));
+        LinearRing linearRing = gf.createLinearRing(coordinates.toArray(new Coordinate[coordinates.size()]));
+        linearRing.setUserData(getCrs());
+        return linearRing;
     }
 
 }

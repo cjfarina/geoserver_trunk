@@ -15,7 +15,7 @@ import junit.framework.TestCase;
 
 public class BXMLDecoderTest extends TestCase {
 
-    protected void testLineRing(LineString exteriorRing, float[][] fs) {
+    protected void testLineRing(LineString exteriorRing, double[][] fs) {
         for (int i = 0; i < fs.length; i++) {
             Coordinate coordinate = exteriorRing.getCoordinateN(i);
             assertEquals(fs[i][0], coordinate.x, 0.01);
@@ -24,7 +24,7 @@ public class BXMLDecoderTest extends TestCase {
     }
     
     protected void testSpatialBinaryOperation(BinarySpatialOperator comparisonOperator,
-            String property, float[][] fs) {
+            String property, double[][] fs) {
         assertEquals(property,
                 ((AttributeExpressionImpl) comparisonOperator.getExpression1()).getPropertyName());
         Polygon p = (Polygon) ((LiteralExpressionImpl) comparisonOperator.getExpression2())

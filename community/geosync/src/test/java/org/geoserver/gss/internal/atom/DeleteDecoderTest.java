@@ -228,7 +228,7 @@ public class DeleteDecoderTest extends BXMLDecoderTest {
 
         Polygon where = (Polygon)entry.getWhere();
         LineString exteriorRing4 = where.getExteriorRing();
-        testLineRing(exteriorRing4, new float[][] { { 10, 10 }, { 20, 20 }, { 30, 30 }, { 40, 40 },
+        testLineRing(exteriorRing4, new double[][] { { 10, 10 }, { 20, 20 }, { 30, 30 }, { 40, 40 },
                 { 10, 10 } });
         reader.close();
 

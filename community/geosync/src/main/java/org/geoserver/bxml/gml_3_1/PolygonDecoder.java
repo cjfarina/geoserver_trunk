@@ -14,6 +14,7 @@ import org.gvsig.bxml.stream.BxmlStreamReader;
 
 import com.vividsolutions.jts.geom.Geometry;
 import com.vividsolutions.jts.geom.LinearRing;
+import com.vividsolutions.jts.geom.Polygon;
 
 public class PolygonDecoder extends GMLLinkDecoder {
 
@@ -51,7 +52,7 @@ public class PolygonDecoder extends GMLLinkDecoder {
         for (int i = 0; i < holesArray.length; i++) {
             holesArray[i] = holes.get(i);
         }
-        Geometry geometry = gf.createPolygon(shell, holesArray);
+        Polygon geometry = gf.createPolygon(shell, holesArray);
         geometry.setUserData(getCrs());
         return geometry;
     }

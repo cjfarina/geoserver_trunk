@@ -187,33 +187,33 @@ public class FilterDecoderTest extends BXMLDecoderTest {
         Polygon p = (Polygon) ((LiteralExpressionImpl) propertyIsEqualTo.getExpression2())
                 .getValue();
         LineString exteriorRing = p.getExteriorRing();
-        testLineRing(exteriorRing, new float[][] { { 10, 10 }, { 20, 20 }, { 30, 30 }, { 40, 40 },
+        testLineRing(exteriorRing, new double[][] { { 10, 10 }, { 20, 20 }, { 30, 30 }, { 40, 40 },
                 { 10, 10 } });
-        testLineRing(p.getInteriorRingN(0), new float[][] { { 15, 16 }, { 17, 18 }, { 19, 20 },
+        testLineRing(p.getInteriorRingN(0), new double[][] { { 15, 16 }, { 17, 18 }, { 19, 20 },
                 { 21, 21 }, { 15, 16 } });
-        testLineRing(p.getInteriorRingN(1), new float[][] { { 5, 5 }, { 7, 7 }, { 11, 11 },
+        testLineRing(p.getInteriorRingN(1), new double[][] { { 5, 5 }, { 7, 7 }, { 11, 11 },
                 { 13, 13 }, { 5, 5 } });
 
         testSpatialBinaryOperation((Disjoint) andFilterChildrens.get(14), "geometry2",
-                new float[][] { { 10, 10 }, { 20, 20 }, { 30, 30 }, { 40, 40 } });
+                new double[][] { { 10, 10 }, { 20, 20 }, { 30, 30 }, { 40, 40 } });
 
         testSpatialBinaryOperation((Touches) andFilterChildrens.get(15), "geometry3",
-                new float[][] { { 10, 10 }, { 20, 20 }, { 30, 30 }, { 40, 40 } });
+                new double[][] { { 10, 10 }, { 20, 20 }, { 30, 30 }, { 40, 40 } });
 
-        testSpatialBinaryOperation((Within) andFilterChildrens.get(16), "geometry4", new float[][] {
-                { 10, 10 }, { 20, 20 }, { 30, 30 }, { 40, 40 } });
+        testSpatialBinaryOperation((Within) andFilterChildrens.get(16), "geometry4",
+                new double[][] { { 10, 10 }, { 20, 20 }, { 30, 30 }, { 40, 40 } });
 
         testSpatialBinaryOperation((Overlaps) andFilterChildrens.get(17), "geometry5",
-                new float[][] { { 10, 10 }, { 20, 20 }, { 30, 30 }, { 40, 40 } });
+                new double[][] { { 10, 10 }, { 20, 20 }, { 30, 30 }, { 40, 40 } });
 
         testSpatialBinaryOperation((Crosses) andFilterChildrens.get(18), "geometry6",
-                new float[][] { { 10, 10 }, { 20, 20 }, { 30, 30 }, { 40, 40 } });
+                new double[][] { { 10, 10 }, { 20, 20 }, { 30, 30 }, { 40, 40 } });
 
         testSpatialBinaryOperation((Intersects) andFilterChildrens.get(19), "geometry7",
-                new float[][] { { 10, 10 }, { 20, 20 }, { 30, 30 }, { 40, 40 } });
+                new double[][] { { 10, 10 }, { 20, 20 }, { 30, 30 }, { 40, 40 } });
 
         testSpatialBinaryOperation((Contains) andFilterChildrens.get(20), "geometry8",
-                new float[][] { { 10, 10 }, { 20, 20 }, { 30, 30 }, { 40, 40 } });
+                new double[][] { { 10, 10 }, { 20, 20 }, { 30, 30 }, { 40, 40 } });
 
         DWithin dWithin = (DWithin) andFilterChildrens.get(21);
         assertEquals("geometry9",
@@ -221,33 +221,34 @@ public class FilterDecoderTest extends BXMLDecoderTest {
 
         Polygon p2 = (Polygon) ((LiteralExpressionImpl) dWithin.getExpression2()).getValue();
         LineString exteriorRing3 = p2.getExteriorRing();
-        testLineRing(exteriorRing3, new float[][] { { 10, 10 }, { 20, 20 }, { 30, 30 }, { 40, 40 },
-                { 10, 10 } });
+        testLineRing(exteriorRing3, new double[][] { { 10, 10 }, { 20, 20 }, { 30, 30 },
+                { 40, 40 }, { 10, 10 } });
         assertEquals(101.25, dWithin.getDistance());
         assertEquals("deg", dWithin.getDistanceUnits());
-        
+
         Beyond beyond = (Beyond) andFilterChildrens.get(22);
         assertEquals("geometry10",
                 ((AttributeExpressionImpl) beyond.getExpression1()).getPropertyName());
-        
+
         Polygon p3 = (Polygon) ((LiteralExpressionImpl) beyond.getExpression2()).getValue();
         LineString exteriorRing4 = p3.getExteriorRing();
-        testLineRing(exteriorRing4, new float[][] { { 10, 10 }, { 20, 20 }, { 30, 30 }, { 40, 40 },
-                { 10, 10 } });
+        testLineRing(exteriorRing4, new double[][] { { 10, 10 }, { 20, 20 }, { 30, 30 },
+                { 40, 40 }, { 10, 10 } });
         assertEquals(142.23, beyond.getDistance());
         assertEquals("deg", beyond.getDistanceUnits());
-        
+
         BBOX bbox = (BBOX) andFilterChildrens.get(23);
         assertEquals("geometry11",
                 ((AttributeExpressionImpl) bbox.getExpression1()).getPropertyName());
-        
-        //TODO: Resolve this
-        /*BoundingBox bb = (BoundingBox) ((LiteralExpressionImpl) bbox.getExpression2()).getValue();
-        assertEquals(13.0983, bb.getMinX());
-        assertEquals(31.5899, bb.getMinY());
-        assertEquals(35.5472, bb.getMaxX());
-        assertEquals(42.8143, bb.getMaxY());*/
-        
+
+        // TODO: Resolve this
+        /*
+         * BoundingBox bb = (BoundingBox) ((LiteralExpressionImpl)
+         * bbox.getExpression2()).getValue(); assertEquals(13.0983, bb.getMinX());
+         * assertEquals(31.5899, bb.getMinY()); assertEquals(35.5472, bb.getMaxX());
+         * assertEquals(42.8143, bb.getMaxY());
+         */
+
         reader.close();
 
     }

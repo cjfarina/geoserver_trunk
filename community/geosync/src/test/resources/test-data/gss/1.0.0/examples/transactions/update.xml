@@ -42,14 +42,19 @@
         </wfs:Property>
         <fes:Filter>
           <fes:FeatureId fes:fid="planet_osm_polygon.100"></fes:FeatureId>
+          <fes:FeatureId fes:fid="planet_osm_polygon.101"></fes:FeatureId>
+          <fes:FeatureId fes:fid="planet_osm_polygon.102"></fes:FeatureId>
         </fes:Filter>
       </wfs:Update>
     </content>
     <georss:where>
-      <gml:Envelope gml:srsName="urn:x-ogc:def:crs:EPSG:900913">
-        <gml:lowerCorner>-8423355.75 -8423355.75</gml:lowerCorner>
-        <gml:upperCorner>-8421933.13 -8421933.13</gml:upperCorner>
-      </gml:Envelope>
+      <gml:Polygon srsName="http://www.opengis.net/gml/srs/epsg.xml#63266405">
+          <gml:exterior>
+              <gml:LinearRing>
+                  <gml:posList>10.1 10.5 21.5 23.5 26.5 28.7 10.1 10.5</gml:posList>
+              </gml:LinearRing>
+          </gml:exterior>
+      </gml:Polygon>
     </georss:where>
   </entry>
 </feed>
