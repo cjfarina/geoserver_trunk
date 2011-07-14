@@ -6,14 +6,14 @@ import java.util.List;
 
 import javax.xml.namespace.QName;
 
-import org.geoserver.bxml.AbstractDecoder;
+import org.geotools.geometry.jts.ReferencedEnvelope;
 import org.geotools.gml3.GML;
 import org.gvsig.bxml.stream.BxmlStreamReader;
 
 import com.vividsolutions.jts.geom.Coordinate;
 import com.vividsolutions.jts.geom.Envelope;
 
-public class EnvelopeDecoder extends AbstractDecoder<Object> {
+public class EnvelopeDecoder extends GMLLinkDecoder {
 
     private static final QName lowerCorner = new QName(GML.NAMESPACE, "lowerCorner");
 
@@ -32,17 +32,18 @@ public class EnvelopeDecoder extends AbstractDecoder<Object> {
         QName name = r.getElementName();
         if (lowerCorner.equals(name)) {
             Object decode = new CoordinatePostListParser(name, 2).decode(r);
-            lowerCornerValues = ((List<Coordinate>)decode).get(0);
+            lowerCornerValues = ((List<Coordinate>) decode).get(0);
         } else if (upperCorner.equals(name)) {
             Object decode = new CoordinatePostListParser(name, 2).decode(r);
-            uperCornerValues = ((List<Coordinate>)decode).get(0);
+            uperCornerValues = ((List<Coordinate>) decode).get(0);
         }
     }
 
     @Override
     protected Envelope buildResult() {
-        Envelope envelope = new Envelope(lowerCornerValues.x, uperCornerValues.x, lowerCornerValues.y,
-                uperCornerValues.y);
-        return envelope;
+        Envelope envelope = new Envelope(lowerCornerValues.x, uperCornerValues.x,
+                lowerCornerValues.y, uperCornerValues.y);
+        ReferencedEnvelope referencedEnvelope = new ReferencedEnvelope(envelope, getCrs());
+        return referencedEnvelope;
     }
 }

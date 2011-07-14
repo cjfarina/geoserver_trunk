@@ -241,13 +241,14 @@ public class FilterDecoderTest extends BXMLDecoderTest {
         assertEquals("geometry11",
                 ((AttributeExpressionImpl) bbox.getExpression1()).getPropertyName());
 
-        // TODO: Resolve this
-        /*
-         * BoundingBox bb = (BoundingBox) ((LiteralExpressionImpl)
-         * bbox.getExpression2()).getValue(); assertEquals(13.0983, bb.getMinX());
-         * assertEquals(31.5899, bb.getMinY()); assertEquals(35.5472, bb.getMaxX());
-         * assertEquals(42.8143, bb.getMaxY());
-         */
+        Polygon bb = (Polygon) ((LiteralExpressionImpl) bbox.getExpression2()).getValue();
+
+        LineString bbExteriorRing = bb.getExteriorRing();
+        testLineRing(bbExteriorRing, new double[][] { { 13.0983, 31.5899 }, { 13.0983, 42.8143 },
+                { 35.5472, 42.8143 }, { 35.5472, 31.5899 }, { 13.0983, 31.5899 } });
+
+        // assertEquals(63266405, bbExteriorRing.getSRID());
+        // assertEquals(bb.getCoordinateReferenceSystem(), bb.getMinX());
 
         reader.close();
 

@@ -16,7 +16,7 @@ import org.gvsig.bxml.stream.EventType;
 
 public abstract class AbstractDecoder<T> {
 
-    private static final Logger LOGGER = Logging.getLogger(AbstractEncoder.class);
+    protected static final Logger LOGGER = Logging.getLogger(AbstractEncoder.class);
 
     protected final QName name;
 
