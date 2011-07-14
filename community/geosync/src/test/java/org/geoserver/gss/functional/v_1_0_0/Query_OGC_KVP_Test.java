@@ -81,49 +81,64 @@ public class Query_OGC_KVP_Test extends GSSFunctionalTestSupport {
         assertXpathExists("atom:feed/atom:id", dom);
         assertXpathExists("atom:feed/atom:updated", dom);
 
-        assertXpathEvaluatesTo("2", "count(atom:feed/atom:entry)", dom);
+        final int expectedEntries = 6;
+        // as per GSSFunctionalTestSupport's oneTimeSetUp
+        final String[] expectedOps = { "Insert", "Insert", "Insert", "Update", "Update", "Delete" };
 
-        assertXpathExists("atom:feed/atom:entry[1]/atom:title", dom);
-        assertXpathExists("atom:feed/atom:entry[1]/atom:summary", dom);
-        assertXpathExists("atom:feed/atom:entry[1]/atom:updated", dom);
-        assertXpathExists("atom:feed/atom:entry[1]/atom:author/atom:name", dom);
-        assertXpathExists("atom:feed/atom:entry[1]/atom:contributor/atom:name", dom);
-        assertXpathExists("atom:feed/atom:entry[1]/atom:content", dom);
-        assertXpathExists("atom:feed/atom:entry[1]/atom:content/wfs:Insert", dom);
+        assertXpathEvaluatesTo(String.valueOf(expectedEntries), "count(atom:feed/atom:entry)", dom);
 
-        assertXpathExists("atom:feed/atom:entry[2]/atom:title", dom);
-        assertXpathExists("atom:feed/atom:entry[2]/atom:summary", dom);
-        assertXpathExists("atom:feed/atom:entry[2]/atom:updated", dom);
-        assertXpathExists("atom:feed/atom:entry[2]/atom:author/atom:name", dom);
-        assertXpathExists("atom:feed/atom:entry[2]/atom:contributor/atom:name", dom);
-        assertXpathExists("atom:feed/atom:entry[2]/atom:content", dom);
-        assertXpathExists("atom:feed/atom:entry[2]/atom:content/wfs:Update", dom);
+        for (int entryIndex = 1; entryIndex <= expectedEntries; entryIndex++) {
+            String entryPath = "atom:feed/atom:entry[" + entryIndex + "]";
+
+            assertXpathExists(entryPath + "/atom:title", dom);
+            assertXpathExists(entryPath + "/atom:summary", dom);
+            assertXpathExists(entryPath + "/atom:updated", dom);
+            assertXpathExists(entryPath + "/atom:author/atom:name", dom);
+            assertXpathExists(entryPath + "/atom:contributor/atom:name", dom);
+            assertXpathExists(entryPath + "/atom:content", dom);
+
+            assertXpathExists(entryPath + "/atom:content/wfs:" + expectedOps[entryIndex - 1], dom);
+
+            assertXpathExists(entryPath + "/georss:where", dom);
+        }
     }
 
     public void testEntryIdFilter() throws Exception {
         final String insertId;
         final String updateId;
+        final String deleteId;
         {
             final String request = REPLICATION_FEED_BASE;
             Document dom = super.getAsDOM(request);
             // print(dom);
             insertId = xpath.evaluate("atom:feed/atom:entry[1]/atom:id", dom);
-            updateId = xpath.evaluate("atom:feed/atom:entry[2]/atom:id", dom);
-            assertTrue(insertId != null && updateId != null && !insertId.equals(updateId));
+            updateId = xpath.evaluate("atom:feed/atom:entry[4]/atom:id", dom);
+            deleteId = xpath.evaluate("atom:feed/atom:entry[6]/atom:id", dom);
+            assertTrue(insertId != null && updateId != null && updateId != null
+                    && !insertId.equals(updateId) && !updateId.equals(deleteId));
         }
         {
-            final String queryById1 = REPLICATION_FEED_BASE + "&ENTRYID=" + insertId;
-            final Document response1 = super.getAsDOM(queryById1);
-            print(response1);
-            assertXpathEvaluatesTo("1", "count(atom:feed/atom:entry)", response1);
-            assertXpathExists("atom:feed/atom:entry[1]/atom:content/wfs:Insert", response1);
+            final String queryById = REPLICATION_FEED_BASE + "&ENTRYID=" + insertId;
+            final Document response = super.getAsDOM(queryById);
+            // print(response);
+            assertXpathEvaluatesTo("1", "count(atom:feed/atom:entry)", response);
+            assertXpathExists("atom:feed/atom:entry[1]/atom:content/wfs:Insert", response);
         }
         {
-            final String queryById2 = REPLICATION_FEED_BASE + "&ENTRYID=" + updateId;
-            final Document response2 = super.getAsDOM(queryById2);
-            print(response2);
-            assertXpathEvaluatesTo("1", "count(atom:feed/atom:entry)", response2);
-            assertXpathExists("atom:feed/atom:entry[1]/atom:content/wfs:Update", response2);
+            final String queryById = REPLICATION_FEED_BASE + "&ENTRYID=" + updateId;
+            final Document response = super.getAsDOM(queryById);
+            // print(response);
+            assertXpathEvaluatesTo("1", "count(atom:feed/atom:entry)", response);
+            assertXpathExists("atom:feed/atom:entry[1]/atom:content/wfs:Update", response);
+        }
+        {
+            final String queryById = REPLICATION_FEED_BASE + "&ENTRYID=" + deleteId;
+            final Document response = super.getAsDOM(queryById);
+            print(response);
+            // REVISIT: this assertion fails becuase we don't map geogit ids to gss ids yet, hence
+            // the same geogit id for the feature insert and then the delete is being used twice
+            assertXpathEvaluatesTo("1", "count(atom:feed/atom:entry)", response);
+            assertXpathExists("atom:feed/atom:entry[1]/atom:content/wfs:Delete", response);
         }
     }
 }

@@ -13,7 +13,7 @@ import org.opengis.feature.type.FeatureType;
 import org.opengis.feature.type.Name;
 import org.opengis.util.ProgressListener;
 
-class ImportVersionedLayerTask extends LongTask<Void> {
+class ImportVersionedLayerTask extends LongTask<RevCommit> {
 
     private static final Logger LOGGER = Logging.getLogger(ImportVersionedLayerTask.class);
 
@@ -44,7 +44,7 @@ class ImportVersionedLayerTask extends LongTask<Void> {
 
     @SuppressWarnings("rawtypes")
     @Override
-    protected Void callInternal(final ProgressListener listener) throws Exception {
+    protected RevCommit callInternal(final ProgressListener listener) throws Exception {
 
         final FeatureType schema = featureSource.getSchema();
         final FeatureCollection features = featureSource.getFeatures();
@@ -61,6 +61,8 @@ class ImportVersionedLayerTask extends LongTask<Void> {
             workingTree.delete(featureTypeName);
             throw e;
         }
+
+        RevCommit revCommit = null;
         if (listener.isCanceled()) {
             LOGGER.warning("Import process for " + featureTypeName.getLocalPart() + " cancelled.");
         } else {
@@ -70,11 +72,11 @@ class ImportVersionedLayerTask extends LongTask<Void> {
             // add only the features of this type, other imports may be running in parallel and we
             // don't want to commit them all
             geoGit.add().call();
-            RevCommit revCommit = geoGit.commit().setAuthor(user).setCommitter(user)
+            revCommit = geoGit.commit().setAuthor(user).setCommitter(user)
                     .setMessage(commitMessage).call();
             LOGGER.info("Initial commit of " + featureTypeName + ": " + revCommit.getId());
         }
-        return null;
+        return revCommit;
     }
 
 }

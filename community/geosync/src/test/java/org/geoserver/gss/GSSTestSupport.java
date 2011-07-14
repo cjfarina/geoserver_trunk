@@ -77,6 +77,7 @@ public abstract class GSSTestSupport extends GeoServerTestSupport {
         namespaces.put("xs", "http://www.w3.org/2001/XMLSchema");
         namespaces.put("app", "http://www.w3.org/2007/app");
         namespaces.put("atom", "http://www.w3.org/2005/Atom");
+        namespaces.put("georss", "http://www.georss.org/georss");
         namespaces.put("os", "http://a9.com/-/spec/opensearch/1.1/");
 
         namespaces.put("xmlns:xsi", "http://www.w3.org/2001/XMLSchema-instance");

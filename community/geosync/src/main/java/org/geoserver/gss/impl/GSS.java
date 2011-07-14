@@ -19,6 +19,7 @@ import org.geogit.api.DiffEntry.ChangeType;
 import org.geogit.api.GeoGIT;
 import org.geogit.api.LogOp;
 import org.geogit.api.ObjectId;
+import org.geogit.api.RevCommit;
 import org.geogit.repository.Index;
 import org.geogit.repository.Repository;
 import org.geogit.repository.WorkingTree;
@@ -140,7 +141,7 @@ public class GSS implements DisposableBean {
      * @throws Exception
      */
     @SuppressWarnings("rawtypes")
-    public Future<Void> initialize(final Name featureTypeName) throws Exception {
+    public Future<?> initialize(final Name featureTypeName) throws Exception {
         final String user = getCurrentUserName();
         Assert.notNull(user, "This operation shall be invoked by a logged in user");
 
@@ -160,7 +161,7 @@ public class GSS implements DisposableBean {
         ImportVersionedLayerTask importTask;
         importTask = new ImportVersionedLayerTask(user, featureSource, geoGit);
         LongTaskMonitor monitor = GeoServerExtensions.bean(LongTaskMonitor.class);
-        Future<Void> future = monitor.dispatch(importTask);
+        Future<RevCommit> future = monitor.dispatch(importTask);
         return future;
     }
 
@@ -235,22 +236,26 @@ public class GSS implements DisposableBean {
      * 
      * @param gssTransactionID
      * @param commitMsg
+     * @return 
      * @throws Exception
      */
-    public void commitChangeSet(final String gssTransactionID, final String commitMsg)
+    public RevCommit commitChangeSet(final String gssTransactionID, final String commitMsg)
             throws Exception {
         String userName = getCurrentUserName();
         LOGGER.info("Committing changeset " + gssTransactionID + " by user " + userName);
 
         // final Ref branch = geoGit.checkout().setName(gssTransactionID).call();
         // commit to the branch
-        geoGit.commit().setAuthor(userName).setCommitter("geoserver").setMessage(commitMsg).call();
+        RevCommit commit;
         // checkout master
         // final Ref master = geoGit.checkout().setName("master").call();
         // merge branch to master
         // MergeResult mergeResult = geoGit.merge().include(branch).call();
         // TODO: check mergeResult is success?
         // geoGit.branchDelete().setName(gssTransactionID).call();
+        commit = geoGit.commit().setAuthor(userName).setCommitter("geoserver")
+                .setMessage(commitMsg).call();
+        return commit;
     }
 
     /**
