@@ -38,9 +38,10 @@ import java.util.Set;
 import javax.xml.namespace.QName;
 
 import org.geoserver.bxml.AbstractEncoder;
+import org.geoserver.bxml.gml_3_1.AbstractGMLEncoder;
+import org.geoserver.bxml.gml_3_1.GeometryEncoder;
 import org.geotools.filter.v1_1.OGC;
 import org.geotools.gml3.GML;
-import org.gvsig.bxml.geoserver.Gml3Encoder;
 import org.gvsig.bxml.stream.BxmlStreamWriter;
 import org.opengis.filter.And;
 import org.opengis.filter.BinaryComparisonOperator;
@@ -99,8 +100,8 @@ import org.opengis.filter.temporal.OverlappedBy;
 import org.opengis.filter.temporal.TContains;
 import org.opengis.filter.temporal.TEquals;
 import org.opengis.filter.temporal.TOverlaps;
-import org.opengis.referencing.crs.CoordinateReferenceSystem;
 
+import com.google.common.base.Throwables;
 import com.vividsolutions.jts.geom.Geometry;
 
 /**
@@ -123,422 +124,445 @@ import com.vividsolutions.jts.geom.Geometry;
  * </ul>
  * 
  */
-public class FilterEncoder extends AbstractEncoder implements FilterVisitor, ExpressionVisitor {
+public class FilterEncoder extends AbstractEncoder<Filter> {
 
-    private BxmlStreamWriter w;
-
-    public FilterEncoder(BxmlStreamWriter w) {
-        this.w = w;
-    }
-
-    public Object visitNullFilter(Object extraData) {
-        throw new IllegalArgumentException(
-                "NULLFilter is not supported. Clean up the filter before encoding");
-    }
-
-    public Object visit(ExcludeFilter filter, Object extraData) {
-        throw new IllegalArgumentException(
-                "ExcludeFilter is not supported. Clean up the filter before encoding");
-    }
-
-    public Object visit(IncludeFilter filter, Object extraData) {
-        throw new IllegalArgumentException(
-                "IncludeFilter is not supported. Clean up the filter before encoding");
-    }
-
-    public Object visit(And filter, Object extraData) {
-        startElement(w, And);
-        {
-            for (Filter anded : filter.getChildren()) {
-                anded.accept(this, extraData);
+    @Override
+    public void encode(final Filter filter, final BxmlStreamWriter w) throws IOException {
+        FilterVisitor filterEncoderVisitor = new FilterEncoderVisitor(w);
+        try {
+            filter.accept(filterEncoderVisitor, null);
+        } catch (RuntimeException e) {
+            if (e.getCause() instanceof IOException) {
+                throw (IOException) e.getCause();
             }
+            throw e;
         }
-        endElement(w);
-        return extraData;
     }
 
-    public Object visit(Id filter, Object extraData) {
-        Set<Identifier> identifiers = filter.getIdentifiers();
-        for (Identifier i : identifiers) {
-            element(w, FeatureId, true, null, "fid", i.getID().toString());
-        }
-        return extraData;
-    }
+    private class FilterEncoderVisitor implements FilterVisitor, ExpressionVisitor {
+        private BxmlStreamWriter w;
 
-    public Object visit(Not filter, Object extraData) {
-        startElement(w, Not);
-        {
-            Filter negated = filter.getFilter();
-            negated.accept(this, extraData);
-            endElement(w);
-        }
-        return extraData;
-    }
+        private AbstractGMLEncoder geometryEncoder;
 
-    public Object visit(Or filter, Object extraData) {
-        startElement(w, Or);
-        {
-            for (Filter ored : filter.getChildren()) {
-                ored.accept(this, extraData);
+        private AbstractGMLEncoder getGeometryEncoder() {
+            if (geometryEncoder == null) {
+                geometryEncoder = new GeometryEncoder();
             }
+            return geometryEncoder;
         }
-        endElement(w);
-        return extraData;
-    }
 
-    public Object visit(PropertyIsBetween filter, Object extraData) {
-        startElement(w, PropertyIsBetween);
-        {
-            Expression expression = filter.getExpression();
-            Expression lowerBoundary = filter.getLowerBoundary();
-            Expression upperBoundary = filter.getUpperBoundary();
+        public FilterEncoderVisitor(BxmlStreamWriter w) {
+            this.w = w;
+        }
 
-            expression.accept(this, extraData);
-            startElement(w, new QName(OGC.NAMESPACE, "LowerBoundary"));
+        public Object visitNullFilter(Object extraData) {
+            throw new IllegalArgumentException(
+                    "NULLFilter is not supported. Clean up the filter before encoding");
+        }
+
+        public Object visit(ExcludeFilter filter, Object extraData) {
+            throw new IllegalArgumentException(
+                    "ExcludeFilter is not supported. Clean up the filter before encoding");
+        }
+
+        public Object visit(IncludeFilter filter, Object extraData) {
+            throw new IllegalArgumentException(
+                    "IncludeFilter is not supported. Clean up the filter before encoding");
+        }
+
+        public Object visit(And filter, Object extraData) {
+            startElement(w, And);
             {
-                lowerBoundary.accept(this, extraData);
+                for (Filter anded : filter.getChildren()) {
+                    anded.accept(this, extraData);
+                }
             }
             endElement(w);
+            return extraData;
+        }
 
-            startElement(w, new QName(OGC.NAMESPACE, "UpperBoundary"));
+        public Object visit(Id filter, Object extraData) {
+            Set<Identifier> identifiers = filter.getIdentifiers();
+            for (Identifier i : identifiers) {
+                element(w, FeatureId, true, null, "fid", i.getID().toString());
+            }
+            return extraData;
+        }
+
+        public Object visit(Not filter, Object extraData) {
+            startElement(w, Not);
             {
-                upperBoundary.accept(this, extraData);
+                Filter negated = filter.getFilter();
+                negated.accept(this, extraData);
+                endElement(w);
+            }
+            return extraData;
+        }
+
+        public Object visit(Or filter, Object extraData) {
+            startElement(w, Or);
+            {
+                for (Filter ored : filter.getChildren()) {
+                    ored.accept(this, extraData);
+                }
             }
             endElement(w);
+            return extraData;
         }
-        endElement(w);
-        return extraData;
-    }
 
-    private Object visit(BinaryComparisonOperator filter, QName name, Object extraData) {
-        filter.isMatchingCase();
-        startElement(w, name);
-        attributes(w, "matchCase", String.valueOf(filter.isMatchingCase()));
-        {
-            Expression expression1 = filter.getExpression1();
-            Expression expression2 = filter.getExpression2();
-            expression1.accept(this, extraData);
-            expression2.accept(this, extraData);
-        }
-        endElement(w);
-        return extraData;
-    }
+        public Object visit(PropertyIsBetween filter, Object extraData) {
+            startElement(w, PropertyIsBetween);
+            {
+                Expression expression = filter.getExpression();
+                Expression lowerBoundary = filter.getLowerBoundary();
+                Expression upperBoundary = filter.getUpperBoundary();
 
-    public Object visit(PropertyIsEqualTo filter, Object extraData) {
-        return visit(filter, PropertyIsEqualTo, extraData);
-    }
+                expression.accept(this, extraData);
+                startElement(w, new QName(OGC.NAMESPACE, "LowerBoundary"));
+                {
+                    lowerBoundary.accept(this, extraData);
+                }
+                endElement(w);
 
-    public Object visit(PropertyIsNotEqualTo filter, Object extraData) {
-        return visit(filter, PropertyIsNotEqualTo, extraData);
-    }
-
-    public Object visit(PropertyIsGreaterThan filter, Object extraData) {
-        return visit(filter, PropertyIsGreaterThan, extraData);
-    }
-
-    public Object visit(PropertyIsGreaterThanOrEqualTo filter, Object extraData) {
-        return visit(filter, PropertyIsGreaterThanOrEqualTo, extraData);
-    }
-
-    public Object visit(PropertyIsLessThan filter, Object extraData) {
-        return visit(filter, PropertyIsLessThan, extraData);
-    }
-
-    public Object visit(PropertyIsLessThanOrEqualTo filter, Object extraData) {
-        return visit(filter, PropertyIsLessThanOrEqualTo, extraData);
-    }
-
-    public Object visit(PropertyIsLike filter, Object extraData) {
-        startElement(w, PropertyIsLike);
-        attributes(w, "matchCase", String.valueOf(filter.isMatchingCase()), "singleChar",
-                filter.getSingleChar(), "escaleChar", filter.getEscape(), "wildCard",
-                filter.getWildCard());
-        {
-            Expression expression = filter.getExpression();
-            expression.accept(this, extraData);
-
-            String literal = filter.getLiteral();
-            element(w, Literal, true, literal);
-        }
-        endElement(w);
-        return extraData;
-    }
-
-    public Object visit(PropertyIsNull filter, Object extraData) {
-        startElement(w, PropertyIsNull);
-        {
-            Expression expression = filter.getExpression();
-            expression.accept(this, extraData);
-        }
-        endElement(w);
-        return extraData;
-    }
-
-    private Object visit(DistanceBufferOperator filter, QName name, Object extraData) {
-        startElement(w, name);
-        {
-            Expression expression1 = filter.getExpression1();
-            Expression expression2 = filter.getExpression2();
-            expression1.accept(this, extraData);
-            expression2.accept(this, extraData);
-
-            element(w, new QName(OGC.NAMESPACE, "Distance"), true,
-                    String.valueOf(filter.getDistance()), "units", filter.getDistanceUnits());
-
-        }
-        endElement(w);
-        return extraData;
-    }
-
-    public Object visit(Beyond filter, Object extraData) {
-        return visit((DistanceBufferOperator) filter, Beyond, extraData);
-    }
-
-    public Object visit(DWithin filter, Object extraData) {
-        return visit((DistanceBufferOperator) filter, DWithin, extraData);
-    }
-
-    private Object visit(BinarySpatialOperator filter, QName name, Object extraData,
-            String... attributes) {
-        startElement(w, name);
-        attributes(w, attributes);
-        {
-            Expression expression1 = filter.getExpression1();
-            Expression expression2 = filter.getExpression2();
-            expression1.accept(this, extraData);
-            expression2.accept(this, extraData);
-        }
-        endElement(w);
-        return extraData;
-    }
-
-    public Object visit(BBOX filter, Object extraData) {
-        return visit(filter, BBOX, extraData);
-    }
-
-    public Object visit(Contains filter, Object extraData) {
-        return visit(filter, Contains, extraData);
-    }
-
-    public Object visit(Crosses filter, Object extraData) {
-        return visit(filter, Crosses, extraData);
-    }
-
-    public Object visit(Disjoint filter, Object extraData) {
-        return visit(filter, Disjoint, extraData);
-    }
-
-    public Object visit(Equals filter, Object extraData) {
-        return visit(filter, Equals, extraData);
-    }
-
-    public Object visit(Intersects filter, Object extraData) {
-        return visit(filter, Intersects, extraData);
-    }
-
-    public Object visit(Overlaps filter, Object extraData) {
-        return visit(filter, Overlaps, extraData);
-    }
-
-    public Object visit(Touches filter, Object extraData) {
-        return visit(filter, Touches, extraData);
-    }
-
-    public Object visit(Within filter, Object extraData) {
-        return visit(filter, Within, extraData);
-    }
-
-    /**
-     * Implements {@link org.opengis.filter.FilterVisitor#visit(org.opengis.filter.PropertyIsNil,
-     * java.lang.Object}
-     */
-    /*
-     * @Override public Object visit(PropertyIsNil filter, Object extraData) { throw new
-     * UnsupportedOperationException("FES 2.0 encoding not yet supported"); }
-     */
-
-    /**
-     * Implements
-     * {@link org.opengis.filter.FilterVisitor#visit(org.opengis.filter.temporal.After, java.lang.Object)}
-     */
-    public Object visit(After after, Object extraData) {
-        throw new UnsupportedOperationException("FES 2.0 encoding not yet supported");
-    }
-
-    /**
-     * Implements
-     * {@link org.opengis.filter.FilterVisitor#visit(org.opengis.filter.temporal.AnyInteracts, java.lang.Object)}
-     */
-    public Object visit(AnyInteracts anyInteracts, Object extraData) {
-        throw new UnsupportedOperationException("FES 2.0 encoding not yet supported");
-    }
-
-    /**
-     * Implements
-     * {@link org.opengis.filter.FilterVisitor#visit(org.opengis.filter.temporal.Before, java.lang.Object)}
-     */
-    public Object visit(Before before, Object extraData) {
-        throw new UnsupportedOperationException("FES 2.0 encoding not yet supported");
-    }
-
-    /**
-     * Implements
-     * {@link org.opengis.filter.FilterVisitor#visit(org.opengis.filter.temporal.Begins, java.lang.Object)}
-     */
-    public Object visit(Begins begins, Object extraData) {
-        throw new UnsupportedOperationException("FES 2.0 encoding not yet supported");
-    }
-
-    /**
-     * Implements
-     * {@link org.opengis.filter.FilterVisitor#visit(org.opengis.filter.temporal.BegunBy, java.lang.Object)}
-     */
-    public Object visit(BegunBy begunBy, Object extraData) {
-        throw new UnsupportedOperationException("FES 2.0 encoding not yet supported");
-    }
-
-    /**
-     * Implements
-     * {@link org.opengis.filter.FilterVisitor#visit(org.opengis.filter.temporal.During, java.lang.Object)}
-     */
-    public Object visit(During during, Object extraData) {
-        throw new UnsupportedOperationException("FES 2.0 encoding not yet supported");
-    }
-
-    /**
-     * Implements
-     * {@link org.opengis.filter.FilterVisitor#visit(org.opengis.filter.temporal.EndedBy, java.lang.Object)}
-     */
-    public Object visit(EndedBy endedBy, Object extraData) {
-        throw new UnsupportedOperationException("FES 2.0 encoding not yet supported");
-    }
-
-    /**
-     * Implements
-     * {@link org.opengis.filter.FilterVisitor#visit(org.opengis.filter.temporal.Ends, java.lang.Object)}
-     */
-    public Object visit(Ends ends, Object extraData) {
-        throw new UnsupportedOperationException("FES 2.0 encoding not yet supported");
-    }
-
-    /**
-     * Implements
-     * {@link org.opengis.filter.FilterVisitor#visit(org.opengis.filter.temporal.Meets, java.lang.Object)}
-     */
-    public Object visit(Meets meets, Object extraData) {
-        throw new UnsupportedOperationException("FES 2.0 encoding not yet supported");
-    }
-
-    /**
-     * Implements
-     * {@link org.opengis.filter.FilterVisitor#visit(org.opengis.filter.temporal.MetBy, java.lang.Object)}
-     */
-    public Object visit(MetBy metBy, Object extraData) {
-        throw new UnsupportedOperationException("FES 2.0 encoding not yet supported");
-    }
-
-    /**
-     * Implements
-     * {@link org.opengis.filter.FilterVisitor#visit(org.opengis.filter.temporal.OverlappedBy, java.lang.Object)}
-     */
-    public Object visit(OverlappedBy overlappedBy, Object extraData) {
-        throw new UnsupportedOperationException("FES 2.0 encoding not yet supported");
-    }
-
-    /**
-     * Implements
-     * {@link org.opengis.filter.FilterVisitor#visit(org.opengis.filter.temporal.TContains, java.lang.Object)}
-     */
-    public Object visit(TContains contains, Object extraData) {
-        throw new UnsupportedOperationException("FES 2.0 encoding not yet supported");
-    }
-
-    /**
-     * Implements
-     * {@link org.opengis.filter.FilterVisitor#visit(org.opengis.filter.temporal.TEquals, java.lang.Object)}
-     */
-    public Object visit(TEquals equals, Object extraData) {
-        throw new UnsupportedOperationException("FES 2.0 encoding not yet supported");
-    }
-
-    /**
-     * Implements
-     * {@link org.opengis.filter.FilterVisitor#visit(org.opengis.filter.temporal.TOverlaps, java.lang.Object)}
-     */
-    public Object visit(TOverlaps contains, Object extraData) {
-        throw new UnsupportedOperationException("FES 2.0 encoding not yet supported");
-    }
-
-    // ///////////// Expressions /////////////////
-
-    public Object visit(NilExpression expression, Object extraData) {
-        element(w, Literal, true, (String) null);
-        return extraData;
-    }
-
-    private Object visit(BinaryExpression expression, QName name, Object extraData) {
-        startElement(w, name);
-        {
-            Expression expression1 = expression.getExpression1();
-            Expression expression2 = expression.getExpression2();
-            expression1.accept(this, extraData);
-            expression2.accept(this, extraData);
-        }
-        endElement(w);
-        return extraData;
-    }
-
-    public Object visit(Add expression, Object extraData) {
-        return visit(expression, Add, extraData);
-    }
-
-    public Object visit(Divide expression, Object extraData) {
-        return visit(expression, Div, extraData);
-    }
-
-    public Object visit(Multiply expression, Object extraData) {
-        return visit(expression, Mul, extraData);
-    }
-
-    public Object visit(Subtract expression, Object extraData) {
-        return visit(expression, Sub, extraData);
-    }
-
-    public Object visit(Function expression, Object extraData) {
-        startElement(w, Function);
-        attributes(w, "name", expression.getName());
-        {
-            for (Expression param : expression.getParameters()) {
-                param.accept(this, extraData);
+                startElement(w, new QName(OGC.NAMESPACE, "UpperBoundary"));
+                {
+                    upperBoundary.accept(this, extraData);
+                }
+                endElement(w);
             }
+            endElement(w);
+            return extraData;
         }
-        endElement(w);
-        return extraData;
-    }
 
-    public Object visit(PropertyName expression, Object extraData) {
-        element(w, PropertyName, true, expression.getPropertyName());
-        return extraData;
-    }
-
-    public Object visit(Literal expression, Object extraData) {
-        final Object value = expression.getValue();
-        if (value == null) {
-            element(w, GML.Null, true, (String) null);
-        } else if (value instanceof Geometry) {
-            final Geometry geometry = (Geometry) value;
-            Gml3Encoder gml3Encoder = getGmlEncoder();
-            CoordinateReferenceSystem crs = guessCRS(geometry);
-            try {
-                gml3Encoder.encodeGeometry(w, crs, geometry);
-            } catch (IOException e) {
-                throw new RuntimeException(e);
+        private Object visit(BinaryComparisonOperator filter, QName name, Object extraData) {
+            filter.isMatchingCase();
+            startElement(w, name);
+            attributes(w, "matchCase", String.valueOf(filter.isMatchingCase()));
+            {
+                Expression expression1 = filter.getExpression1();
+                Expression expression2 = filter.getExpression2();
+                expression1.accept(this, extraData);
+                expression2.accept(this, extraData);
             }
-        } else {
-            String evaluated = expression.evaluate(null, String.class);
-            element(w, Literal, true, evaluated);
+            endElement(w);
+            return extraData;
         }
-        return extraData;
+
+        public Object visit(PropertyIsEqualTo filter, Object extraData) {
+            return visit(filter, PropertyIsEqualTo, extraData);
+        }
+
+        public Object visit(PropertyIsNotEqualTo filter, Object extraData) {
+            return visit(filter, PropertyIsNotEqualTo, extraData);
+        }
+
+        public Object visit(PropertyIsGreaterThan filter, Object extraData) {
+            return visit(filter, PropertyIsGreaterThan, extraData);
+        }
+
+        public Object visit(PropertyIsGreaterThanOrEqualTo filter, Object extraData) {
+            return visit(filter, PropertyIsGreaterThanOrEqualTo, extraData);
+        }
+
+        public Object visit(PropertyIsLessThan filter, Object extraData) {
+            return visit(filter, PropertyIsLessThan, extraData);
+        }
+
+        public Object visit(PropertyIsLessThanOrEqualTo filter, Object extraData) {
+            return visit(filter, PropertyIsLessThanOrEqualTo, extraData);
+        }
+
+        public Object visit(PropertyIsLike filter, Object extraData) {
+            startElement(w, PropertyIsLike);
+            attributes(w, "matchCase", String.valueOf(filter.isMatchingCase()), "singleChar",
+                    filter.getSingleChar(), "escaleChar", filter.getEscape(), "wildCard",
+                    filter.getWildCard());
+            {
+                Expression expression = filter.getExpression();
+                expression.accept(this, extraData);
+
+                String literal = filter.getLiteral();
+                element(w, Literal, true, literal);
+            }
+            endElement(w);
+            return extraData;
+        }
+
+        public Object visit(PropertyIsNull filter, Object extraData) {
+            startElement(w, PropertyIsNull);
+            {
+                Expression expression = filter.getExpression();
+                expression.accept(this, extraData);
+            }
+            endElement(w);
+            return extraData;
+        }
+
+        private Object visit(DistanceBufferOperator filter, QName name, Object extraData) {
+            startElement(w, name);
+            {
+                Expression expression1 = filter.getExpression1();
+                Expression expression2 = filter.getExpression2();
+                expression1.accept(this, extraData);
+                expression2.accept(this, extraData);
+
+                element(w, new QName(OGC.NAMESPACE, "Distance"), true,
+                        String.valueOf(filter.getDistance()), "units", filter.getDistanceUnits());
+
+            }
+            endElement(w);
+            return extraData;
+        }
+
+        public Object visit(Beyond filter, Object extraData) {
+            return visit((DistanceBufferOperator) filter, Beyond, extraData);
+        }
+
+        public Object visit(DWithin filter, Object extraData) {
+            return visit((DistanceBufferOperator) filter, DWithin, extraData);
+        }
+
+        private Object visit(BinarySpatialOperator filter, QName name, Object extraData,
+                String... attributes) {
+            startElement(w, name);
+            attributes(w, attributes);
+            {
+                Expression expression1 = filter.getExpression1();
+                Expression expression2 = filter.getExpression2();
+                expression1.accept(this, extraData);
+                expression2.accept(this, extraData);
+            }
+            endElement(w);
+            return extraData;
+        }
+
+        public Object visit(BBOX filter, Object extraData) {
+            return visit(filter, BBOX, extraData);
+        }
+
+        public Object visit(Contains filter, Object extraData) {
+            return visit(filter, Contains, extraData);
+        }
+
+        public Object visit(Crosses filter, Object extraData) {
+            return visit(filter, Crosses, extraData);
+        }
+
+        public Object visit(Disjoint filter, Object extraData) {
+            return visit(filter, Disjoint, extraData);
+        }
+
+        public Object visit(Equals filter, Object extraData) {
+            return visit(filter, Equals, extraData);
+        }
+
+        public Object visit(Intersects filter, Object extraData) {
+            return visit(filter, Intersects, extraData);
+        }
+
+        public Object visit(Overlaps filter, Object extraData) {
+            return visit(filter, Overlaps, extraData);
+        }
+
+        public Object visit(Touches filter, Object extraData) {
+            return visit(filter, Touches, extraData);
+        }
+
+        public Object visit(Within filter, Object extraData) {
+            return visit(filter, Within, extraData);
+        }
+
+        /**
+         * Implements {@link
+         * org.opengis.filter.FilterVisitor#visit(org.opengis.filter.PropertyIsNil,
+         * java.lang.Object}
+         */
+        /*
+         * @Override public Object visit(PropertyIsNil filter, Object extraData) { throw new
+         * UnsupportedOperationException("FES 2.0 encoding not yet supported"); }
+         */
+
+        /**
+         * Implements
+         * {@link org.opengis.filter.FilterVisitor#visit(org.opengis.filter.temporal.After, java.lang.Object)}
+         */
+        public Object visit(After after, Object extraData) {
+            throw new UnsupportedOperationException("FES 2.0 encoding not yet supported");
+        }
+
+        /**
+         * Implements
+         * {@link org.opengis.filter.FilterVisitor#visit(org.opengis.filter.temporal.AnyInteracts, java.lang.Object)}
+         */
+        public Object visit(AnyInteracts anyInteracts, Object extraData) {
+            throw new UnsupportedOperationException("FES 2.0 encoding not yet supported");
+        }
+
+        /**
+         * Implements
+         * {@link org.opengis.filter.FilterVisitor#visit(org.opengis.filter.temporal.Before, java.lang.Object)}
+         */
+        public Object visit(Before before, Object extraData) {
+            throw new UnsupportedOperationException("FES 2.0 encoding not yet supported");
+        }
+
+        /**
+         * Implements
+         * {@link org.opengis.filter.FilterVisitor#visit(org.opengis.filter.temporal.Begins, java.lang.Object)}
+         */
+        public Object visit(Begins begins, Object extraData) {
+            throw new UnsupportedOperationException("FES 2.0 encoding not yet supported");
+        }
+
+        /**
+         * Implements
+         * {@link org.opengis.filter.FilterVisitor#visit(org.opengis.filter.temporal.BegunBy, java.lang.Object)}
+         */
+        public Object visit(BegunBy begunBy, Object extraData) {
+            throw new UnsupportedOperationException("FES 2.0 encoding not yet supported");
+        }
+
+        /**
+         * Implements
+         * {@link org.opengis.filter.FilterVisitor#visit(org.opengis.filter.temporal.During, java.lang.Object)}
+         */
+        public Object visit(During during, Object extraData) {
+            throw new UnsupportedOperationException("FES 2.0 encoding not yet supported");
+        }
+
+        /**
+         * Implements
+         * {@link org.opengis.filter.FilterVisitor#visit(org.opengis.filter.temporal.EndedBy, java.lang.Object)}
+         */
+        public Object visit(EndedBy endedBy, Object extraData) {
+            throw new UnsupportedOperationException("FES 2.0 encoding not yet supported");
+        }
+
+        /**
+         * Implements
+         * {@link org.opengis.filter.FilterVisitor#visit(org.opengis.filter.temporal.Ends, java.lang.Object)}
+         */
+        public Object visit(Ends ends, Object extraData) {
+            throw new UnsupportedOperationException("FES 2.0 encoding not yet supported");
+        }
+
+        /**
+         * Implements
+         * {@link org.opengis.filter.FilterVisitor#visit(org.opengis.filter.temporal.Meets, java.lang.Object)}
+         */
+        public Object visit(Meets meets, Object extraData) {
+            throw new UnsupportedOperationException("FES 2.0 encoding not yet supported");
+        }
+
+        /**
+         * Implements
+         * {@link org.opengis.filter.FilterVisitor#visit(org.opengis.filter.temporal.MetBy, java.lang.Object)}
+         */
+        public Object visit(MetBy metBy, Object extraData) {
+            throw new UnsupportedOperationException("FES 2.0 encoding not yet supported");
+        }
+
+        /**
+         * Implements
+         * {@link org.opengis.filter.FilterVisitor#visit(org.opengis.filter.temporal.OverlappedBy, java.lang.Object)}
+         */
+        public Object visit(OverlappedBy overlappedBy, Object extraData) {
+            throw new UnsupportedOperationException("FES 2.0 encoding not yet supported");
+        }
+
+        /**
+         * Implements
+         * {@link org.opengis.filter.FilterVisitor#visit(org.opengis.filter.temporal.TContains, java.lang.Object)}
+         */
+        public Object visit(TContains contains, Object extraData) {
+            throw new UnsupportedOperationException("FES 2.0 encoding not yet supported");
+        }
+
+        /**
+         * Implements
+         * {@link org.opengis.filter.FilterVisitor#visit(org.opengis.filter.temporal.TEquals, java.lang.Object)}
+         */
+        public Object visit(TEquals equals, Object extraData) {
+            throw new UnsupportedOperationException("FES 2.0 encoding not yet supported");
+        }
+
+        /**
+         * Implements
+         * {@link org.opengis.filter.FilterVisitor#visit(org.opengis.filter.temporal.TOverlaps, java.lang.Object)}
+         */
+        public Object visit(TOverlaps contains, Object extraData) {
+            throw new UnsupportedOperationException("FES 2.0 encoding not yet supported");
+        }
+
+        // ///////////// Expressions /////////////////
+
+        public Object visit(NilExpression expression, Object extraData) {
+            element(w, Literal, true, (String) null);
+            return extraData;
+        }
+
+        private Object visit(BinaryExpression expression, QName name, Object extraData) {
+            startElement(w, name);
+            {
+                Expression expression1 = expression.getExpression1();
+                Expression expression2 = expression.getExpression2();
+                expression1.accept(this, extraData);
+                expression2.accept(this, extraData);
+            }
+            endElement(w);
+            return extraData;
+        }
+
+        public Object visit(Add expression, Object extraData) {
+            return visit(expression, Add, extraData);
+        }
+
+        public Object visit(Divide expression, Object extraData) {
+            return visit(expression, Div, extraData);
+        }
+
+        public Object visit(Multiply expression, Object extraData) {
+            return visit(expression, Mul, extraData);
+        }
+
+        public Object visit(Subtract expression, Object extraData) {
+            return visit(expression, Sub, extraData);
+        }
+
+        public Object visit(Function expression, Object extraData) {
+            startElement(w, Function);
+            attributes(w, "name", expression.getName());
+            {
+                for (Expression param : expression.getParameters()) {
+                    param.accept(this, extraData);
+                }
+            }
+            endElement(w);
+            return extraData;
+        }
+
+        public Object visit(PropertyName expression, Object extraData) {
+            element(w, PropertyName, true, expression.getPropertyName());
+            return extraData;
+        }
+
+        public Object visit(Literal expression, Object extraData) {
+            final Object value = expression.getValue();
+            if (value == null) {
+                element(w, GML.Null, true, (String) null);
+            } else if (value instanceof Geometry) {
+                final Geometry geometry = (Geometry) value;
+                try {
+                    getGeometryEncoder().encode(geometry, w);
+                } catch (Exception e) {
+                    Throwables.propagate(e);
+                }
+            } else {
+                String evaluated = expression.evaluate(null, String.class);
+                element(w, Literal, true, evaluated);
+            }
+            return extraData;
+        }
     }
 
 }

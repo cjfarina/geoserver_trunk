@@ -2,7 +2,6 @@ package org.geoserver.bxml.atom;
 
 import static org.geoserver.gss.internal.atom.Atom.author;
 import static org.geoserver.gss.internal.atom.Atom.category;
-import static org.geoserver.gss.internal.atom.Atom.content;
 import static org.geoserver.gss.internal.atom.Atom.contributor;
 import static org.geoserver.gss.internal.atom.Atom.entry;
 import static org.geoserver.gss.internal.atom.Atom.id;
@@ -15,20 +14,19 @@ import java.io.IOException;
 
 import javax.xml.namespace.QName;
 
-import org.geoserver.bxml.AbstractEncoder;
-import org.geoserver.bxml.feature.DeleteElementTypeEncoder;
-import org.geoserver.bxml.feature.InsertElementTypeEncoder;
-import org.geoserver.bxml.feature.UpdateElementTypeEncoder;
+import org.geoserver.bxml.gml_3_1.EnvelopeEncoder;
+import org.geoserver.bxml.gml_3_1.GeometryEncoder;
+import org.geoserver.bxml.wfs_1_1.DeleteElementTypeEncoder;
+import org.geoserver.bxml.wfs_1_1.InsertElementTypeEncoder;
+import org.geoserver.bxml.wfs_1_1.UpdateElementTypeEncoder;
 import org.geoserver.gss.internal.atom.CategoryImpl;
 import org.geoserver.gss.internal.atom.ContentImpl;
 import org.geoserver.gss.internal.atom.EntryImpl;
 import org.geoserver.gss.internal.atom.GeoRSS;
 import org.geoserver.gss.internal.atom.LinkImpl;
 import org.geoserver.gss.internal.atom.PersonImpl;
-import org.gvsig.bxml.geoserver.Gml3Encoder;
 import org.gvsig.bxml.stream.BxmlStreamWriter;
 import org.opengis.geometry.BoundingBox;
-import org.opengis.referencing.crs.CoordinateReferenceSystem;
 
 import com.vividsolutions.jts.geom.Geometry;
 
@@ -44,15 +42,20 @@ import com.vividsolutions.jts.geom.Geometry;
  * @see UpdateElementTypeEncoder
  * @see DeleteElementTypeEncoder
  */
-public class EntryEncoder extends AbstractEncoder {
+public class EntryEncoder extends AbstractAtomEncoder<EntryImpl> {
 
-    private final BxmlStreamWriter w;
+    private final EnvelopeEncoder envelopeEncoder;
 
-    public EntryEncoder(BxmlStreamWriter w) {
-        this.w = w;
+    private final GeometryEncoder geometryEncoder;
+
+    public EntryEncoder() {
+        envelopeEncoder = new EnvelopeEncoder();
+        geometryEncoder = new GeometryEncoder();
     }
 
-    public void encode(final EntryImpl e) throws IOException {
+    @SuppressWarnings("unchecked")
+    @Override
+    public void encode(final EntryImpl e, final BxmlStreamWriter w) throws IOException {
         startElement(w, entry);
         {
             element(w, title, false, e.getTitle());
@@ -82,24 +85,18 @@ public class EntryEncoder extends AbstractEncoder {
             final ContentImpl econtent = e.getContent();
             if (null != econtent) {
                 Object value = econtent.getValue();
-                ContentEncoder contentEncoder = ContentEncoder.findEncoderFor(value);
-                startElement(w, content);
-                {
-                    contentEncoder.encode(w, value);
-                }
-                endElement(w);
+                ContentEncoder<Object> contentEncoder = new ContentEncoder<Object>();
+                contentEncoder.encode(value, w);
             }
 
             Object georssWhere = e.getWhere();
             if (georssWhere != null) {
-                Gml3Encoder gmlEncoder = getGmlEncoder();
                 startElement(w, GeoRSS.where);
                 {
                     if (georssWhere instanceof BoundingBox) {
-                        gmlEncoder.encodeEnvelope(w, (BoundingBox) georssWhere);
+                        envelopeEncoder.encode((BoundingBox) georssWhere, w);
                     } else if (georssWhere instanceof Geometry) {
-                        CoordinateReferenceSystem crs = guessCRS((Geometry) georssWhere);
-                        gmlEncoder.encodeGeometry(w, crs, (Geometry) georssWhere);
+                        geometryEncoder.encode((Geometry) georssWhere, w);
                     }
                 }
                 endElement(w);

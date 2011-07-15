@@ -1,4 +1,4 @@
-package org.geoserver.bxml.feature;
+package org.geoserver.bxml.wfs_1_1;
 
 import static org.geoserver.wfs.xml.v1_1_0.WFS.DELETE;
 import static org.geotools.filter.v1_1.OGC.Filter;
@@ -12,6 +12,7 @@ import net.opengis.wfs.WfsFactory;
 import net.opengis.wfs.impl.WfsFactoryImpl;
 
 import org.geoserver.bxml.AbstractDecoder;
+import org.geoserver.bxml.feature.FeatureTypeUtil;
 import org.geoserver.bxml.filter_1_1.FilterChainDecoder;
 import org.gvsig.bxml.stream.BxmlStreamReader;
 

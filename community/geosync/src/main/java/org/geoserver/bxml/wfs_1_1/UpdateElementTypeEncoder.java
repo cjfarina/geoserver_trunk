@@ -1,4 +1,4 @@
-package org.geoserver.bxml.feature;
+package org.geoserver.bxml.wfs_1_1;
 
 import static org.geoserver.wfs.xml.v1_1_0.WFS.UPDATE;
 import static org.geotools.filter.v1_1.OGC.Filter;
@@ -12,30 +12,42 @@ import javax.xml.namespace.QName;
 import net.opengis.wfs.PropertyType;
 import net.opengis.wfs.UpdateElementType;
 
-import org.geoserver.bxml.atom.ContentEncoder;
+import org.geoserver.bxml.AbstractEncoder;
 import org.geoserver.bxml.filter_1_1.FilterEncoder;
+import org.geoserver.bxml.gml_3_1.PropertyValueEncoder;
 import org.geoserver.gss.impl.GSS;
 import org.geoserver.wfs.xml.v1_1_0.WFS;
+import org.geotools.factory.CommonFactoryFinder;
 import org.geotools.feature.NameImpl;
-import org.gvsig.bxml.geoserver.Gml3Encoder;
-import org.gvsig.bxml.geoserver.Gml3Encoder.AttributeEncoder;
 import org.gvsig.bxml.stream.BxmlStreamWriter;
+import org.opengis.feature.FeatureFactory;
+import org.opengis.feature.Property;
 import org.opengis.feature.simple.SimpleFeatureType;
 import org.opengis.feature.type.AttributeDescriptor;
 import org.opengis.feature.type.FeatureType;
+import org.opengis.feature.type.GeometryDescriptor;
 import org.opengis.feature.type.PropertyDescriptor;
 import org.opengis.filter.Filter;
+import org.opengis.referencing.crs.CoordinateReferenceSystem;
 import org.springframework.util.Assert;
+
+import com.vividsolutions.jts.geom.Geometry;
 
 /**
  * Handles the XML encoding of an {@link UpdateElementType} as the content of an {@code atom:entry}
  * 
  */
-public class UpdateElementTypeEncoder extends ContentEncoder {
+public class UpdateElementTypeEncoder extends AbstractEncoder<UpdateElementType> {
+
+    private final FeatureFactory featureFactory;
+
+    public UpdateElementTypeEncoder() {
+        featureFactory = CommonFactoryFinder.getFeatureFactory(null);
+    }
 
     @Override
-    public void encode(BxmlStreamWriter w, Object value) throws IOException {
-        final UpdateElementType update = (UpdateElementType) value;
+    public void encode(final UpdateElementType update, final BxmlStreamWriter w) throws IOException {
+
         final QName typeName = update.getTypeName();
 
         final String namespaceURI = typeName.getNamespaceURI();
@@ -43,8 +55,6 @@ public class UpdateElementTypeEncoder extends ContentEncoder {
 
         final GSS gss = GSS.get();
         final FeatureType featureType = gss.getFeatureType(namespaceURI, localTypeName);
-
-        final Gml3Encoder gmlencoder = getGmlEncoder();
 
         startElement(w, UPDATE);
         w.writeNamespace("f", namespaceURI);
@@ -56,11 +66,10 @@ public class UpdateElementTypeEncoder extends ContentEncoder {
             Object propertyValue;
             String propertyNsUri;
             PropertyDescriptor descriptor;
-            Class<?> binding;
-            AttributeEncoder attributeEncoder;
-            for (PropertyType property : properties) {
-                propertyName = property.getName();
-                propertyValue = property.getValue();
+
+            for (PropertyType wfsProperty : properties) {
+                propertyName = wfsProperty.getName();
+                propertyValue = wfsProperty.getValue();
                 propertyNsUri = propertyName.getNamespaceURI();
 
                 String simplePropertyName = propertyName.getLocalPart();
@@ -72,11 +81,8 @@ public class UpdateElementTypeEncoder extends ContentEncoder {
                     descriptor = ((SimpleFeatureType) featureType)
                             .getDescriptor(simplePropertyName);
                 }
-                Assert.notNull(descriptor);
 
-                binding = descriptor.getType().getBinding();
-                attributeEncoder = Gml3Encoder.getAttributeEncoder(binding);
-                Assert.notNull(attributeEncoder);
+                Assert.notNull(descriptor);
 
                 startElement(w, WFS.PROPERTY);
                 {
@@ -91,8 +97,9 @@ public class UpdateElementTypeEncoder extends ContentEncoder {
                     element(w, new QName(WFS.NAMESPACE, "Name"), true, qName, true);
                     startElement(w, new QName(WFS.NAMESPACE, "Value"));
                     {
-                        attributeEncoder.encode(gmlencoder, propertyValue,
-                                ((AttributeDescriptor) descriptor), w);
+                        Property property = property(featureType, propertyValue, descriptor);
+                        PropertyValueEncoder<Property> propertyEncoder = new PropertyValueEncoder<Property>();
+                        propertyEncoder.encode(property, w);
                     }
                     endElement(w);
                 }
@@ -102,11 +109,35 @@ public class UpdateElementTypeEncoder extends ContentEncoder {
             final Filter filter = update.getFilter();
             startElement(w, Filter);
             {
-                FilterEncoder filterEncoder = new FilterEncoder(w);
-                filter.accept(filterEncoder, null);
+                FilterEncoder filterEncoder = new FilterEncoder();
+                filterEncoder.encode(filter, w);
             }
             endElement(w);
         }
         endElement(w);
+    }
+
+    private Property property(final FeatureType featureType, Object propertyValue,
+            PropertyDescriptor descriptor) {
+        Property property;
+        if (descriptor instanceof GeometryDescriptor) {
+            CoordinateReferenceSystem crs;
+            if (propertyValue instanceof Geometry
+                    && ((Geometry) propertyValue).getUserData() instanceof CoordinateReferenceSystem) {
+                crs = (CoordinateReferenceSystem) ((Geometry) propertyValue).getUserData();
+            } else {
+                crs = ((GeometryDescriptor) descriptor).getCoordinateReferenceSystem();
+            }
+            if (crs == null) {
+                crs = featureType.getCoordinateReferenceSystem();
+            }
+            property = featureFactory.createGeometryAttribute(propertyValue,
+                    (GeometryDescriptor) descriptor, null, crs);
+
+        } else {
+            property = featureFactory.createAttribute(propertyValue,
+                    (AttributeDescriptor) descriptor, null);
+        }
+        return property;
     }
 }

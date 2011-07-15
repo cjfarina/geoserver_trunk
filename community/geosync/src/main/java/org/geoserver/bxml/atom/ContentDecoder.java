@@ -10,8 +10,8 @@ import java.util.Map;
 import javax.xml.namespace.QName;
 
 import org.geoserver.bxml.AbstractDecoder;
-import org.geoserver.bxml.feature.DeleteElementTypeDecoder;
-import org.geoserver.bxml.feature.UpdateElementTypeDecoder;
+import org.geoserver.bxml.wfs_1_1.DeleteElementTypeDecoder;
+import org.geoserver.bxml.wfs_1_1.UpdateElementTypeDecoder;
 import org.geoserver.gss.internal.atom.Atom;
 import org.geoserver.gss.internal.atom.ContentImpl;
 import org.gvsig.bxml.stream.BxmlStreamReader;

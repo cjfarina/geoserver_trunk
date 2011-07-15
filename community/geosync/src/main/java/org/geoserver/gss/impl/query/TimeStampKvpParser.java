@@ -2,7 +2,7 @@ package org.geoserver.gss.impl.query;
 
 import java.util.Date;
 
-import org.geoserver.bxml.AbstractEncoder;
+import org.geoserver.bxml.atom.AbstractAtomEncoder;
 import org.geoserver.ows.KvpParser;
 import org.geotools.feature.type.DateUtil;
 
@@ -11,7 +11,7 @@ import org.geotools.feature.type.DateUtil;
  * closest to <a href="http://tools.ietf.org/html/rfc3339">rfc3339</a> parser that I know of.
  * 
  * @author groldan
- * @see AbstractEncoder
+ * @see AbstractAtomEncoder
  */
 public class TimeStampKvpParser extends KvpParser {
 

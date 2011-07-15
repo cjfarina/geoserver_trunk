@@ -13,7 +13,7 @@ import com.vividsolutions.jts.geom.Coordinate;
 import com.vividsolutions.jts.geom.LineString;
 import com.vividsolutions.jts.geom.Polygon;
 
-public class BXMLDecoderTest extends TestCase {
+public abstract class BXMLDecoderTest extends TestCase {
 
     protected void testLineRing(LineString exteriorRing, double[][] fs) {
         for (int i = 0; i < fs.length; i++) {

@@ -9,6 +9,7 @@ import java.util.logging.Logger;
 
 import javax.xml.namespace.QName;
 
+import org.geoserver.bxml.atom.AbstractAtomEncoder;
 import org.geotools.feature.type.DateUtil;
 import org.geotools.util.logging.Logging;
 import org.gvsig.bxml.stream.BxmlStreamReader;
@@ -16,7 +17,7 @@ import org.gvsig.bxml.stream.EventType;
 
 public abstract class AbstractDecoder<T> implements Decoder<T> {
 
-    protected static final Logger LOGGER = Logging.getLogger(AbstractEncoder.class);
+    protected static final Logger LOGGER = Logging.getLogger(AbstractAtomEncoder.class);
 
     protected final QName name;
 
