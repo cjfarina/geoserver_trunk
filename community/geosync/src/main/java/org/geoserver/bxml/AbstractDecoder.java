@@ -14,7 +14,7 @@ import org.geotools.util.logging.Logging;
 import org.gvsig.bxml.stream.BxmlStreamReader;
 import org.gvsig.bxml.stream.EventType;
 
-public abstract class AbstractDecoder<T> {
+public abstract class AbstractDecoder<T> implements Decoder<T> {
 
     protected static final Logger LOGGER = Logging.getLogger(AbstractEncoder.class);
 
@@ -36,6 +36,10 @@ public abstract class AbstractDecoder<T> {
     protected void setStringValue(String value) throws Exception {
     }
 
+    /**
+     * @see org.geoserver.bxml.Decoder#decode(org.gvsig.bxml.stream.BxmlStreamReader)
+     */
+    @Override
     public T decode(BxmlStreamReader r) throws Exception {
         r.require(EventType.START_ELEMENT, name.getNamespaceURI(), name.getLocalPart());
 
