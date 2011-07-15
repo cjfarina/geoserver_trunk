@@ -236,7 +236,7 @@ public class GSS implements DisposableBean {
      * 
      * @param gssTransactionID
      * @param commitMsg
-     * @return 
+     * @return
      * @throws Exception
      */
     public RevCommit commitChangeSet(final String gssTransactionID, final String commitMsg)

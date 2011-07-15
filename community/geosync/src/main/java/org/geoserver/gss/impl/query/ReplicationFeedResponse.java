@@ -29,9 +29,9 @@ public class ReplicationFeedResponse extends AbstractGetEntriesResponse {
             final BxmlStreamWriter w) throws ServiceException, IOException {
 
         final FeedImpl feed = response.getResult();
-        FeedEncoder encoder = new FeedEncoder(w);
+        FeedEncoder encoder = new FeedEncoder();
 
-        encoder.encode(feed);
+        encoder.encode(feed, w);
         w.flush();
     }
 

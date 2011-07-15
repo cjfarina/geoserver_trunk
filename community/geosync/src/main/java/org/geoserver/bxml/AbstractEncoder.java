@@ -45,22 +45,26 @@ public abstract class AbstractEncoder<T> implements Encoder<T> {
      * Encodes a {@code java.util.Date} using {@link DateUtil#serializeDateTime(long, boolean)} as
      * the closest to <a href="http://tools.ietf.org/html/rfc3339">rfc3339</a> that I know of.
      */
-    protected final void element(BxmlStreamWriter w, QName element, boolean encodeIfNull, Date date, boolean stringTable) {
+    protected final void element(BxmlStreamWriter w, QName element, boolean encodeIfNull,
+            Date date, boolean stringTable) {
         if (date != null) {
             String value = DateUtil.serializeDateTime(date.getTime(), true);
             element(w, element, encodeIfNull, value, stringTable);
         }
     }
 
-    protected final void element(BxmlStreamWriter w, QName element, boolean encodeIfNull, String value) {
+    protected final void element(BxmlStreamWriter w, QName element, boolean encodeIfNull,
+            String value) {
         element(w, element, encodeIfNull, value, false);
     }
 
-    protected void element(BxmlStreamWriter w, QName element, boolean encodeIfNull, String value, boolean stringTable) {
+    protected void element(BxmlStreamWriter w, QName element, boolean encodeIfNull, String value,
+            boolean stringTable) {
         element(w, element, encodeIfNull, value, stringTable, false, (String[]) null);
     }
 
-    protected final void element(BxmlStreamWriter w, QName element, boolean encodeIfNull, String value, String... attributes) {
+    protected final void element(BxmlStreamWriter w, QName element, boolean encodeIfNull,
+            String value, String... attributes) {
         element(w, element, encodeIfNull, value, false, false, attributes);
     }
 
@@ -77,34 +81,34 @@ public abstract class AbstractEncoder<T> implements Encoder<T> {
      *            for highly repetitive attributes)
      * @param attributes
      */
-    protected void element(BxmlStreamWriter w, QName element, boolean encodeIfNull, String value, boolean stringTable,
-            boolean stringTableAtts, String... attributes) {
-                if (value == null && !encodeIfNull) {
-                    return;
-                }
-                try {
-                    w.writeStartElement(element.getNamespaceURI(), element.getLocalPart());
-                    attributes(w, stringTableAtts, attributes);
-                    if (value != null) {
-                        if (stringTable && w.supportsStringTableValues()) {
-                            long stringTableReference = w.getStringTableReference(value);
-                            w.writeStringTableValue(stringTableReference);
-                        } else {
-                            w.writeValue(value);
-                        }
-                    }
-                    w.writeEndElement();
-                } catch (IOException e) {
-                    throw new RuntimeException(e);
+    protected void element(BxmlStreamWriter w, QName element, boolean encodeIfNull, String value,
+            boolean stringTable, boolean stringTableAtts, String... attributes) {
+        if (value == null && !encodeIfNull) {
+            return;
+        }
+        try {
+            w.writeStartElement(element.getNamespaceURI(), element.getLocalPart());
+            attributes(w, stringTableAtts, attributes);
+            if (value != null) {
+                if (stringTable && w.supportsStringTableValues()) {
+                    long stringTableReference = w.getStringTableReference(value);
+                    w.writeStringTableValue(stringTableReference);
+                } else {
+                    w.writeValue(value);
                 }
             }
+            w.writeEndElement();
+        } catch (IOException e) {
+            throw new RuntimeException(e);
+        }
+    }
 
     protected final void attributes(BxmlStreamWriter w, String... attributes) {
         attributes(w, false, attributes);
     }
 
     protected void attributes(BxmlStreamWriter w, boolean stringTable, String... attributes) {
-    
+
         if (attributes != null && attributes.length > 0) {
             Assert.isTrue(attributes.length % 2 == 0,
                     "Didn't get an even set of attributes key/value pairs");

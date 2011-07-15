@@ -13,15 +13,9 @@ import static org.geoserver.gss.internal.atom.Atom.updated;
 
 import java.io.IOException;
 import java.util.Iterator;
-import java.util.concurrent.BlockingQueue;
-import java.util.concurrent.ExecutorService;
-import java.util.concurrent.Executors;
-import java.util.concurrent.Future;
-import java.util.concurrent.LinkedBlockingQueue;
 
 import javax.xml.namespace.QName;
 
-import org.geoserver.bxml.AbstractEncoder;
 import org.geoserver.gss.internal.atom.Atom;
 import org.geoserver.gss.internal.atom.CategoryImpl;
 import org.geoserver.gss.internal.atom.EntryImpl;
@@ -34,17 +28,14 @@ import org.geoserver.wfs.xml.v1_1_0.WFS;
 import org.geotools.gml3.GML;
 import org.gvsig.bxml.stream.BxmlStreamWriter;
 
-import com.google.common.base.Throwables;
+public class FeedEncoder extends AbstractAtomEncoder<FeedImpl> {
 
-public class FeedEncoder extends AbstractEncoder {
-
-    private final BxmlStreamWriter w;
-
-    public FeedEncoder(final BxmlStreamWriter w) {
-        this.w = w;
+    public FeedEncoder() {
+        //
     }
 
-    public void encode(final FeedImpl feed) throws IOException {
+    @Override
+    public void encode(final FeedImpl feed, final BxmlStreamWriter w) throws IOException {
 
         w.writeStartDocument();
 
@@ -130,48 +121,48 @@ public class FeedEncoder extends AbstractEncoder {
         // Logo?
 
         final Iterator<EntryImpl> entries = feed.getEntry();
-        final EntryEncoder entryEncoder = new EntryEncoder(w);
+        final EntryEncoder entryEncoder = new EntryEncoder();
         EntryImpl entry;
         for (; entries.hasNext();) {
             entry = entries.next();
-            entryEncoder.encode(entry);
+            entryEncoder.encode(entry, w);
         }
 
-//        final BlockingQueue<EntryImpl> queue = new LinkedBlockingQueue<EntryImpl>(10);
-//        final ExecutorService executorService = Executors.newSingleThreadExecutor();
-//        final Future<?> readTask = executorService.submit(new Runnable() {
-//            @Override
-//            public void run() {
-//                final BlockingQueue<EntryImpl> pool = queue;
-//                final Iterator<EntryImpl> iterator = entries;
-//                EntryImpl entry;
-//                while (iterator.hasNext()) {
-//                    entry = iterator.next();
-//                    try {
-//                        pool.put(entry);
-//                    } catch (InterruptedException e) {
-//                        break;
-//                    }
-//                }
-//            }
-//        });
-//
-//        try {
-//            while (!readTask.isDone()) {
-//                entry = queue.take();
-//                if (entry == null) {
-//                    break;
-//                }
-//                entryEncoder.encode(entry);
-//                w.flush();
-//            }
-//        } catch (IOException e) {
-//            readTask.cancel(true);
-//            throw e;
-//        } catch (Throwable t) {
-//            readTask.cancel(true);
-//            Throwables.propagate(t);
-//        }
+        // final BlockingQueue<EntryImpl> queue = new LinkedBlockingQueue<EntryImpl>(10);
+        // final ExecutorService executorService = Executors.newSingleThreadExecutor();
+        // final Future<?> readTask = executorService.submit(new Runnable() {
+        // @Override
+        // public void run() {
+        // final BlockingQueue<EntryImpl> pool = queue;
+        // final Iterator<EntryImpl> iterator = entries;
+        // EntryImpl entry;
+        // while (iterator.hasNext()) {
+        // entry = iterator.next();
+        // try {
+        // pool.put(entry);
+        // } catch (InterruptedException e) {
+        // break;
+        // }
+        // }
+        // }
+        // });
+        //
+        // try {
+        // while (!readTask.isDone()) {
+        // entry = queue.take();
+        // if (entry == null) {
+        // break;
+        // }
+        // entryEncoder.encode(entry);
+        // w.flush();
+        // }
+        // } catch (IOException e) {
+        // readTask.cancel(true);
+        // throw e;
+        // } catch (Throwable t) {
+        // readTask.cancel(true);
+        // Throwables.propagate(t);
+        // }
 
         w.writeEndElement();
         w.writeEndDocument();

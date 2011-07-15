@@ -6,7 +6,6 @@ import junit.framework.Test;
 
 import org.custommonkey.xmlunit.exceptions.XpathException;
 import org.geoserver.config.ContactInfo;
-import org.geoserver.gss.GSSTestSupport;
 import org.geoserver.gss.xml.GSSSchema;
 import org.w3c.dom.Document;
 import org.w3c.dom.Element;
