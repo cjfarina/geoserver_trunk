@@ -32,8 +32,8 @@ public class ContentDecoder extends AbstractDecoder<ContentImpl> {
         if (DELETE.equals(name)) {
             content.setValue(new DeleteElementTypeDecoder().decode(r));
         }
-        
-        if(UPDATE.equals(name)){
+
+        if (UPDATE.equals(name)) {
             content.setValue(new UpdateElementTypeDecoder().decode(r));
         }
     }

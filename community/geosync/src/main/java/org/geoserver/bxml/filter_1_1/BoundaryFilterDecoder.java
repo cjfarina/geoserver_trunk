@@ -3,6 +3,7 @@ package org.geoserver.bxml.filter_1_1;
 import javax.xml.namespace.QName;
 
 import org.geoserver.bxml.AbstractDecoder;
+import org.geoserver.bxml.filter_1_1.expression.ExpressionChainDecoder;
 import org.gvsig.bxml.stream.BxmlStreamReader;
 import org.opengis.filter.expression.Expression;
 

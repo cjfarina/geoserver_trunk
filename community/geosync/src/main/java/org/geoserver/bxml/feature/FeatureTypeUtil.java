@@ -11,7 +11,8 @@ public class FeatureTypeUtil {
 
     private static final String FEATURE_PREFIX = "f:";
 
-    public static QName buildFeatureTypeName(BxmlStreamReader r, Map<QName, String> attributes, QName elementName) {
+    public static QName buildFeatureTypeName(BxmlStreamReader r, Map<QName, String> attributes,
+            QName elementName) {
         QName name = r.getElementName();
 
         String namespaceURI = r.getNamespaceURI("f");
@@ -34,7 +35,7 @@ public class FeatureTypeUtil {
 
     public static QName buildQName(String nameString, String namespaceURI) {
         QName qName = null;
-        if(nameString.startsWith(FEATURE_PREFIX)){
+        if (nameString.startsWith(FEATURE_PREFIX)) {
             qName = new QName(namespaceURI, nameString.substring(2));
         }
         return qName;

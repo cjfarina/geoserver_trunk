@@ -5,6 +5,7 @@ import static org.geotools.filter.v1_1.OGC.PropertyIsLike;
 import java.util.ArrayList;
 import java.util.List;
 
+import org.geoserver.bxml.filter_1_1.expression.ExpressionChainDecoder;
 import org.geotools.filter.LiteralExpressionImpl;
 import org.gvsig.bxml.stream.BxmlStreamReader;
 import org.opengis.filter.Filter;
@@ -26,7 +27,7 @@ public class PropertyIsLikeFilterDecoder extends FilterLinkDecoder {
 
     @Override
     protected Filter buildResult() {
-        Object value = ((LiteralExpressionImpl)expresions.get(1)).getValue();
+        Object value = ((LiteralExpressionImpl) expresions.get(1)).getValue();
         Assert.notNull(value, "Literal in IsLike filte can't be null");
         return ff.like(expresions.get(0), value.toString());
     }

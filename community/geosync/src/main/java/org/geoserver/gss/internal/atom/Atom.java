@@ -75,7 +75,7 @@ public class Atom extends XSD {
     public static QName published = new QName(NAMESPACE, "published");
 
     public static QName source = new QName(NAMESPACE, "source");
-    
+
     public static QName typeName = new QName(NAMESPACE, "typeName");
 
     @Override

@@ -17,21 +17,21 @@ public class FeatureIdDecoder extends AbstractDecoder<FeatureId> {
 
     protected static FilterFactory2 ff = CommonFactoryFinder.getFilterFactory2(GeoTools
             .getDefaultHints());
-    
+
     private String entryId;
-    
+
     public static final QName fid = new QName("http://www.opengis.net/ogc", "fid");
-    
+
     public FeatureIdDecoder() {
         super(FeatureId);
     }
-    
+
     @Override
     protected void decodeAttributtes(final BxmlStreamReader r, Map<QName, String> attributes)
             throws Exception {
         entryId = attributes.get(fid);
     }
-    
+
     @Override
     protected FeatureId buildResult() {
         return ff.featureId(entryId);

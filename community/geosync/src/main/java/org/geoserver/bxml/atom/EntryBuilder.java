@@ -36,7 +36,7 @@ public class EntryBuilder {
     private String title;
 
     private Date updated;
-    
+
     private Object where;
 
     public EntryImpl build() {

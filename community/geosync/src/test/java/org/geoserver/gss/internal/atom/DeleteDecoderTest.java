@@ -226,10 +226,10 @@ public class DeleteDecoderTest extends BXMLDecoderTest {
         assertEquals("Street1",
                 ((LiteralExpressionImpl) propertyIsEqualTo2.getExpression2()).getValue());
 
-        Polygon where = (Polygon)entry.getWhere();
+        Polygon where = (Polygon) entry.getWhere();
         LineString exteriorRing4 = where.getExteriorRing();
-        testLineRing(exteriorRing4, new double[][] { { 10, 10 }, { 20, 20 }, { 30, 30 }, { 40, 40 },
-                { 10, 10 } });
+        testLineRing(exteriorRing4, new double[][] { { 10, 10 }, { 20, 20 }, { 30, 30 },
+                { 40, 40 }, { 10, 10 } });
         reader.close();
 
     }

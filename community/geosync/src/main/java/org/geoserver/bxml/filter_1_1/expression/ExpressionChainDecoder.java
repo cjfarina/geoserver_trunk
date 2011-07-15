@@ -1,4 +1,4 @@
-package org.geoserver.bxml.filter_1_1;
+package org.geoserver.bxml.filter_1_1.expression;
 
 import org.gvsig.bxml.stream.BxmlStreamReader;
 import org.opengis.filter.expression.Expression;

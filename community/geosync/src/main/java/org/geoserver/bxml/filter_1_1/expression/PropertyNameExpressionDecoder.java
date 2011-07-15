@@ -1,4 +1,4 @@
-package org.geoserver.bxml.filter_1_1;
+package org.geoserver.bxml.filter_1_1.expression;
 
 import static org.geotools.filter.v1_1.OGC.PropertyName;
 

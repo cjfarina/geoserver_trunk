@@ -1,4 +1,4 @@
-package org.geoserver.bxml.filter_1_1;
+package org.geoserver.bxml.filter_1_1.expression;
 
 import javax.xml.namespace.QName;
 

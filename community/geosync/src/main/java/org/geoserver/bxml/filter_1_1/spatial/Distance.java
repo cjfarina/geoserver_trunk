@@ -1,9 +1,9 @@
 package org.geoserver.bxml.filter_1_1.spatial;
 
 public class Distance {
-    
+
     private double value;
-    
+
     private String units;
 
     public double getValue() {

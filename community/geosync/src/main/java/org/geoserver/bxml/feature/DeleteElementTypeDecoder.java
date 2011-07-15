@@ -13,7 +13,6 @@ import net.opengis.wfs.impl.WfsFactoryImpl;
 
 import org.geoserver.bxml.AbstractDecoder;
 import org.geoserver.bxml.filter_1_1.FilterChainDecoder;
-import org.geoserver.gss.internal.atom.Atom;
 import org.gvsig.bxml.stream.BxmlStreamReader;
 
 public class DeleteElementTypeDecoder extends AbstractDecoder<DeleteElementType> {

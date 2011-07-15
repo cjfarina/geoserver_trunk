@@ -2,8 +2,8 @@ package org.geoserver.bxml.filter_1_1.spatial;
 
 import javax.xml.namespace.QName;
 
-import org.geoserver.bxml.filter_1_1.ExpressionChainDecoder;
 import org.geoserver.bxml.filter_1_1.FilterLinkDecoder;
+import org.geoserver.bxml.filter_1_1.expression.ExpressionChainDecoder;
 import org.geoserver.bxml.gml_3_1.GMLChainDecoder;
 import org.geotools.filter.AttributeExpressionImpl;
 import org.geotools.filter.v1_1.OGC;
@@ -21,7 +21,7 @@ public abstract class BinarySpatialOperationDecoder extends FilterLinkDecoder {
     public BinarySpatialOperationDecoder(QName name) {
         super(name);
     }
-    
+
     public BinarySpatialOperationDecoder(final QName name, final FilterLinkDecoder filterLink) {
         super(name, filterLink);
     }
@@ -35,7 +35,7 @@ public abstract class BinarySpatialOperationDecoder extends FilterLinkDecoder {
                     .decode(r);
             propertyName = expression.getPropertyName();
         } else if (name.getNamespaceURI().equals(GML.NAMESPACE)) {
-            geometry = (Geometry)new GMLChainDecoder().decode(r);
+            geometry = (Geometry) new GMLChainDecoder().decode(r);
         }
     }
 

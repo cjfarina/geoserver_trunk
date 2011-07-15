@@ -4,7 +4,8 @@ import static org.geotools.filter.v1_1.OGC.PropertyIsGreaterThanOrEqualTo;
 
 import org.opengis.filter.Filter;
 
-public class PropertyIsGreaterThanOrEqualToFilterDecoder extends BinaryComparisonOpTypeFilterDecoder {
+public class PropertyIsGreaterThanOrEqualToFilterDecoder extends
+        BinaryComparisonOpTypeFilterDecoder {
 
     public PropertyIsGreaterThanOrEqualToFilterDecoder() {
         super(PropertyIsGreaterThanOrEqualTo, new PropertyIsLikeFilterDecoder());

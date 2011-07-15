@@ -7,8 +7,8 @@ import java.util.logging.Level;
 
 import javax.xml.namespace.QName;
 
-import org.geoserver.bxml.filter_1_1.ExpressionChainDecoder;
 import org.geoserver.bxml.filter_1_1.FilterLinkDecoder;
+import org.geoserver.bxml.filter_1_1.expression.ExpressionChainDecoder;
 import org.geoserver.bxml.gml_3_1.EnvelopeDecoder;
 import org.geotools.filter.AttributeExpressionImpl;
 import org.geotools.filter.v1_1.OGC;

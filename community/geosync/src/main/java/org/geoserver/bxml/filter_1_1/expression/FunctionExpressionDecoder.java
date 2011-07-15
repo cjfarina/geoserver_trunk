@@ -1,4 +1,4 @@
-package org.geoserver.bxml.filter_1_1;
+package org.geoserver.bxml.filter_1_1.expression;
 
 import static org.geotools.filter.v1_1.OGC.Function;
 
@@ -18,26 +18,26 @@ public class FunctionExpressionDecoder extends ExpressionLinkDecoder {
     public static final QName name = new QName(OGC.NAMESPACE, "name");
 
     private final List<Expression> expresions = new ArrayList<Expression>();
-    
+
     private String functionName = null;
-    
+
     public FunctionExpressionDecoder() {
         super(Function);
     }
-    
+
     @Override
     protected void decodeElement(final BxmlStreamReader r) throws Exception {
         expresions.add(new ExpressionChainDecoder().decode(r));
     }
-    
+
     @Override
     protected void decodeAttributtes(BxmlStreamReader r, Map<QName, String> attributes)
             throws IOException {
         functionName = attributes.get(name);
     }
-    
+
     @Override
     protected Expression buildResult() {
-        return ff.function(functionName, (Expression[])expresions.toArray());
+        return ff.function(functionName, (Expression[]) expresions.toArray());
     }
 }

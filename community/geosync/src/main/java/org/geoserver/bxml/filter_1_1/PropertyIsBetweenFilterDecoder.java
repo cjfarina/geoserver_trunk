@@ -7,6 +7,7 @@ import java.util.List;
 
 import javax.xml.namespace.QName;
 
+import org.geoserver.bxml.filter_1_1.expression.ExpressionChainDecoder;
 import org.geoserver.bxml.filter_1_1.spatial.EqualsFilterDecoder;
 import org.geotools.filter.v1_1.OGC;
 import org.gvsig.bxml.stream.BxmlStreamReader;

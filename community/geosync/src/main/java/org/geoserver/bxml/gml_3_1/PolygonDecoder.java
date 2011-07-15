@@ -19,25 +19,25 @@ import com.vividsolutions.jts.geom.Polygon;
 public class PolygonDecoder extends GMLLinkDecoder {
 
     private LinearRing shell;
-    
+
     private List<LinearRing> holes = new ArrayList<LinearRing>();
-    
+
     public PolygonDecoder() {
         super(Polygon, new LinearRingDecoder());
     }
-    
+
     protected void decodeElement(final BxmlStreamReader r) throws Exception {
         QName name = r.getElementName();
-        
+
         LinearRingDecoder linearRingDecoder = new LinearRingDecoder();
         linearRingDecoder.setCrs(getCrs());
         linearRingDecoder.setDimension(getDimension());
-        if(exterior.equals(name)){
+        if (exterior.equals(name)) {
             r.next();
-            shell = (LinearRing)linearRingDecoder.decode(r);
-        } else if(interior.equals(name)){
+            shell = (LinearRing) linearRingDecoder.decode(r);
+        } else if (interior.equals(name)) {
             r.next();
-            holes.add((LinearRing)linearRingDecoder.decode(r));
+            holes.add((LinearRing) linearRingDecoder.decode(r));
         }
     }
 
@@ -45,7 +45,7 @@ public class PolygonDecoder extends GMLLinkDecoder {
             throws Exception {
         super.decodeAttributtes(r, attributes);
     }
-    
+
     @Override
     protected Geometry buildResult() {
         LinearRing[] holesArray = new LinearRing[holes.size()];

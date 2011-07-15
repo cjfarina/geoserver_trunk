@@ -71,9 +71,10 @@ public abstract class AbstractDecoder<T> {
     }
 
     /**
-     * @param r must be possitioned at the START_ELEMENT event of the element who's value is to be
-     *        read. When this method returns the reader is guaranteed to be possitioned at the
-     *        END_ELEMENT event of the same element.
+     * @param r
+     *            must be possitioned at the START_ELEMENT event of the element who's value is to be
+     *            read. When this method returns the reader is guaranteed to be possitioned at the
+     *            END_ELEMENT event of the same element.
      * @return
      * @throws IOException
      */

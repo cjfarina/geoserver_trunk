@@ -25,15 +25,16 @@ public class LinearRingDecoder extends GMLLinkDecoder {
     @SuppressWarnings("unchecked")
     protected void decodeElement(final BxmlStreamReader r) throws Exception {
         QName name = r.getElementName();
-        CoordinatePostListParser coordinatePostListParser = new CoordinatePostListParser(name, getDimension());
+        CoordinatePostListParser coordinatePostListParser = new CoordinatePostListParser(name,
+                getDimension());
         Object postList = coordinatePostListParser.decode(r);
-        if(getCrs() == null){
+        if (getCrs() == null) {
             setCrs(coordinatePostListParser.getCrs());
         }
-        if(getDimension() == -1){
+        if (getDimension() == -1) {
             setDimension(coordinatePostListParser.getDimension());
         }
-        coordinates.addAll((List<Coordinate>)postList);
+        coordinates.addAll((List<Coordinate>) postList);
     }
 
     protected void decodeAttributtes(final BxmlStreamReader r, Map<QName, String> attributes)
@@ -43,7 +44,8 @@ public class LinearRingDecoder extends GMLLinkDecoder {
 
     @Override
     protected Geometry buildResult() {
-        LinearRing linearRing = gf.createLinearRing(coordinates.toArray(new Coordinate[coordinates.size()]));
+        LinearRing linearRing = gf.createLinearRing(coordinates.toArray(new Coordinate[coordinates
+                .size()]));
         linearRing.setUserData(getCrs());
         return linearRing;
     }

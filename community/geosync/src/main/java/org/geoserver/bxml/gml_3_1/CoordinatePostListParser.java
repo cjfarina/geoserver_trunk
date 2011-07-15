@@ -14,26 +14,26 @@ import com.vividsolutions.jts.geom.Coordinate;
 public class CoordinatePostListParser extends GMLLinkDecoder {
 
     private List<Coordinate> coordinates = new ArrayList<Coordinate>();
-    
+
     public CoordinatePostListParser(final QName name, final int dimension) {
         super(name);
         this.setDimension(dimension);
     }
-    
+
     @Override
     protected void decodeElement(BxmlStreamReader r) throws Exception {
-        
+
         QName name = r.getElementName();
-        
-        if(pos.equals(name)){
+
+        if (pos.equals(name)) {
             coordinates.addAll(toCoordList(readStringValue(r, name)));
         }
     }
-    
+
     protected void setStringValue(String value) throws Exception {
         coordinates.addAll(toCoordList(value));
     }
-    
+
     private List<Coordinate> toCoordList(String value) {
         value = value.trim();
         value = value.replaceAll("\n", " ");

@@ -76,7 +76,7 @@ public abstract class GMLLinkDecoder extends AbstractDecoder<Object> {
         int dimension = Integer.valueOf(srsDimension);
         return dimension;
     }
-    
+
     public CoordinateReferenceSystem getCrs() {
         return crs;
     }

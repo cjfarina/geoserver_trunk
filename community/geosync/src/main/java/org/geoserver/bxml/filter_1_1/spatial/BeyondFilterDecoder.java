@@ -12,8 +12,8 @@ public class BeyondFilterDecoder extends DistanceBufferFilterDecoder {
 
     @Override
     protected Filter buildResult() {
-        return ff.beyond(expression, ff.literal(geometry), distance.getValue(),
-                distance.getUnits());
+        return ff
+                .beyond(expression, ff.literal(geometry), distance.getValue(), distance.getUnits());
     }
 
 }
