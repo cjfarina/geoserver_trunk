@@ -48,6 +48,8 @@ import org.opengis.feature.type.Name;
 import org.opengis.filter.Filter;
 import org.opengis.filter.sort.SortOrder;
 
+import com.vividsolutions.jts.geom.Geometry;
+
 public class GSSLayersPage extends GeoServerSecuredPage implements IHeaderContributor {
 
     private final GSSLayerProvider provider;
@@ -245,7 +247,29 @@ public class GSSLayersPage extends GeoServerSecuredPage implements IHeaderContri
 
         private static final long serialVersionUID = 4641819017764643297L;
 
-        static final Property<GSSLayerInfo> TYPE = new BeanProperty<GSSLayerInfo>("type", "type");
+        static final Property<GSSLayerInfo> TYPE = new BeanProperty<GSSLayerInfo>("type",
+                "geometryType") {
+
+            private static final long serialVersionUID = 1L;
+
+            @Override
+            public Comparator<GSSLayerInfo> getComparator() {
+                return new Comparator<GSSLayerInfo>() {
+                    @Override
+                    public int compare(GSSLayerInfo o1, GSSLayerInfo o2) {
+                        Class<? extends Geometry> gt1 = o1.getGeometryType();
+                        Class<? extends Geometry> gt2 = o2.getGeometryType();
+                        if (gt1 == null) {
+                            return gt2 == null ? 0 : -1;
+                        }
+                        if (gt2 == null) {
+                            return 1;
+                        }
+                        return gt1.getName().compareTo(gt2.getName());
+                    }
+                };
+            }
+        };
 
         static final Property<GSSLayerInfo> NAME = new BeanProperty<GSSLayerInfo>("name", "name");
 

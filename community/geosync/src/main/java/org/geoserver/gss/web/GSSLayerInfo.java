@@ -11,7 +11,10 @@ import org.geotools.data.FeatureSource;
 import org.geotools.data.FeatureStore;
 import org.geotools.feature.NameImpl;
 import org.opengis.feature.type.GeometryDescriptor;
+import org.opengis.feature.type.GeometryType;
 import org.opengis.feature.type.Name;
+
+import com.vividsolutions.jts.geom.Geometry;
 
 public class GSSLayerInfo implements Comparable<GSSLayerInfo>, Serializable {
 
@@ -27,13 +30,13 @@ public class GSSLayerInfo implements Comparable<GSSLayerInfo>, Serializable {
 
     private boolean readOnly;
 
-    private Class<?> geometryType;
+    private Class<? extends Geometry> geometryType;
 
     private boolean enabled;
 
     private String errorMessage;
 
-    @SuppressWarnings("rawtypes")
+    @SuppressWarnings({ "rawtypes", "unchecked" })
     public GSSLayerInfo(final FeatureTypeInfo featureType) {
         final Name qualifiedName = featureType.getQualifiedName();
         this.ns = qualifiedName.getNamespaceURI();
@@ -47,7 +50,8 @@ public class GSSLayerInfo implements Comparable<GSSLayerInfo>, Serializable {
                 FeatureSource featureSource = featureType.getFeatureSource(null, null);
                 this.readOnly = !(featureSource instanceof FeatureStore);
                 if (geometryDescriptor != null) {
-                    this.geometryType = geometryDescriptor.getType().getBinding();
+                    GeometryType type = geometryDescriptor.getType();
+                    this.geometryType = (Class<? extends Geometry>) type.getBinding();
                 }
             } catch (Exception e) {
                 enabled = false;
@@ -101,9 +105,9 @@ public class GSSLayerInfo implements Comparable<GSSLayerInfo>, Serializable {
     }
 
     /**
-     * @return the geometryType
+     * @return the geometryType, or {@code null} if the FeatureType is geometry-less
      */
-    public Class<?> getGeometryType() {
+    public Class<? extends Geometry> getGeometryType() {
         return geometryType;
     }
 
