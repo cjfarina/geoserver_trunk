@@ -23,7 +23,7 @@ import org.opengis.filter.identity.FeatureId;
 
 public class FilterDecoder extends AbstractDecoder<Filter> {
 
-    private Decoder<Filter> chain;
+    private Decoder<Filter> choice;
 
     private Filter filter;
 
@@ -38,7 +38,7 @@ public class FilterDecoder extends AbstractDecoder<Filter> {
 
     @SuppressWarnings("unchecked")
     private void setup() {
-        this.chain = new ChoiceDecoder<Filter>(
+        this.choice = new ChoiceDecoder<Filter>(
                 new BinaryComparisonOperatorDecoder(), //
                 new PropertyIsBetweenFilterDecoder(), new PropertyIsLikeFilterDecoder(),
                 new PropertyIsNullFilterDecoder(), new LogicOperatorDecoder(),
@@ -51,7 +51,7 @@ public class FilterDecoder extends AbstractDecoder<Filter> {
         if (Filter.equals(r.getElementName())) {
             return super.decode(r);
         } else {
-            return chain.decode(r);
+            return choice.decode(r);
         }
     }
 
@@ -71,7 +71,7 @@ public class FilterDecoder extends AbstractDecoder<Filter> {
                 throw new MalformedFilterException(
                         "The <_Id> element can't be in the same Filter than a <logicalOps>, <comparisonOps> and <spatialOps>");
             }
-            filter = chain.decode(r);
+            filter = choice.decode(r);
         }
     }
 
@@ -88,6 +88,6 @@ public class FilterDecoder extends AbstractDecoder<Filter> {
 
     @Override
     public Boolean canHandle(QName name) {
-        return chain.canHandle(name);
+        return choice.canHandle(name);
     }
 }
