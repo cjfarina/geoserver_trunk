@@ -16,6 +16,7 @@ import org.geoserver.gss.impl.subscription.ListTopicsOp;
 import org.geoserver.gss.impl.subscription.RemoveTopicOp;
 import org.geoserver.gss.impl.subscription.SubscribeOp;
 import org.geoserver.gss.impl.transaction.TransactionOp;
+import org.geoserver.gss.internal.atom.FeedImpl;
 import org.geoserver.gss.service.AcceptChange;
 import org.geoserver.gss.service.AcceptChangeResponse;
 import org.geoserver.gss.service.CreateTopic;
@@ -23,7 +24,6 @@ import org.geoserver.gss.service.CreateTopicResponse;
 import org.geoserver.gss.service.GeoSynchronizationService;
 import org.geoserver.gss.service.GetCapabilities;
 import org.geoserver.gss.service.GetEntries;
-import org.geoserver.gss.service.GetEntriesResponse;
 import org.geoserver.gss.service.ListSubscriptions;
 import org.geoserver.gss.service.ListSubscriptionsResponse;
 import org.geoserver.gss.service.ListTopics;
@@ -77,7 +77,7 @@ public class DefaultGeoSynchronizationService implements GeoSynchronizationServi
     /**
      * @see org.geoserver.gss.service.GeoSynchronizationService#getEntries(org.geoserver.gss.service.GetEntries)
      */
-    public GetEntriesResponse getEntries(final GetEntries request) throws ServiceException {
+    public FeedImpl getEntries(final GetEntries request) throws ServiceException {
         Assert.notNull(request, "request is null");
         Assert.notNull(request.getFeed(), "request.getFeed() is null");
         Assert.notNull(request.getOutputFormat(), "request.getOutputFormat() is null");

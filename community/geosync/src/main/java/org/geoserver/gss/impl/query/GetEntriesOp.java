@@ -10,7 +10,6 @@ import org.geoserver.gss.impl.GSS;
 import org.geoserver.gss.internal.atom.FeedImpl;
 import org.geoserver.gss.service.FeedType;
 import org.geoserver.gss.service.GetEntries;
-import org.geoserver.gss.service.GetEntriesResponse;
 import org.geoserver.platform.ServiceException;
 import org.opengis.filter.Filter;
 import org.opengis.filter.sort.SortOrder;
@@ -36,7 +35,7 @@ public class GetEntriesOp {
      * @return
      * @throws ServiceException
      */
-    public GetEntriesResponse execute(final GetEntries request) throws ServiceException {
+    public FeedImpl execute(final GetEntries request) throws ServiceException {
 
         final String baseUrl = request.getBaseUrl();
         final String handle = request.getHandle();
@@ -66,7 +65,7 @@ public class GetEntriesOp {
             throw new IllegalArgumentException("Unknown feed type: " + feed);
         }
 
-        return new GetEntriesResponse(baseUrl, response);
+        return response;
     }
 
 }

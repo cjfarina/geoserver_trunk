@@ -6,13 +6,15 @@ import java.util.Collections;
 import java.util.HashSet;
 import java.util.Set;
 
+import javax.xml.stream.FactoryConfigurationError;
 import javax.xml.stream.XMLOutputFactory;
+import javax.xml.stream.XMLStreamException;
 import javax.xml.stream.XMLStreamWriter;
 
+import org.geoserver.bxml.atom.FeedEncoder;
 import org.geoserver.gss.impl.GSS;
-import org.geoserver.gss.service.FeedType;
+import org.geoserver.gss.internal.atom.FeedImpl;
 import org.geoserver.gss.service.GetEntries;
-import org.geoserver.gss.service.GetEntriesResponse;
 import org.geoserver.ows.Response;
 import org.geoserver.ows.util.OwsUtils;
 import org.geoserver.platform.Operation;
@@ -25,7 +27,12 @@ import org.gvsig.bxml.stream.BxmlStreamWriter_Contract;
 import org.gvsig.bxml.stream.EncodingOptions;
 import org.springframework.util.Assert;
 
-public abstract class AbstractGetEntriesResponse extends Response {
+/**
+ * OWS {@link Response} that encodes the response of a {@code GetEntries} operation {@link FeedImpl
+ * result} as specified in the <i>OGC 10-069r2 Engineering Report</i>, section 9.2.4
+ * "Resolution feed", page 48.
+ */
+public class FeedResponse extends Response {
 
     private static final String TEXT_XML = "text/xml";
 
@@ -45,8 +52,6 @@ public abstract class AbstractGetEntriesResponse extends Response {
         OUTPUT_FORMATS = Collections.unmodifiableSet(formats);
     }
 
-    private final FeedType feedName;
-
     protected final GSS gss;
 
     /**
@@ -54,18 +59,16 @@ public abstract class AbstractGetEntriesResponse extends Response {
      *            the kind feed this response can handle
      * @param gss
      */
-    public AbstractGetEntriesResponse(final FeedType feedName, final GSS gss) {
-        super(GetEntriesResponse.class, OUTPUT_FORMATS);
-        Assert.notNull(feedName);
+    public FeedResponse(final GSS gss) {
+        super(FeedImpl.class, OUTPUT_FORMATS);
         Assert.notNull(gss);
-        this.feedName = feedName;
         this.gss = gss;
     }
 
     @Override
     public String getMimeType(final Object value, final Operation operation)
             throws ServiceException {
-        Assert.isTrue(value instanceof GetEntriesResponse);
+        Assert.isTrue(value instanceof FeedImpl);
         GetEntries request = OwsUtils.parameter(operation.getParameters(), GetEntries.class);
         String outputFormat = request.getOutputFormat();
         Assert.isTrue(getOutputFormats().contains(outputFormat));
@@ -73,8 +76,8 @@ public abstract class AbstractGetEntriesResponse extends Response {
     }
 
     /**
-     * Determines whether this response can handle the given operation based on the request's
-     * {@link GetEntries#getFeed() FEED}
+     * Determines whether this response can handle the given operation based on whether the
+     * operation parameter is a {@link GetEntries} request.
      * 
      * @see org.geoserver.ows.Response#canHandle(org.geoserver.platform.Operation)
      */
@@ -84,33 +87,22 @@ public abstract class AbstractGetEntriesResponse extends Response {
         if (request == null) {
             return false;
         }
-        FeedType feed = request.getFeed();
-        return this.feedName.equals(feed);
+        return true;
     }
 
     @Override
     public void write(final Object value, final OutputStream output, final Operation operation)
             throws IOException, ServiceException {
-        Assert.isTrue(value instanceof GetEntriesResponse);
+        Assert.isTrue(value instanceof FeedImpl);
 
         final GetEntries request = OwsUtils.parameter(operation.getParameters(), GetEntries.class);
-        final GetEntriesResponse response = (GetEntriesResponse) value;
 
-        String outputFormat = request.getOutputFormat();
-        final boolean isBinary = outputFormat.startsWith(APPLICATION_ATOM_X_BXML)
-                || outputFormat.equals(TEXT_BXML);
+        final FeedImpl response = (FeedImpl) value;
+        final String outputFormat = request.getOutputFormat();
+
         try {
             BxmlStreamWriter writer;
-            if (isBinary) {
-                BxmlOutputFactory outputFactory = BxmlFactoryFinder.newOutputFactory();
-                writer = outputFactory.createSerializer(output);
-            } else {
-                XMLStreamWriter staxWriter = XMLOutputFactory.newInstance().createXMLStreamWriter(
-                        output);
-                EncodingOptions encodingOptions = new EncodingOptions();
-                writer = new XmlStreamWriterAdapter(encodingOptions, staxWriter);
-                writer = new BxmlStreamWriter_Contract(writer);
-            }
+            writer = getResponseWriter(output, outputFormat);
             encode(request, response, writer);
             writer.flush();
         } catch (ServiceException e) {
@@ -124,7 +116,33 @@ public abstract class AbstractGetEntriesResponse extends Response {
         }
     }
 
-    protected abstract void encode(final GetEntries request, final GetEntriesResponse response,
-            final BxmlStreamWriter writer) throws ServiceException, Exception;
+    private BxmlStreamWriter getResponseWriter(final OutputStream output, final String outputFormat)
+            throws IOException, XMLStreamException, FactoryConfigurationError {
+
+        final boolean isBinary = outputFormat.startsWith(APPLICATION_ATOM_X_BXML)
+                || outputFormat.equals(TEXT_BXML);
+
+        BxmlStreamWriter writer;
+        if (isBinary) {
+            BxmlOutputFactory outputFactory = BxmlFactoryFinder.newOutputFactory();
+            writer = outputFactory.createSerializer(output);
+        } else {
+            XMLStreamWriter staxWriter = XMLOutputFactory.newInstance().createXMLStreamWriter(
+                    output);
+            EncodingOptions encodingOptions = new EncodingOptions();
+            writer = new XmlStreamWriterAdapter(encodingOptions, staxWriter);
+            writer = new BxmlStreamWriter_Contract(writer);
+        }
+        return writer;
+    }
+
+    protected void encode(final GetEntries request, final FeedImpl response,
+            final BxmlStreamWriter w) throws ServiceException, IOException {
+
+        FeedEncoder encoder = new FeedEncoder();
+
+        encoder.encode(response, w);
+        w.flush();
+    }
 
 }

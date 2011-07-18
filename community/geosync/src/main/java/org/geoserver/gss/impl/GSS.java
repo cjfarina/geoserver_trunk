@@ -32,7 +32,7 @@ import org.geoserver.catalog.FeatureTypeInfo;
 import org.geoserver.config.GeoServer;
 import org.geoserver.config.GeoServerDataDirectory;
 import org.geoserver.gss.config.GSSInfo;
-import org.geoserver.gss.impl.query.AbstractGetEntriesResponse;
+import org.geoserver.gss.impl.query.FeedResponse;
 import org.geoserver.gss.internal.atom.FeedImpl;
 import org.geoserver.gss.internal.storage.GeoSyncDatabase;
 import org.geoserver.platform.GeoServerExtensions;
@@ -389,14 +389,14 @@ public class GSS implements DisposableBean {
 
     /**
      * @return the list of supported {@code GetEntries} output formats by inspecting the application
-     *         context for instances of {@link AbstractGetEntriesResponse}
+     *         context for instances of {@link FeedResponse}
      */
     public Set<String> getGetEntriesOutputFormats() {
-        final List<AbstractGetEntriesResponse> getEntriesResponses;
-        getEntriesResponses = GeoServerExtensions.extensions(AbstractGetEntriesResponse.class);
+        final List<FeedResponse> getEntriesResponses;
+        getEntriesResponses = GeoServerExtensions.extensions(FeedResponse.class);
 
         Set<String> supportedFormats = new HashSet<String>();
-        for (AbstractGetEntriesResponse r : getEntriesResponses) {
+        for (FeedResponse r : getEntriesResponses) {
             supportedFormats.addAll(r.getOutputFormats());
         }
 

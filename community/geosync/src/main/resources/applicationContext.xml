@@ -141,18 +141,9 @@
   <bean id="gssGetEntriesKvpReader" class="org.geoserver.gss.impl.query.GetEntriesKvpRequestReader">
   </bean>
   
-  <bean id="gssGetEntriesChangeFeedResponse" class="org.geoserver.gss.impl.query.ChangeFeedResponse">
+  <bean id="gssGetEntriesResponse" class="org.geoserver.gss.impl.query.FeedResponse">
     <constructor-arg ref="GSS"/>
   </bean>
-  
-  <bean id="gssGetEntriesResolutionResponse" class="org.geoserver.gss.impl.query.ResolutionFeedResponse">
-    <constructor-arg ref="GSS"/>
-  </bean>
-  
-  <bean id="gssGetEntriesReplicationResponse" class="org.geoserver.gss.impl.query.ReplicationFeedResponse">
-    <constructor-arg ref="GSS"/>
-  </bean>
-  
 
   <!-- XML handling -->
   <bean id="gssXsd" class="org.geoserver.gss.xml.GSSSchema">
@@ -168,7 +159,6 @@
     <constructor-arg ref="gssXsd" />
     <constructor-arg ref="catalog" />
   </bean>
-
     
     
   <!-- WEB UI -->

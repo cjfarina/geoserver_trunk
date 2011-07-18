@@ -5,6 +5,7 @@
 package org.geoserver.gss.service;
 
 import org.geoserver.config.ServiceInfo;
+import org.geoserver.gss.internal.atom.FeedImpl;
 import org.geoserver.platform.ServiceException;
 
 public interface GeoSynchronizationService {
@@ -15,7 +16,7 @@ public interface GeoSynchronizationService {
 
     TransactionResponse transaction(final Transaction request) throws ServiceException;
 
-    GetEntriesResponse getEntries(final GetEntries request) throws ServiceException;
+    FeedImpl getEntries(final GetEntries request) throws ServiceException;
 
     AcceptChangeResponse acceptChange(final AcceptChange request) throws ServiceException;
 
