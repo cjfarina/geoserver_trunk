@@ -1,49 +1,64 @@
 package org.geoserver.bxml.filter_1_1;
 
-import static org.geotools.filter.v1_1.OGC.FeatureId;
 import static org.geotools.filter.v1_1.OGC.Filter;
+import static org.geotools.filter.v1_1.OGC.FeatureId;
 
-import java.util.HashSet;
 import java.util.Set;
 
 import javax.xml.namespace.QName;
 
 import org.geoserver.bxml.AbstractDecoder;
+import org.geoserver.bxml.Decoder;
+import org.geoserver.bxml.filter_1_1.spatial.BBOXFilterDecoder;
+import org.geoserver.bxml.filter_1_1.spatial.BinarySpatialOperationDecoder;
+import org.geoserver.bxml.filter_1_1.spatial.DistanceBufferFilterDecoder;
 import org.geotools.factory.CommonFactoryFinder;
 import org.geotools.factory.GeoTools;
 import org.geotools.filter.MalformedFilterException;
 import org.gvsig.bxml.stream.BxmlStreamReader;
+import java.util.HashSet;
 import org.opengis.filter.Filter;
 import org.opengis.filter.FilterFactory2;
 import org.opengis.filter.identity.FeatureId;
 
-public class FilterChainDecoder extends AbstractDecoder<Filter> {
+public class FilterDecoder extends AbstractDecoder<Filter> {
 
-    private AndFilterDecoder filterLink;
+    private Decoder<Filter> chain;
 
     private Filter filter;
 
     private Set<FeatureId> identifiers = new HashSet<FeatureId>();
 
-    private static FilterFactory2 ff = CommonFactoryFinder.getFilterFactory2(GeoTools
+    protected static FilterFactory2 ff = CommonFactoryFinder.getFilterFactory2(GeoTools
             .getDefaultHints());
 
-    public FilterChainDecoder(QName name) {
-        super(Filter);
-        filterLink = new AndFilterDecoder();
+    public FilterDecoder() {
+        setup();
     }
 
-    public Filter decodeFilter(final BxmlStreamReader r) throws Exception {
-        if (filterLink != null) {
-            return filterLink.decode(r);
+    @SuppressWarnings("unchecked")
+    private void setup() {
+        this.chain = new ChoiceDecoder<Filter>(
+                new BinaryComparisonOperatorDecoder(), //
+                new PropertyIsBetweenFilterDecoder(), new PropertyIsLikeFilterDecoder(),
+                new PropertyIsNullFilterDecoder(), new LogicOperatorDecoder(),
+                new DistanceBufferFilterDecoder(), new BinarySpatialOperationDecoder(),
+                new BBOXFilterDecoder());
+    }
+
+    @Override
+    public Filter decode(BxmlStreamReader r) throws Exception {
+        if (Filter.equals(r.getElementName())) {
+            return super.decode(r);
         } else {
-            return null;
+            return chain.decode(r);
         }
     }
 
-    protected void decodeElement(final BxmlStreamReader r) throws Exception {
+    @Override
+    public void decodeElement(final BxmlStreamReader r) throws Exception {
         QName name = r.getElementName();
-
+        setup();
         if (FeatureId.equals(name)) {
             if (filter != null) {
                 throw new MalformedFilterException(
@@ -56,7 +71,7 @@ public class FilterChainDecoder extends AbstractDecoder<Filter> {
                 throw new MalformedFilterException(
                         "The <_Id> element can't be in the same Filter than a <logicalOps>, <comparisonOps> and <spatialOps>");
             }
-            filter = decodeFilter(r);
+            filter = chain.decode(r);
         }
     }
 
@@ -69,5 +84,10 @@ public class FilterChainDecoder extends AbstractDecoder<Filter> {
         } else {
             return null;
         }
+    }
+
+    @Override
+    public Boolean canHandle(QName name) {
+        return chain.canHandle(name);
     }
 }

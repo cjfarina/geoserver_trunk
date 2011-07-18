@@ -9,17 +9,24 @@ import java.util.Map;
 
 import javax.xml.namespace.QName;
 
+import org.geoserver.bxml.AbstractDecoder;
+import org.geotools.factory.CommonFactoryFinder;
+import org.geotools.factory.GeoTools;
 import org.geotools.filter.v1_1.OGC;
 import org.gvsig.bxml.stream.BxmlStreamReader;
+import org.opengis.filter.FilterFactory2;
 import org.opengis.filter.expression.Expression;
 
-public class FunctionExpressionDecoder extends ExpressionLinkDecoder {
+public class FunctionExpressionDecoder extends AbstractDecoder<Expression> {
 
     public static final QName name = new QName(OGC.NAMESPACE, "name");
 
     private final List<Expression> expresions = new ArrayList<Expression>();
 
     private String functionName = null;
+    
+    protected static FilterFactory2 ff = CommonFactoryFinder.getFilterFactory2(GeoTools
+            .getDefaultHints());
 
     public FunctionExpressionDecoder() {
         super(Function);
@@ -27,7 +34,7 @@ public class FunctionExpressionDecoder extends ExpressionLinkDecoder {
 
     @Override
     protected void decodeElement(final BxmlStreamReader r) throws Exception {
-        expresions.add(new ExpressionChainDecoder().decode(r));
+        expresions.add(new ExpressionDecoder().decode(r));
     }
 
     @Override

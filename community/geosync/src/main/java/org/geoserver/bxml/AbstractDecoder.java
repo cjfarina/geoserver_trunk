@@ -19,10 +19,14 @@ public abstract class AbstractDecoder<T> implements Decoder<T> {
 
     protected static final Logger LOGGER = Logging.getLogger(AbstractAtomEncoder.class);
 
-    protected final QName name;
+    protected QName name;
 
     public AbstractDecoder(final QName name) {
         this.name = name;
+    }
+    
+    public AbstractDecoder(){
+        
     }
 
     protected void decodeElement(final BxmlStreamReader r) throws Exception {
@@ -37,11 +41,19 @@ public abstract class AbstractDecoder<T> implements Decoder<T> {
     protected void setStringValue(String value) throws Exception {
     }
 
+    @Override
+    public Boolean canHandle(QName name) {
+        return this.name.equals(name);
+    }
+
     /**
      * @see org.geoserver.bxml.Decoder#decode(org.gvsig.bxml.stream.BxmlStreamReader)
      */
     @Override
     public T decode(BxmlStreamReader r) throws Exception {
+        if(name == null){
+            name = r.getElementName();
+        }
         r.require(EventType.START_ELEMENT, name.getNamespaceURI(), name.getLocalPart());
 
         EventType event;
@@ -76,10 +88,9 @@ public abstract class AbstractDecoder<T> implements Decoder<T> {
     }
 
     /**
-     * @param r
-     *            must be possitioned at the START_ELEMENT event of the element who's value is to be
-     *            read. When this method returns the reader is guaranteed to be possitioned at the
-     *            END_ELEMENT event of the same element.
+     * @param r must be possitioned at the START_ELEMENT event of the element who's value is to be
+     *        read. When this method returns the reader is guaranteed to be possitioned at the
+     *        END_ELEMENT event of the same element.
      * @return
      * @throws IOException
      */

@@ -15,7 +15,7 @@ import net.opengis.wfs.impl.WfsFactoryImpl;
 import org.geoserver.bxml.AbstractDecoder;
 import org.geoserver.bxml.feature.FeatureTypeUtil;
 import org.geoserver.bxml.feature.PropertyDecoder;
-import org.geoserver.bxml.filter_1_1.FilterChainDecoder;
+import org.geoserver.bxml.filter_1_1.FilterDecoder;
 import org.gvsig.bxml.stream.BxmlStreamReader;
 
 public class UpdateElementTypeDecoder extends AbstractDecoder<UpdateElementType> {
@@ -33,7 +33,7 @@ public class UpdateElementTypeDecoder extends AbstractDecoder<UpdateElementType>
         QName name = r.getElementName();
 
         if (Filter.equals(name)) {
-            FilterChainDecoder filterDecoder = new FilterChainDecoder(Filter);
+            FilterDecoder filterDecoder = new FilterDecoder();
             element.setFilter(filterDecoder.decode(r));
         }
 

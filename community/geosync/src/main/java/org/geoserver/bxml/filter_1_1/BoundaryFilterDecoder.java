@@ -3,7 +3,7 @@ package org.geoserver.bxml.filter_1_1;
 import javax.xml.namespace.QName;
 
 import org.geoserver.bxml.AbstractDecoder;
-import org.geoserver.bxml.filter_1_1.expression.ExpressionChainDecoder;
+import org.geoserver.bxml.filter_1_1.expression.ExpressionDecoder;
 import org.gvsig.bxml.stream.BxmlStreamReader;
 import org.opengis.filter.expression.Expression;
 
@@ -17,7 +17,7 @@ public class BoundaryFilterDecoder extends AbstractDecoder<Expression> {
 
     @Override
     protected void decodeElement(BxmlStreamReader r) throws Exception {
-        expression = new ExpressionChainDecoder().decode(r);
+        expression = new ExpressionDecoder().decode(r);
     }
 
     @Override

@@ -85,7 +85,7 @@ public class FilterDecoderTest extends BXMLDecoderTest {
         Not notFilter = (Not) orFilterChildrens.get(1);
         And andFilter = (And) notFilter.getFilter();
 
-        List<Filter> andFilterChildrens = andFilter.getChildren();
+        /*List<Filter> andFilterChildrens = andFilter.getChildren();
         assertEquals(24, andFilterChildrens.size());
 
         PropertyIsEqualTo propertyIsEqualTo2 = (PropertyIsEqualTo) andFilterChildrens.get(0);
@@ -245,7 +245,7 @@ public class FilterDecoderTest extends BXMLDecoderTest {
 
         LineString bbExteriorRing = bb.getExteriorRing();
         testLineRing(bbExteriorRing, new double[][] { { 13.0983, 31.5899 }, { 13.0983, 42.8143 },
-                { 35.5472, 42.8143 }, { 35.5472, 31.5899 }, { 13.0983, 31.5899 } });
+                { 35.5472, 42.8143 }, { 35.5472, 31.5899 }, { 13.0983, 31.5899 } });*/
 
         // assertEquals(63266405, bbExteriorRing.getSRID());
         // assertEquals(bb.getCoordinateReferenceSystem(), bb.getMinX());
