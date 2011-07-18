@@ -14,6 +14,9 @@ import org.geotools.util.Range;
 import org.opengis.filter.Filter;
 import org.opengis.filter.sort.SortOrder;
 
+import com.google.common.base.Function;
+import com.google.common.collect.Iterators;
+
 /**
  * Builds a feed of entries for the RESOLUTION FEED based on the given filtering criteria.
  * 
@@ -93,16 +96,21 @@ class CommitsEntryListBuilder {
             commits = list.iterator();
         }
 
-        Iterable<EntryImpl> entries = new CommitToEntryList(gss, commits, filter, startPosition,
-                maxEntries);
+        final Function<RevCommit, EntryImpl> commitToEntryFunctor = new CommitToEntry(gss);
+        Iterator<EntryImpl> entries = Iterators.transform(commits, commitToEntryFunctor);
 
-        FeedImpl feed = buildFeedImpl();
-        feed.setEntry(entries.iterator());
+        FilteringEntryListBuilder filteringEntries = new FilteringEntryListBuilder(this.filter,
+                this.searchTerms, this.startPosition, this.maxEntries);
+
+        entries = filteringEntries.filter(entries);
+
+        FeedImpl feed = buildFeedImpl(entries);
 
         return feed;
+
     }
 
-    private FeedImpl buildFeedImpl() {
+    private FeedImpl buildFeedImpl(final Iterator<EntryImpl> entries) {
         FeedImpl feed = new FeedImpl();
         feed.setStartPosition(startPosition);
         feed.setMaxEntries(maxEntries);
@@ -117,6 +125,7 @@ class CommitsEntryListBuilder {
             feed.setId(headCommit.getId().toString());
             feed.setUpdated(new Date(headCommit.getTimestamp()));
         }
+        feed.setEntry(entries);
         return feed;
     }
 

@@ -17,7 +17,6 @@ import org.opengis.filter.Filter;
 import org.opengis.filter.sort.SortOrder;
 
 import com.google.common.base.Function;
-import com.google.common.base.Predicate;
 import com.google.common.collect.Iterators;
 
 /**
@@ -121,13 +120,11 @@ class DiffEntryListBuilder {
         Function<DiffEntry, EntryImpl> diffToEntryFunction = new DiffToEntry(gss);
 
         Iterator<EntryImpl> entries = Iterators.transform(diffEntries, diffToEntryFunction);
-        if (!Filter.INCLUDE.equals(filter)) {
-            EntryFilter entryFilter = new EntryFilter(filter);
-            entries = Iterators.filter(entries, entryFilter);
-        }
-        if (maxEntries != null) {
-            entries = Iterators.limit(entries, maxEntries.intValue());
-        }
+
+        FilteringEntryListBuilder filteringEntries = new FilteringEntryListBuilder(this.filter,
+                this.searchTerms, this.startPosition, this.maxEntries);
+
+        entries = filteringEntries.filter(entries);
 
         FeedImpl feed = buildFeed(newest, entries);
 
@@ -156,22 +153,6 @@ class DiffEntryListBuilder {
         feed.setEntry(entries);
 
         return feed;
-    }
-
-    private static final class EntryFilter implements Predicate<EntryImpl> {
-
-        private final Filter filter;
-
-        public EntryFilter(final Filter ogcFilter) {
-            this.filter = ogcFilter;
-        }
-
-        @Override
-        public boolean apply(final EntryImpl input) {
-            boolean applies = filter.evaluate(input);
-            return applies;
-        }
-
     }
 
 }

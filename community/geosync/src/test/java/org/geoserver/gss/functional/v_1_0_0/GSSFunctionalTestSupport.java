@@ -1,5 +1,6 @@
 package org.geoserver.gss.functional.v_1_0_0;
 
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
@@ -22,6 +23,9 @@ import org.opengis.feature.type.Name;
 import org.opengis.filter.Filter;
 import org.opengis.filter.FilterFactory2;
 import org.opengis.filter.expression.PropertyName;
+import org.w3c.dom.Document;
+import org.w3c.dom.Node;
+import org.w3c.dom.NodeList;
 
 import com.vividsolutions.jts.geom.Coordinate;
 import com.vividsolutions.jts.geom.Geometry;
@@ -163,4 +167,17 @@ public abstract class GSSFunctionalTestSupport extends GSSTestSupport {
         assertTrue(gss.isReplicated(featureTypeName));
         return future.get();
     }
+
+    protected List<String> evaluateAll(final String xpathStr, final Document dom) throws Exception {
+        NodeList matchingNodes = xpath.getMatchingNodes(xpathStr, dom);
+        int length = matchingNodes.getLength();
+        List<String> matches = new ArrayList<String>(length);
+        for (int i = 0; i < length; i++) {
+            Node item = matchingNodes.item(i);
+            String nodeValue = item.getTextContent();
+            matches.add(nodeValue);
+        }
+        return matches;
+    }
+
 }

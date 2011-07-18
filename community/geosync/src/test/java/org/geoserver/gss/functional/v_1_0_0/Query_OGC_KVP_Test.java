@@ -2,6 +2,10 @@ package org.geoserver.gss.functional.v_1_0_0;
 
 import static org.custommonkey.xmlunit.XMLAssert.assertXpathEvaluatesTo;
 import static org.custommonkey.xmlunit.XMLAssert.assertXpathExists;
+
+import java.util.Arrays;
+import java.util.List;
+
 import junit.framework.Test;
 
 import org.geoserver.gss.internal.atom.Atom;
@@ -36,6 +40,32 @@ public class Query_OGC_KVP_Test extends GSSFunctionalTestSupport {
     private static final String BASE_REQUEST_PATH = "/ows?service=GSS&version=1.0.0&request=GetEntries";
 
     private static final String REPLICATION_FEED_BASE = BASE_REQUEST_PATH + "&FEED=REPLICATIONFEED";
+
+    /**
+     * The ordered list of all values for the {@code /atom:feed/atom:entry/atom:title} XPath in the
+     * REPLICATIONFEED as set up at {@link #oneTimeSetUp()}
+     */
+    private static final List<String> ALL_REPLICATION_TITLES = Arrays.asList( //
+            "Insert of Feature Bridges.1107531599613", //
+            "Insert of Feature Buildings.1107531701011", //
+            "Insert of Feature Buildings.1107531701010", //
+            "Update of Feature Bridges.1107531599613",//
+            "Update of Feature Buildings.1107531701011",//
+            "Delte of Feature Buildings.1107531701010"//
+    );
+
+    /**
+     * The ordered list of all values for the {@code /atom:feed/atom:entry/atom:summary} XPath in
+     * the REPLICATIONFEED as set up at {@link #oneTimeSetUp()}
+     */
+    final List<String> ALL_REPLICATION_SUMMARIES = Arrays.asList(//
+            "Initial import of FeatureType http://www.opengis.net/cite:Bridges",//
+            "Initial import of FeatureType http://www.opengis.net/cite:Buildings",//
+            "Initial import of FeatureType http://www.opengis.net/cite:Buildings",//
+            "Change Cam Bridge",//
+            "Moved building",//
+            "Deleted building"//
+    );
 
     /**
      * This is a READ ONLY TEST so we can use one time setup
@@ -73,7 +103,7 @@ public class Query_OGC_KVP_Test extends GSSFunctionalTestSupport {
     public void testBaseRequest() throws Exception {
         final String request = REPLICATION_FEED_BASE;
         Document dom = super.getAsDOM(request);
-        print(dom);
+        // print(dom);
         Element root = dom.getDocumentElement();
         String nodeName = root.getLocalName();
         assertEquals(Atom.NAMESPACE, root.getNamespaceURI());
@@ -103,6 +133,77 @@ public class Query_OGC_KVP_Test extends GSSFunctionalTestSupport {
         }
     }
 
+    public void testStartPositionFiltering() throws Exception {
+
+        String request;
+        Document dom;
+        List<String> result;
+
+        request = REPLICATION_FEED_BASE;
+        dom = super.getAsDOM(request);
+        // print(dom);
+
+        result = evaluateAll("//atom:feed/atom:entry/atom:title", dom);
+        assertEquals(ALL_REPLICATION_TITLES.size(), result.size());
+        assertEquals(ALL_REPLICATION_TITLES, result);
+
+        request = REPLICATION_FEED_BASE + "&startPosition=2";
+        dom = super.getAsDOM(request);
+        result = evaluateAll("//atom:feed/atom:entry/atom:title", dom);
+        assertEquals(ALL_REPLICATION_TITLES.subList(1, ALL_REPLICATION_TITLES.size()), result);
+
+        request = REPLICATION_FEED_BASE + "&startPosition=6";
+        dom = super.getAsDOM(request);
+        result = evaluateAll("//atom:feed/atom:entry/atom:title", dom);
+        assertEquals(ALL_REPLICATION_TITLES.subList(5, ALL_REPLICATION_TITLES.size()), result);
+
+        request = REPLICATION_FEED_BASE + "&startPosition=10";
+        dom = super.getAsDOM(request);
+        result = evaluateAll("//atom:feed/atom:entry/atom:title", dom);
+        assertTrue(result.isEmpty());
+    }
+
+    public void testSearchTermsFiltering() throws Exception {
+        String request;
+        Document dom;
+        List<String> result;
+
+        request = REPLICATION_FEED_BASE;
+        dom = super.getAsDOM(request);
+        // print(dom);
+        result = evaluateAll("//atom:feed/atom:entry/atom:summary", dom);
+        assertEquals(ALL_REPLICATION_SUMMARIES.size(), result.size());
+        assertEquals(ALL_REPLICATION_SUMMARIES, result);
+
+        request = REPLICATION_FEED_BASE + "&searchTerms=Insert,Update";
+        dom = super.getAsDOM(request);
+        // print(dom);
+        assertXpathEvaluatesTo("5", "count(//atom:feed/atom:entry)", dom);
+
+        request = REPLICATION_FEED_BASE + "&searchTerms=Moved,Delte";
+        dom = super.getAsDOM(request);
+        // print(dom);
+        assertXpathEvaluatesTo("2", "count(//atom:feed/atom:entry)", dom);
+
+        request = REPLICATION_FEED_BASE + "&searchTerms=None";
+        dom = super.getAsDOM(request);
+        // print(dom);
+        assertXpathEvaluatesTo("0", "count(//atom:feed/atom:entry)", dom);
+
+        request = REPLICATION_FEED_BASE + "&searchTerms=Buildings.1107531701011";
+        dom = super.getAsDOM(request);
+        // print(dom);
+        assertXpathEvaluatesTo("2", "count(//atom:feed/atom:entry)", dom);
+
+        request = REPLICATION_FEED_BASE + "&searchTerms=Buildings.1107531701011,Moved";
+        dom = super.getAsDOM(request);
+        // print(dom);
+        // expect 2, as we're assuming an entry matches the seatchTerms if it containst ANY of the
+        // query search terms. The spec is not clear, asqued for clarification on the OWS-8 mailing
+        // list.
+        assertXpathEvaluatesTo("2", "count(//atom:feed/atom:entry)", dom);
+    }
+
     public void testEntryIdFilter() throws Exception {
         final String insertId;
         final String updateId;
@@ -119,26 +220,26 @@ public class Query_OGC_KVP_Test extends GSSFunctionalTestSupport {
         }
         {
             final String queryById = REPLICATION_FEED_BASE + "&ENTRYID=" + insertId;
-            final Document response = super.getAsDOM(queryById);
-            // print(response);
-            assertXpathEvaluatesTo("1", "count(atom:feed/atom:entry)", response);
-            assertXpathExists("atom:feed/atom:entry[1]/atom:content/wfs:Insert", response);
+            final Document dom = super.getAsDOM(queryById);
+            // print(dom);
+            assertXpathEvaluatesTo("1", "count(atom:feed/atom:entry)", dom);
+            assertXpathExists("atom:feed/atom:entry[1]/atom:content/wfs:Insert", dom);
         }
         {
             final String queryById = REPLICATION_FEED_BASE + "&ENTRYID=" + updateId;
-            final Document response = super.getAsDOM(queryById);
-            // print(response);
-            assertXpathEvaluatesTo("1", "count(atom:feed/atom:entry)", response);
-            assertXpathExists("atom:feed/atom:entry[1]/atom:content/wfs:Update", response);
+            final Document dom = super.getAsDOM(queryById);
+            // print(dom);
+            assertXpathEvaluatesTo("1", "count(atom:feed/atom:entry)", dom);
+            assertXpathExists("atom:feed/atom:entry[1]/atom:content/wfs:Update", dom);
         }
         {
             final String queryById = REPLICATION_FEED_BASE + "&ENTRYID=" + deleteId;
-            final Document response = super.getAsDOM(queryById);
-            print(response);
+            final Document dom = super.getAsDOM(queryById);
+            // print(dom);
             // REVISIT: this assertion fails becuase we don't map geogit ids to gss ids yet, hence
             // the same geogit id for the feature insert and then the delete is being used twice
-            assertXpathEvaluatesTo("1", "count(atom:feed/atom:entry)", response);
-            assertXpathExists("atom:feed/atom:entry[1]/atom:content/wfs:Delete", response);
+            assertXpathEvaluatesTo("1", "count(atom:feed/atom:entry)", dom);
+            assertXpathExists("atom:feed/atom:entry[1]/atom:content/wfs:Delete", dom);
         }
     }
 }
