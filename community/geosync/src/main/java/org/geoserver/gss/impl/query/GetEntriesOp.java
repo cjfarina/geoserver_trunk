@@ -37,8 +37,8 @@ public class GetEntriesOp {
      */
     public FeedImpl execute(final GetEntries request) throws ServiceException {
 
-        final String baseUrl = request.getBaseUrl();
-        final String handle = request.getHandle();
+        // final String baseUrl = request.getBaseUrl();
+        // final String handle = request.getHandle();
 
         final FeedType feed = request.getFeed();
         final Long startPosition = request.getStartPosition();
@@ -47,19 +47,23 @@ public class GetEntriesOp {
         final Filter filter = request.getFilter();
         final List<String> searchTerms = request.getSearchTerms();
 
+        final SortOrder sortOrder = request.getSortOrder() == null ? SortOrder.ASCENDING : request
+                .getSortOrder();
+
         FeedImpl response;
 
         switch (feed) {
         case CHANGEFEED:
-            response = gss.queryChangeFeed(searchTerms, filter, startPosition, maxEntries);
+            response = gss.queryChangeFeed(searchTerms, filter, startPosition, maxEntries,
+                    sortOrder);
             break;
         case RESOLUTIONFEED:
             response = gss.queryResolutionFeed(searchTerms, filter, startPosition, maxEntries,
-                    SortOrder.ASCENDING);
+                    sortOrder);
             break;
         case REPLICATIONFEED:
             response = gss.queryReplicationFeed(searchTerms, filter, startPosition, maxEntries,
-                    SortOrder.ASCENDING);
+                    sortOrder);
             break;
         default:
             throw new IllegalArgumentException("Unknown feed type: " + feed);

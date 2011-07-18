@@ -7,6 +7,7 @@ package org.geoserver.gss.service;
 import java.util.List;
 
 import org.opengis.filter.Filter;
+import org.opengis.filter.sort.SortOrder;
 
 /**
  * 
@@ -49,6 +50,8 @@ public class GetEntries extends BaseRequest {
     private List<String> searchTerms;
 
     private Filter filter;
+
+    private SortOrder sortOrder;
 
     public GetEntries() {
         super("GetEntries");
@@ -100,6 +103,21 @@ public class GetEntries extends BaseRequest {
 
     public void setFilter(final Filter filter) {
         this.filter = filter;
+    }
+
+    /**
+     * @return the sortOrder
+     */
+    public SortOrder getSortOrder() {
+        return sortOrder;
+    }
+
+    /**
+     * @param sortOrder
+     *            the sortOrder to set
+     */
+    public void setSortOrder(SortOrder sortOrder) {
+        this.sortOrder = sortOrder;
     }
 
 }

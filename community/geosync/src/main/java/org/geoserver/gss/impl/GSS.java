@@ -347,7 +347,7 @@ public class GSS implements DisposableBean {
     }
 
     public FeedImpl queryChangeFeed(List<String> searchTerms, Filter filter, Long startPosition,
-            Long maxEntries) {
+            Long maxEntries, SortOrder sortOrder) {
         throw new UnsupportedOperationException("Not yet implemented");
     }
 

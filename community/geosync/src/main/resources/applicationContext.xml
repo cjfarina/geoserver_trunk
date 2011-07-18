@@ -136,6 +136,11 @@
     <property name="service" value="GSS"/>
     <property name="version" value="1.0.0"/>
   </bean>
+  <bean id="gssSortOrderKvpParser" class="org.geoserver.gss.impl.query.SortOrderKvpParser">
+    <constructor-arg value="SORTORDER"/>
+    <property name="service" value="GSS"/>
+    <property name="version" value="1.0.0"/>
+  </bean>
   
 
   <bean id="gssGetEntriesKvpReader" class="org.geoserver.gss.impl.query.GetEntriesKvpRequestReader">
