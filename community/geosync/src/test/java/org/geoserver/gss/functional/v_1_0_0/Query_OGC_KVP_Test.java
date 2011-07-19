@@ -198,9 +198,7 @@ public class Query_OGC_KVP_Test extends GSSFunctionalTestSupport {
         request = REPLICATION_FEED_BASE + "&searchTerms=Buildings.1107531701011,Moved";
         dom = super.getAsDOM(request);
         // print(dom);
-        // expect 2, as we're assuming an entry matches the seatchTerms if it containst ANY of the
-        // query search terms. The spec is not clear, asqued for clarification on the OWS-8 mailing
-        // list.
+        // expect 2, an entry matches the seatchTerms if it containst ANY of the terms
         assertXpathEvaluatesTo("2", "count(//atom:feed/atom:entry)", dom);
     }
 
