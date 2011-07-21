@@ -1,9 +1,11 @@
 package org.geoserver.bxml;
 
 import java.io.IOException;
+import java.util.Collections;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.Set;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
@@ -24,9 +26,18 @@ public abstract class AbstractDecoder<T> implements Decoder<T> {
     public AbstractDecoder(final QName name) {
         this.name = name;
     }
-    
-    public AbstractDecoder(){
-        
+
+    public AbstractDecoder() {
+
+    }
+
+    @Override
+    public Set<QName> getTargets() {
+        if (name == null) {
+            throw new IllegalStateException(
+                    "name is null, subclass should have overriden getTargets()");
+        }
+        return Collections.singleton(name);
     }
 
     protected void decodeElement(final BxmlStreamReader r) throws Exception {
@@ -42,7 +53,7 @@ public abstract class AbstractDecoder<T> implements Decoder<T> {
     }
 
     @Override
-    public Boolean canHandle(QName name) {
+    public boolean canHandle(QName name) {
         return this.name.equals(name);
     }
 
@@ -51,7 +62,7 @@ public abstract class AbstractDecoder<T> implements Decoder<T> {
      */
     @Override
     public T decode(BxmlStreamReader r) throws Exception {
-        if(name == null){
+        if (name == null) {
             name = r.getElementName();
         }
         r.require(EventType.START_ELEMENT, name.getNamespaceURI(), name.getLocalPart());
@@ -88,9 +99,10 @@ public abstract class AbstractDecoder<T> implements Decoder<T> {
     }
 
     /**
-     * @param r must be possitioned at the START_ELEMENT event of the element who's value is to be
-     *        read. When this method returns the reader is guaranteed to be possitioned at the
-     *        END_ELEMENT event of the same element.
+     * @param r
+     *            must be possitioned at the START_ELEMENT event of the element who's value is to be
+     *            read. When this method returns the reader is guaranteed to be possitioned at the
+     *            END_ELEMENT event of the same element.
      * @return
      * @throws IOException
      */

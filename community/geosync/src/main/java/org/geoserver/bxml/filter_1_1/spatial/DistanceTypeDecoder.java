@@ -9,13 +9,13 @@ import org.geoserver.gss.internal.atom.Atom;
 import org.geotools.filter.v1_1.OGC;
 import org.gvsig.bxml.stream.BxmlStreamReader;
 
-public class DistanceFilterDecoder extends AbstractDecoder<Distance> {
+public class DistanceTypeDecoder extends AbstractDecoder<Distance> {
 
     public static final QName Distance = new QName(OGC.NAMESPACE, "Distance");
 
     private Distance distance = new Distance();
 
-    public DistanceFilterDecoder() {
+    public DistanceTypeDecoder() {
         super(Distance);
     }
 

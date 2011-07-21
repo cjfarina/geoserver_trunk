@@ -8,6 +8,7 @@ import java.util.Set;
 import javax.xml.namespace.QName;
 
 import org.geoserver.bxml.AbstractDecoder;
+import org.geoserver.bxml.ChoiceDecoder;
 import org.geoserver.bxml.Decoder;
 import org.geoserver.bxml.filter_1_1.spatial.BBOXFilterDecoder;
 import org.geoserver.bxml.filter_1_1.spatial.BinarySpatialOperationDecoder;
@@ -41,7 +42,7 @@ public class FilterDecoder extends AbstractDecoder<Filter> {
         this.choice = new ChoiceDecoder<Filter>(
                 new BinaryComparisonOperatorDecoder(), //
                 new PropertyIsBetweenFilterDecoder(), new PropertyIsLikeFilterDecoder(),
-                new PropertyIsNullFilterDecoder(), new LogicOperatorDecoder(),
+                new PropertyIsNullFilterDecoder(), new BinaryLogicOperatorDecoder(),
                 new DistanceBufferFilterDecoder(), new BinarySpatialOperationDecoder(),
                 new BBOXFilterDecoder());
     }
@@ -87,7 +88,7 @@ public class FilterDecoder extends AbstractDecoder<Filter> {
     }
 
     @Override
-    public Boolean canHandle(QName name) {
+    public boolean canHandle(QName name) {
         return choice.canHandle(name);
     }
 }

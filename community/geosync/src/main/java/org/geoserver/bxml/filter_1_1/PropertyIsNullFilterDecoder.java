@@ -2,34 +2,57 @@ package org.geoserver.bxml.filter_1_1;
 
 import static org.geotools.filter.v1_1.OGC.PropertyIsNull;
 
-import org.geoserver.bxml.AbstractDecoder;
-import org.geoserver.bxml.filter_1_1.expression.ExpressionDecoder;
+import java.util.Collections;
+import java.util.Iterator;
+import java.util.Set;
+
+import javax.xml.namespace.QName;
+
+import org.geoserver.bxml.Decoder;
+import org.geoserver.bxml.SequenceDecoder;
+import org.geoserver.bxml.filter_1_1.expression.PropertyNameExpressionDecoder;
 import org.geotools.factory.CommonFactoryFinder;
 import org.geotools.factory.GeoTools;
 import org.gvsig.bxml.stream.BxmlStreamReader;
+import org.gvsig.bxml.stream.EventType;
 import org.opengis.filter.Filter;
 import org.opengis.filter.FilterFactory2;
 import org.opengis.filter.expression.Expression;
 
-public class PropertyIsNullFilterDecoder extends AbstractDecoder<Filter> {
+public class PropertyIsNullFilterDecoder implements Decoder<Filter> {
 
-    protected Expression expresion = null;
+    private SequenceDecoder<Expression> seq;
 
     protected static FilterFactory2 ff = CommonFactoryFinder.getFilterFactory2(GeoTools
             .getDefaultHints());
-    
+
     public PropertyIsNullFilterDecoder() {
-        super(PropertyIsNull);
+        seq = new SequenceDecoder<Expression>(1, 1);
+        seq.add(new PropertyNameExpressionDecoder(), 1, 1);
     }
 
     @Override
-    protected void decodeElement(final BxmlStreamReader r) throws Exception {
-        expresion = new ExpressionDecoder().decode(r);
+    public Filter decode(final BxmlStreamReader r) throws Exception {
+        r.require(EventType.START_ELEMENT, PropertyIsNull.getNamespaceURI(),
+                PropertyIsNull.getLocalPart());
+        r.nextTag();
+        Iterator<Expression> expressions = seq.decode(r);
+        Expression e1 = expressions.next();
+
+        r.nextTag();
+        r.require(EventType.END_ELEMENT, PropertyIsNull.getNamespaceURI(),
+                PropertyIsNull.getLocalPart());
+        return ff.isNull(e1);
     }
 
     @Override
-    protected Filter buildResult() {
-        return ff.isNull(expresion);
+    public boolean canHandle(QName name) {
+        return PropertyIsNull.equals(name);
+    }
+
+    @Override
+    public Set<QName> getTargets() {
+        return Collections.singleton(PropertyIsNull);
     }
 
 }

@@ -16,6 +16,7 @@ import org.geoserver.bxml.AbstractDecoder;
 import org.geoserver.bxml.feature.FeatureTypeUtil;
 import org.geoserver.bxml.feature.PropertyDecoder;
 import org.geoserver.bxml.filter_1_1.FilterDecoder;
+import org.geoserver.bxml.filter_1_1.FilterDecoder2;
 import org.gvsig.bxml.stream.BxmlStreamReader;
 
 public class UpdateElementTypeDecoder extends AbstractDecoder<UpdateElementType> {
@@ -33,7 +34,7 @@ public class UpdateElementTypeDecoder extends AbstractDecoder<UpdateElementType>
         QName name = r.getElementName();
 
         if (Filter.equals(name)) {
-            FilterDecoder filterDecoder = new FilterDecoder();
+            FilterDecoder2 filterDecoder = new FilterDecoder2();
             element.setFilter(filterDecoder.decode(r));
         }
 

@@ -11,88 +11,61 @@ import static org.geotools.filter.v1_1.OGC.Within;
 
 import javax.xml.namespace.QName;
 
-import org.geoserver.bxml.filter_1_1.ListDecoder;
+import org.geoserver.bxml.SequenceDecoder;
+import org.geoserver.bxml.filter_1_1.AbstractTypeDecoder;
 import org.geoserver.bxml.filter_1_1.expression.ExpressionDecoder;
-import org.geoserver.bxml.gml_3_1.GMLChainDecoder;
 import org.geotools.factory.CommonFactoryFinder;
 import org.geotools.factory.GeoTools;
-import org.geotools.filter.AttributeExpressionImpl;
-import org.geotools.filter.v1_1.OGC;
-import org.geotools.gml3.GML;
 import org.gvsig.bxml.stream.BxmlStreamReader;
+import org.gvsig.bxml.stream.EventType;
 import org.opengis.filter.Filter;
 import org.opengis.filter.FilterFactory2;
+import org.opengis.filter.expression.Expression;
 
-import com.vividsolutions.jts.geom.Geometry;
+import com.google.common.collect.Iterators;
 
-public class BinarySpatialOperationDecoder extends ListDecoder<Filter> {
-
-    protected String propertyName;
-
-    protected Geometry geometry;
+public class BinarySpatialOperationDecoder extends AbstractTypeDecoder<Filter> {
 
     protected static FilterFactory2 ff = CommonFactoryFinder.getFilterFactory2(GeoTools
             .getDefaultHints());
 
     public BinarySpatialOperationDecoder() {
-        add(Equals);
-        add(Disjoint);
-        add(Touches);
-        add(Within);
-        add(Overlaps);
-        add(Crosses);
-        add(Intersects);
-        add(Contains);
+        super(Equals, Disjoint, Touches, Within, Overlaps, Crosses, Intersects, Contains);
     }
 
     @Override
-    protected void decodeElement(final BxmlStreamReader r) throws Exception {
-        QName name = r.getElementName();
+    protected Filter decodeInternal(final BxmlStreamReader r, final QName name) throws Exception {
 
-        if (name.getNamespaceURI().equals(OGC.NAMESPACE)) {
-            AttributeExpressionImpl expression = (AttributeExpressionImpl) new ExpressionDecoder()
-                    .decode(r);
-            propertyName = expression.getPropertyName();
-        } else if (name.getNamespaceURI().equals(GML.NAMESPACE)) {
-            geometry = (Geometry) new GMLChainDecoder().decode(r);
-        }
-    }
+        SequenceDecoder<Expression> seq = new SequenceDecoder<Expression>();
+        seq.add(new ExpressionDecoder(), 2, 2);
 
-    @Override
-    protected Filter buildResult() {
+        r.nextTag();
+        Expression[] expressions = Iterators.toArray(seq.decode(r), Expression.class);
+        r.require(EventType.END_ELEMENT, name.getNamespaceURI(), name.getLocalPart());
+        // r.nextTag();
+
+        Filter f;
         if (Equals.equals(name)) {
-            return ff.equals(ff.property(propertyName), ff.literal(geometry));
+            f = ff.equal(expressions[0], expressions[1]);
+        } else if (Disjoint.equals(name)) {
+            f = ff.disjoint(expressions[0], expressions[1]);
+        } else if (Touches.equals(name)) {
+            f = ff.touches(expressions[0], expressions[1]);
+        } else if (Within.equals(name)) {
+            f = ff.within(expressions[0], expressions[1]);
+        } else if (Overlaps.equals(name)) {
+            f = ff.overlaps(expressions[0], expressions[1]);
+        } else if (Crosses.equals(name)) {
+            f = ff.crosses(expressions[0], expressions[1]);
+        } else if (Intersects.equals(name)) {
+            f = ff.intersects(expressions[0], expressions[1]);
+        } else if (Contains.equals(name)) {
+            f = ff.contains(expressions[0], expressions[1]);
+        } else {
+            throw new IllegalArgumentException(this.getClass().getName() + " can not decode "
+                    + name);
         }
-
-        if (Disjoint.equals(name)) {
-            return ff.disjoint(ff.property(propertyName), ff.literal(geometry));
-        }
-        
-        if (Touches.equals(name)) {
-            return ff.touches(ff.property(propertyName), ff.literal(geometry));
-        }
-        
-        if (Within.equals(name)) {
-            return ff.within(ff.property(propertyName), ff.literal(geometry));
-        }
-        
-        if (Overlaps.equals(name)) {
-            return ff.overlaps(ff.property(propertyName), ff.literal(geometry));
-        }
-        
-        if (Crosses.equals(name)) {
-            return ff.crosses(ff.property(propertyName), ff.literal(geometry));
-        }
-        
-        if (Intersects.equals(name)) {
-            return ff.intersects(ff.property(propertyName), ff.literal(geometry));
-        }
-        
-        if (Contains.equals(name)) {
-            return ff.contains(ff.property(propertyName), ff.literal(geometry));
-        }
-
-        throw new IllegalArgumentException(this.getClass().getName() + " can not decode " + name);
+        return f;
     }
 
 }

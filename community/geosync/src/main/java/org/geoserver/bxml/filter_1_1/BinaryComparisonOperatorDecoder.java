@@ -7,64 +7,105 @@ import static org.geotools.filter.v1_1.OGC.PropertyIsLessThan;
 import static org.geotools.filter.v1_1.OGC.PropertyIsLessThanOrEqualTo;
 import static org.geotools.filter.v1_1.OGC.PropertyIsNotEqualTo;
 
-import java.util.ArrayList;
-import java.util.List;
+import java.util.Collections;
+import java.util.HashSet;
+import java.util.Iterator;
+import java.util.Set;
 
+import javax.xml.namespace.QName;
+
+import org.geoserver.bxml.Decoder;
+import org.geoserver.bxml.SequenceDecoder;
 import org.geoserver.bxml.filter_1_1.expression.ExpressionDecoder;
 import org.geotools.factory.CommonFactoryFinder;
 import org.geotools.factory.GeoTools;
 import org.gvsig.bxml.stream.BxmlStreamReader;
+import org.gvsig.bxml.stream.EventType;
 import org.opengis.filter.Filter;
 import org.opengis.filter.FilterFactory2;
 import org.opengis.filter.expression.Expression;
+import org.springframework.util.Assert;
 
-public class BinaryComparisonOperatorDecoder extends ListDecoder<Filter> {
+import com.google.common.collect.Iterators;
 
-    protected final List<Expression> expresions = new ArrayList<Expression>();
+public class BinaryComparisonOperatorDecoder implements Decoder<Filter> {
 
     protected static FilterFactory2 ff = CommonFactoryFinder.getFilterFactory2(GeoTools
             .getDefaultHints());
 
+    private static final Set<QName> names;
+    static {
+        Set<QName> n = new HashSet<QName>();
+        n.add(PropertyIsEqualTo);
+        n.add(PropertyIsNotEqualTo);
+        n.add(PropertyIsLessThan);
+        n.add(PropertyIsGreaterThan);
+        n.add(PropertyIsLessThanOrEqualTo);
+        n.add(PropertyIsGreaterThanOrEqualTo);
+        names = Collections.unmodifiableSet(n);
+    }
+
+    private SequenceDecoder<Expression> seq;
+
     public BinaryComparisonOperatorDecoder() {
-        add(PropertyIsEqualTo);
-        add(PropertyIsNotEqualTo);
-        add(PropertyIsLessThan);
-        add(PropertyIsGreaterThan);
-        add(PropertyIsLessThanOrEqualTo);
-        add(PropertyIsGreaterThanOrEqualTo);
+        seq = new SequenceDecoder<Expression>(2, 2);
+        seq.add(new ExpressionDecoder(), 1, 1);
     }
 
     @Override
-    protected void decodeElement(final BxmlStreamReader r) throws Exception {
-        expresions.add(new ExpressionDecoder().decode(r));
-    }
+    public Filter decode(final BxmlStreamReader r) throws Exception {
+        r.require(EventType.START_ELEMENT, null, null);
+        final QName name = r.getElementName();
+        Assert.isTrue(canHandle(name));
 
-    @Override
-    protected Filter buildResult() {
+        final String matchCaseAtt = r.getAttributeValue(null, "matchCase");
+        final boolean matchCase = matchCaseAtt == null ? true : Boolean.valueOf(matchCaseAtt);
+
+        r.nextTag();
+
+        final Iterator<Expression> exprIterator = seq.decode(r);
+        final Expression[] expressions = Iterators.toArray(exprIterator, Expression.class);
+
+        Assert.isTrue(expressions.length == 2);
+
+       // r.nextTag();
+        r.require(EventType.END_ELEMENT, name.getNamespaceURI(), name.getLocalPart());
+        
         if (PropertyIsEqualTo.equals(name)) {
-            return ff.equals(expresions.get(0), expresions.get(1));
+            return ff.equals(expressions[0], expressions[1]);
         }
 
         if (PropertyIsNotEqualTo.equals(name)) {
-            return ff.notEqual(expresions.get(0), expresions.get(1));
+            return ff.notEqual(expressions[0], expressions[1]);
         }
 
         if (PropertyIsLessThan.equals(name)) {
-            return ff.less(expresions.get(0), expresions.get(1));
+            return ff.less(expressions[0], expressions[1], matchCase);
         }
 
         if (PropertyIsGreaterThan.equals(name)) {
-            return ff.greater(expresions.get(0), expresions.get(1));
+            return ff.greater(expressions[0], expressions[1], matchCase);
         }
 
         if (PropertyIsGreaterThanOrEqualTo.equals(name)) {
-            return ff.greaterOrEqual(expresions.get(0), expresions.get(1));
+            return ff.greaterOrEqual(expressions[0], expressions[1], matchCase);
         }
 
         if (PropertyIsLessThanOrEqualTo.equals(name)) {
-            return ff.lessOrEqual(expresions.get(0), expresions.get(1));
+            return ff.lessOrEqual(expressions[0], expressions[1], matchCase);
         }
 
         throw new IllegalArgumentException(this.getClass().getName() + " can not decode " + name);
     }
+
+    @Override
+    public boolean canHandle(final QName name) {
+        return names.contains(name);
+    }
+
+    @Override
+    public Set<QName> getTargets() {
+        return names;
+    }
+
 }

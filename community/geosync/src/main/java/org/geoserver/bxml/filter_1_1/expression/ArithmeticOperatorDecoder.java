@@ -5,51 +5,56 @@ import static org.geotools.filter.v1_1.OGC.Div;
 import static org.geotools.filter.v1_1.OGC.Mul;
 import static org.geotools.filter.v1_1.OGC.Sub;
 
-import java.util.ArrayList;
-import java.util.List;
+import javax.xml.namespace.QName;
 
-import org.geoserver.bxml.filter_1_1.ListDecoder;
+import org.geoserver.bxml.SequenceDecoder;
+import org.geoserver.bxml.filter_1_1.AbstractTypeDecoder;
 import org.geotools.factory.CommonFactoryFinder;
 import org.geotools.factory.GeoTools;
 import org.gvsig.bxml.stream.BxmlStreamReader;
+import org.gvsig.bxml.stream.EventType;
 import org.opengis.filter.FilterFactory2;
 import org.opengis.filter.expression.Expression;
 
-public class ArithmeticOperatorDecoder extends ListDecoder<Expression> {
+import com.google.common.collect.Iterators;
 
-    protected final List<Expression> expresions = new ArrayList<Expression>();
+public class ArithmeticOperatorDecoder extends AbstractTypeDecoder<Expression> {
 
     protected static FilterFactory2 ff = CommonFactoryFinder.getFilterFactory2(GeoTools
             .getDefaultHints());
 
     public ArithmeticOperatorDecoder() {
-        add(Add);
-        add(Sub);
-        add(Mul);
-        add(Div);
+        super(Add, Sub, Mul, Div);
     }
 
     @Override
-    protected void decodeElement(final BxmlStreamReader r) throws Exception {
-        expresions.add(new ExpressionDecoder().decode(r));
-    }
+    protected Expression decodeInternal(BxmlStreamReader r, QName name) throws Exception {
 
-    @Override
-    protected Expression buildResult() {
+        r.nextTag();
+
+        final SequenceDecoder<Expression> seq;
+        seq = new SequenceDecoder<Expression>();
+        seq.add(new ExpressionDecoder(), 2, 2);
+
+        Expression[] expressions = Iterators.toArray(seq.decode(r), Expression.class);
+
+        r.require(EventType.END_ELEMENT, name.getNamespaceURI(), name.getLocalPart());
+        // r.nextTag();
+
         if (Add.equals(name)) {
-            return ff.add(expresions.get(0), expresions.get(1));
+            return ff.add(expressions[0], expressions[1]);
         }
 
         if (Sub.equals(name)) {
-            return ff.subtract(expresions.get(0), expresions.get(1));
+            return ff.subtract(expressions[0], expressions[1]);
         }
 
         if (Mul.equals(name)) {
-            return ff.multiply(expresions.get(0), expresions.get(1));
+            return ff.multiply(expressions[0], expressions[1]);
         }
 
         if (Div.equals(name)) {
-            return ff.divide(expresions.get(0), expresions.get(1));
+            return ff.divide(expressions[0], expressions[1]);
         }
 
         throw new IllegalArgumentException(this.getClass().getName() + " can not decode " + name);

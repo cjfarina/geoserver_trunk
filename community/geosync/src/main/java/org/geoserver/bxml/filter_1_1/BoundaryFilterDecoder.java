@@ -1,5 +1,7 @@
 package org.geoserver.bxml.filter_1_1;
 
+import java.util.Set;
+
 import javax.xml.namespace.QName;
 
 import org.geoserver.bxml.AbstractDecoder;

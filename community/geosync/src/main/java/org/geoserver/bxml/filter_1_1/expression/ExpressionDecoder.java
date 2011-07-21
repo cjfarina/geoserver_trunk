@@ -1,11 +1,15 @@
 package org.geoserver.bxml.filter_1_1.expression;
 
+import java.util.Set;
+
 import javax.xml.namespace.QName;
 
+import org.geoserver.bxml.ChoiceDecoder;
 import org.geoserver.bxml.Decoder;
-import org.geoserver.bxml.filter_1_1.ChoiceDecoder;
 import org.gvsig.bxml.stream.BxmlStreamReader;
+import org.gvsig.bxml.stream.EventType;
 import org.opengis.filter.expression.Expression;
+import org.springframework.util.Assert;
 
 public class ExpressionDecoder implements Decoder<Expression> {
 
@@ -19,12 +23,23 @@ public class ExpressionDecoder implements Decoder<Expression> {
     }
 
     @Override
-    public Expression decode(BxmlStreamReader r) throws Exception {
-        return chain.decode(r);
+    public Expression decode(final BxmlStreamReader r) throws Exception {
+        r.require(EventType.START_ELEMENT, null, null);
+        QName name = r.getElementName();
+        Assert.isTrue(canHandle(name));
+
+        Expression expression = chain.decode(r);
+        r.require(EventType.END_ELEMENT, name.getNamespaceURI(), name.getLocalPart());
+        return expression;
     }
 
     @Override
-    public Boolean canHandle(QName name) {
+    public boolean canHandle(QName name) {
         return chain.canHandle(name);
+    }
+
+    @Override
+    public Set<QName> getTargets() {
+        return chain.getTargets();
     }
 }

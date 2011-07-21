@@ -22,6 +22,7 @@ import java.util.logging.Logger;
 import javax.xml.namespace.QName;
 
 import org.geoserver.bxml.AbstractDecoder;
+import org.geoserver.bxml.BxmlElementIterator;
 import org.geoserver.gss.internal.atom.Atom;
 import org.geoserver.gss.internal.atom.EntryImpl;
 import org.geoserver.gss.internal.atom.FeedImpl;

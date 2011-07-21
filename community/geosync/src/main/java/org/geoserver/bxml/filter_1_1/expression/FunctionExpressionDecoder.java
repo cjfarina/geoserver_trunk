@@ -2,49 +2,52 @@ package org.geoserver.bxml.filter_1_1.expression;
 
 import static org.geotools.filter.v1_1.OGC.Function;
 
-import java.io.IOException;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Map;
+import java.util.Collections;
+import java.util.Set;
 
 import javax.xml.namespace.QName;
 
-import org.geoserver.bxml.AbstractDecoder;
+import org.geoserver.bxml.Decoder;
+import org.geoserver.bxml.SequenceDecoder;
 import org.geotools.factory.CommonFactoryFinder;
 import org.geotools.factory.GeoTools;
-import org.geotools.filter.v1_1.OGC;
 import org.gvsig.bxml.stream.BxmlStreamReader;
+import org.gvsig.bxml.stream.EventType;
 import org.opengis.filter.FilterFactory2;
 import org.opengis.filter.expression.Expression;
+import org.springframework.util.Assert;
 
-public class FunctionExpressionDecoder extends AbstractDecoder<Expression> {
+import com.google.common.collect.Iterators;
 
-    public static final QName name = new QName(OGC.NAMESPACE, "name");
+public class FunctionExpressionDecoder implements Decoder<Expression> {
 
-    private final List<Expression> expresions = new ArrayList<Expression>();
-
-    private String functionName = null;
-    
     protected static FilterFactory2 ff = CommonFactoryFinder.getFilterFactory2(GeoTools
             .getDefaultHints());
 
-    public FunctionExpressionDecoder() {
-        super(Function);
+    @Override
+    public Expression decode(final BxmlStreamReader r) throws Exception {
+        r.require(EventType.START_ELEMENT, Function.getNamespaceURI(), Function.getLocalPart());
+
+        final String functionName = r.getAttributeValue(null, "name");
+        Assert.notNull(functionName, "Attribute 'name' not found in element Function");
+
+        SequenceDecoder<Expression> seq = new SequenceDecoder<Expression>();
+        seq.add(new ExpressionDecoder(), 0, Integer.MAX_VALUE);
+
+        Expression[] expressions = Iterators.toArray(seq.decode(r), Expression.class);
+
+        r.require(EventType.END_ELEMENT, Function.getNamespaceURI(), Function.getLocalPart());
+
+        return ff.function(functionName, expressions);
     }
 
     @Override
-    protected void decodeElement(final BxmlStreamReader r) throws Exception {
-        expresions.add(new ExpressionDecoder().decode(r));
+    public boolean canHandle(final QName name) {
+        return Function.equals(name);
     }
 
     @Override
-    protected void decodeAttributtes(BxmlStreamReader r, Map<QName, String> attributes)
-            throws IOException {
-        functionName = attributes.get(name);
-    }
-
-    @Override
-    protected Expression buildResult() {
-        return ff.function(functionName, (Expression[]) expresions.toArray());
+    public Set<QName> getTargets() {
+        return Collections.singleton(Function);
     }
 }
