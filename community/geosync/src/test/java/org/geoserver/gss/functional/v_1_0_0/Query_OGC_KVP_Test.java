@@ -4,15 +4,20 @@ import static org.custommonkey.xmlunit.XMLAssert.assertXpathEvaluatesTo;
 import static org.custommonkey.xmlunit.XMLAssert.assertXpathExists;
 
 import java.util.Arrays;
+import java.util.Collections;
 import java.util.List;
 
 import junit.framework.Test;
 
 import org.geoserver.gss.internal.atom.Atom;
+import org.geotools.geometry.jts.ReferencedEnvelope;
 import org.geotools.ows.v1_1.OWS;
+import org.geotools.referencing.CRS;
+import org.opengis.referencing.crs.CoordinateReferenceSystem;
 import org.w3c.dom.Document;
 import org.w3c.dom.Element;
 
+import com.google.common.collect.Lists;
 import com.mockrunner.mock.web.MockHttpServletResponse;
 
 /**
@@ -32,6 +37,20 @@ import com.mockrunner.mock.web.MockHttpServletResponse;
  * 
  * </p>
  * 
+ * <p>
+ * This functional test suite asserts the end-to-end GetEntries request processing by means of:
+ * <ul>
+ * <li> {@link #testExceptionIsOWS11ExceptionReport() ServiceException reporting}
+ * <li> {@link #testResponseCodeAndMimeType() response code and MIME type}
+ * <li> {@link #testBaseRequest() Base Request} with mandatory parameters only.
+ * <li> {@link #testEntryIdFilter() ENTRYID filtering}.
+ * <li> {@link #testSearchTermsFiltering() SEARCHTERMS filtering}.
+ * <li> {@link #testStartPositionAndMaxEntriesFiltering() STARTPOSITON and MAXENTRIES} results
+ * constraint.
+ * <li> {@link #testSortOder() SORTORDER parameter} ordering.
+ * </ul>
+ * </p>
+ * 
  * @author groldan
  * 
  */
@@ -41,31 +60,47 @@ public class Query_OGC_KVP_Test extends GSSFunctionalTestSupport {
 
     private static final String REPLICATION_FEED_BASE = BASE_REQUEST_PATH + "&FEED=REPLICATIONFEED";
 
+    private static final String RESOLUTION_FEED_BASE = BASE_REQUEST_PATH + "&FEED=RESOLUTIONFEED";
+
     /**
      * The ordered list of all values for the {@code /atom:feed/atom:entry/atom:title} XPath in the
      * REPLICATIONFEED as set up at {@link #oneTimeSetUp()}
      */
-    private static final List<String> ALL_REPLICATION_TITLES = Arrays.asList( //
+    private final List<String> ALL_REPLICATION_TITLES = Collections.unmodifiableList(Arrays.asList( //
             "Insert of Feature Bridges.1107531599613", //
             "Insert of Feature Buildings.1107531701011", //
             "Insert of Feature Buildings.1107531701010", //
             "Update of Feature Bridges.1107531599613",//
             "Update of Feature Buildings.1107531701011",//
             "Delte of Feature Buildings.1107531701010"//
-    );
+    ));
 
     /**
      * The ordered list of all values for the {@code /atom:feed/atom:entry/atom:summary} XPath in
      * the REPLICATIONFEED as set up at {@link #oneTimeSetUp()}
      */
-    final List<String> ALL_REPLICATION_SUMMARIES = Arrays.asList(//
+    private final List<String> ALL_REPLICATION_SUMMARIES = Collections.unmodifiableList(Arrays
+            .asList(//
             "Initial import of FeatureType http://www.opengis.net/cite:Bridges",//
             "Initial import of FeatureType http://www.opengis.net/cite:Buildings",//
+                    "Initial import of FeatureType http://www.opengis.net/cite:Buildings",//
+                    "Change Cam Bridge",//
+                    "Moved building",//
+                    "Deleted building"//
+            ));
+
+    /**
+     * The ordered list of all values for the {@code /atom:feed/atom:entry/atom:summary} XPath in
+     * the RESOLUTIONFEED as set up at {@link #oneTimeSetUp()}
+     */
+    private final List<String> ALL_RESOLUTION_SUMMARIES = Collections.unmodifiableList(Arrays
+            .asList(//
+            "Initial import of FeatureType http://www.opengis.net/cite:Bridges",//
             "Initial import of FeatureType http://www.opengis.net/cite:Buildings",//
-            "Change Cam Bridge",//
-            "Moved building",//
-            "Deleted building"//
-    );
+                    "Change Cam Bridge",//
+                    "Moved building",//
+                    "Deleted building"//
+            ));
 
     /**
      * This is a READ ONLY TEST so we can use one time setup
@@ -133,7 +168,7 @@ public class Query_OGC_KVP_Test extends GSSFunctionalTestSupport {
         }
     }
 
-    public void testStartPositionFiltering() throws Exception {
+    public void testStartPositionAndMaxEntriesFiltering() throws Exception {
 
         String request;
         Document dom;
@@ -161,6 +196,21 @@ public class Query_OGC_KVP_Test extends GSSFunctionalTestSupport {
         dom = super.getAsDOM(request);
         result = evaluateAll("//atom:feed/atom:entry/atom:title", dom);
         assertTrue(result.isEmpty());
+
+        request = REPLICATION_FEED_BASE + "&maxEntries=2";
+        dom = super.getAsDOM(request);
+        result = evaluateAll("//atom:feed/atom:entry/atom:title", dom);
+        assertEquals(ALL_REPLICATION_TITLES.subList(0, 2), result);
+
+        request = REPLICATION_FEED_BASE + "&startPosition=2&maxEntries=2";
+        dom = super.getAsDOM(request);
+        result = evaluateAll("//atom:feed/atom:entry/atom:title", dom);
+        assertEquals(ALL_REPLICATION_TITLES.subList(1, 3), result);
+
+        request = REPLICATION_FEED_BASE + "&startPosition=4&maxEntries=50";
+        dom = super.getAsDOM(request);
+        result = evaluateAll("//atom:feed/atom:entry/atom:title", dom);
+        assertEquals(ALL_REPLICATION_TITLES.subList(3, ALL_REPLICATION_TITLES.size()), result);
     }
 
     public void testSearchTermsFiltering() throws Exception {
@@ -240,4 +290,92 @@ public class Query_OGC_KVP_Test extends GSSFunctionalTestSupport {
             assertXpathExists("atom:feed/atom:entry[1]/atom:content/wfs:Delete", dom);
         }
     }
+
+    public void testSortOder() throws Exception {
+        /*
+         * Use the summaries list to check instead of the titles, as summaries are the commit
+         * messages and those are the ones being returned in reverse order. The orther of feature
+         * inserts/updates/deletes for a single commit is not reversed.
+         */
+        testSortOder(REPLICATION_FEED_BASE, ALL_REPLICATION_SUMMARIES);
+        testSortOder(RESOLUTION_FEED_BASE, ALL_RESOLUTION_SUMMARIES);
+    }
+
+    private void testSortOder(final String baseFeedRequest,
+            final List<String> ascendingOrderSummaries) throws Exception {
+
+        String request;
+        Document dom;
+        List<String> result;
+
+        request = baseFeedRequest;
+        dom = super.getAsDOM(request);
+        // defaults to ASCENDING
+        result = evaluateAll("//atom:feed/atom:entry/atom:summary", dom);
+        assertEquals(ascendingOrderSummaries, result);
+
+        // explicitly ask for ASCENDING
+        request = baseFeedRequest + "&sortOrder=ASCENDING";
+        dom = super.getAsDOM(request);
+        result = evaluateAll("//atom:feed/atom:entry/atom:summary", dom);
+        assertEquals(ascendingOrderSummaries, result);
+
+        request = baseFeedRequest + "&sortOrder=DESCENDING";
+        dom = super.getAsDOM(request);
+        result = evaluateAll("//atom:feed/atom:entry/atom:summary", dom);
+        List<String> reverse = Lists.reverse(ascendingOrderSummaries);
+        assertEquals(reverse, result);
+    }
+
+    public void testBBOXFilter() throws Exception {
+        /*
+         * Bridges.1107531599613 is moved to POINT(3,4), see class javadocs for
+         * GSSFunctionalTestSupport
+         */
+
+        // Note we use lat/lon axis order here as GSS defaults to ogc:urn:def:epsg:XXX format which
+        // respects EPSG database axis order
+        String request = REPLICATION_FEED_BASE + "&BBOX=3.9,2.9,4.1,3.1";
+        Document dom = super.getAsDOM(request);
+        // print(dom);
+        assertXpathEvaluatesTo("1", "count(//atom:feed/atom:entry)", dom);
+        assertXpathEvaluatesTo("Update of Feature Bridges.1107531599613",
+                "//atom:feed/atom:entry/atom:title", dom);
+        assertXpathEvaluatesTo("Change Cam Bridge", "//atom:feed/atom:entry/atom:summary", dom);
+
+        // But if you want lon/lat, just say so
+        request = REPLICATION_FEED_BASE + "&BBOX=2.9,3.9,3.1,4.1,EPSG:4326";
+        dom = super.getAsDOM(request);
+        // print(dom);
+        assertXpathEvaluatesTo("1", "count(//atom:feed/atom:entry)", dom);
+        assertXpathEvaluatesTo("Update of Feature Bridges.1107531599613",
+                "//atom:feed/atom:entry/atom:title", dom);
+        assertXpathEvaluatesTo("Change Cam Bridge", "//atom:feed/atom:entry/atom:summary", dom);
+
+    }
+
+    public void testBBOXFilterReproject() throws Exception {
+        /*
+         * Bridges.1107531599613 is moved to POINT(3,4), see class javadocs for
+         * GSSFunctionalTestSupport
+         */
+        CoordinateReferenceSystem orig = CRS.decode("urn:x-ogc:def:crs:EPSG:4326");
+        CoordinateReferenceSystem target = CRS.decode("urn:x-ogc:def:crs:EPSG:900913");
+        // Note: the arguments x1,x1,x2,y2 for ReferencedEnvelope are actually lat1,lat2,lon1,lon2,
+        // as the CRS is lat/lon
+        ReferencedEnvelope envelope = new ReferencedEnvelope(3.9, 3.1, 2.9, 4.1, orig).transform(
+                target, true);
+
+        String request = REPLICATION_FEED_BASE + "&BBOX=" + envelope.getMinX() + ","
+                + envelope.getMinY() + "," + envelope.getMaxX() + "," + envelope.getMaxY()
+                + ",urn:x-ogc:def:crs:EPSG:900913";
+
+        Document dom = super.getAsDOM(request);
+        print(dom);
+        assertXpathEvaluatesTo("1", "count(//atom:feed/atom:entry)", dom);
+        assertXpathEvaluatesTo("Update of Feature Bridges.1107531599613",
+                "//atom:feed/atom:entry/atom:title", dom);
+        assertXpathEvaluatesTo("Change Cam Bridge", "//atom:feed/atom:entry/atom:summary", dom);
+    }
+
 }

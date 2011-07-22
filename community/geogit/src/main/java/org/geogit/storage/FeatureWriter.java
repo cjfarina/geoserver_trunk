@@ -30,15 +30,19 @@ import java.util.Collection;
 
 import javax.xml.XMLConstants;
 
+import org.geotools.referencing.CRS;
 import org.geotools.util.Converters;
 import org.gvsig.bxml.stream.BxmlOutputFactory;
 import org.gvsig.bxml.stream.BxmlStreamWriter;
 import org.gvsig.bxml.stream.EventType;
 import org.opengis.feature.Attribute;
 import org.opengis.feature.Feature;
+import org.opengis.feature.GeometryAttribute;
 import org.opengis.feature.Property;
 import org.opengis.feature.simple.SimpleFeature;
+import org.opengis.feature.type.GeometryDescriptor;
 import org.opengis.feature.type.Name;
+import org.opengis.referencing.crs.CoordinateReferenceSystem;
 import org.springframework.util.Assert;
 
 import com.vividsolutions.jts.geom.Geometry;
@@ -70,6 +74,23 @@ public class FeatureWriter implements ObjectWriter<Feature> {
                 Attribute att = (Attribute) p;
                 Name name = att.getName();
                 Object value = att.getValue();
+                if (value instanceof Geometry) {
+                    Geometry geom = (Geometry) value;
+                    if (!(geom.getUserData() instanceof CoordinateReferenceSystem)) {
+                        GeometryDescriptor descriptor = null;
+                        if (att instanceof GeometryAttribute) {
+                            descriptor = ((GeometryAttribute) att).getDescriptor();
+                        } else if (feature instanceof SimpleFeature) {
+                            // SimpleFeatureImpl keeps on missbehaving?
+                            descriptor = ((SimpleFeature) feature).getFeatureType()
+                                    .getGeometryDescriptor();
+                        }
+                        if (descriptor != null) {
+                            CoordinateReferenceSystem crs = descriptor.getCoordinateReferenceSystem();
+                            geom.setUserData(crs);
+                        }
+                    }
+                }
                 writeValue(writer, value);
             }
             writer.writeEndElement();
@@ -145,9 +166,16 @@ public class FeatureWriter implements ObjectWriter<Feature> {
             long[] array = (long[]) value;
             writer.writeValue(array, 0, array.length);
         } else if (value instanceof Geometry) {
+            final Geometry geometry = (Geometry) value;
+            String srs;
+            if (geometry.getUserData() instanceof CoordinateReferenceSystem) {
+                srs = CRS.toSRS((CoordinateReferenceSystem) geometry.getUserData());
+            } else {
+                srs = "urn:ogc:def:crs:EPSG::4326";
+            }
             writer.writeStartElement(GEOMETRY_WKB);
             writer.writeStartAttribute(XMLConstants.NULL_NS_URI, "crs");
-            writer.writeValue("EPSG:4326");
+            writer.writeValue(srs);
             writer.writeEndAttributes();
 
             // writes the wkb geometry in byte[] chunks as delivered by WKBWriter, effectively
@@ -168,7 +196,7 @@ public class FeatureWriter implements ObjectWriter<Feature> {
                 }
             };
             WKBWriter wkbWriter = new WKBWriter();
-            wkbWriter.write(((Geometry) value), wkbSerializingOut);
+            wkbWriter.write(geometry, wkbSerializingOut);
 
             // WKBWriter wkbWriter = new WKBWriter();
             // byte[] wkb = wkbWriter.write(((Geometry) value));

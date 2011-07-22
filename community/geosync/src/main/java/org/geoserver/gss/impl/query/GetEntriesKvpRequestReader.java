@@ -183,12 +183,12 @@ public class GetEntriesKvpRequestReader extends KvpRequestReader {
         }
 
         Filter filter = null;
+        NamespaceSupport nscontext = new NamespaceSupport();
+        nscontext.declarePrefix("atom", Atom.NAMESPACE);
+        nscontext.declarePrefix("georss", "http://www.georss.org/georss");
+        final PropertyName propertyName = ff.property("atom:entry/georss:where", nscontext);
         if (geom != null) {
             geom.setUserData(crs);
-            NamespaceSupport nscontext = new NamespaceSupport();
-            nscontext.declarePrefix("atom", Atom.NAMESPACE);
-            nscontext.declarePrefix("georss", "http://www.georss.org/georss");
-            Expression propertyName = ff.property("atom:entry/georss:where", nscontext);
             Expression geometryLiteral = ff.literal(geom);
             switch (spatialOp) {
             case Contains:
@@ -217,7 +217,7 @@ public class GetEntriesKvpRequestReader extends KvpRequestReader {
                 break;
             }
         } else if (bbox != null) {
-            filter = ff.bbox((String) null, bbox.getMinX(), bbox.getMinY(), bbox.getMaxX(),
+            filter = ff.bbox(propertyName, bbox.getMinX(), bbox.getMinY(), bbox.getMaxX(),
                     bbox.getMaxY(), srs);
         }
         return filter;

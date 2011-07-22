@@ -40,6 +40,7 @@ import javax.xml.namespace.QName;
 
 import org.geogit.api.ObjectId;
 import org.geotools.feature.simple.SimpleFeatureBuilder;
+import org.geotools.referencing.CRS;
 import org.geotools.util.Converters;
 import org.gvsig.bxml.stream.BxmlInputFactory;
 import org.gvsig.bxml.stream.BxmlStreamReader;
@@ -48,7 +49,9 @@ import org.opengis.feature.Feature;
 import org.opengis.feature.simple.SimpleFeature;
 import org.opengis.feature.simple.SimpleFeatureType;
 import org.opengis.feature.type.FeatureType;
+import org.opengis.referencing.crs.CoordinateReferenceSystem;
 
+import com.google.common.base.Throwables;
 import com.vividsolutions.jts.geom.Geometry;
 import com.vividsolutions.jts.io.InStream;
 import com.vividsolutions.jts.io.ParseException;
@@ -242,7 +245,16 @@ public class FeatureReader implements ObjectReader<Feature> {
             } catch (ParseException e) {
                 throw (IOException) new IOException(e.getMessage()).initCause(e);
             }
-            geometry.setUserData(srs);
+
+            if (srs != null) {
+                CoordinateReferenceSystem crs;
+                try {
+                    crs = CRS.decode(srs);
+                    geometry.setUserData(crs);
+                } catch (Exception e) {
+                    Throwables.propagate(e);
+                }
+            }
             value = geometry;
             reader.nextTag();
             reader.require(END_ELEMENT, valueElemName.getNamespaceURI(),
