@@ -96,7 +96,7 @@ class CommitsEntryListBuilder {
             commits = list.iterator();
         }
 
-        final Function<RevCommit, EntryImpl> commitToEntryFunctor = new CommitToEntry(gss);
+        final Function<RevCommit, EntryImpl> commitToEntryFunctor = new CommitToEntry(gss, geoGit);
         Iterator<EntryImpl> entries = Iterators.transform(commits, commitToEntryFunctor);
 
         FilteringEntryListBuilder filteringEntries = new FilteringEntryListBuilder(this.filter,

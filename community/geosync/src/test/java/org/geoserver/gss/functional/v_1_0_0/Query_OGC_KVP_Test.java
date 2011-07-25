@@ -19,6 +19,9 @@ import org.w3c.dom.Element;
 
 import com.google.common.collect.Lists;
 import com.mockrunner.mock.web.MockHttpServletResponse;
+import com.vividsolutions.jts.geom.Geometry;
+import com.vividsolutions.jts.geom.Point;
+import com.vividsolutions.jts.io.WKTReader;
 
 /**
  * Functional test suite for the {@code GetEntries} GSS operation using KVP request encoding.
@@ -371,11 +374,38 @@ public class Query_OGC_KVP_Test extends GSSFunctionalTestSupport {
                 + ",urn:x-ogc:def:crs:EPSG:900913";
 
         Document dom = super.getAsDOM(request);
-        print(dom);
+        // print(dom);
         assertXpathEvaluatesTo("1", "count(//atom:feed/atom:entry)", dom);
         assertXpathEvaluatesTo("Update of Feature Bridges.1107531599613",
                 "//atom:feed/atom:entry/atom:title", dom);
         assertXpathEvaluatesTo("Change Cam Bridge", "//atom:feed/atom:entry/atom:summary", dom);
     }
 
+    public void testGEOMFilter() throws Exception {
+
+        // Buildings.1107531701010
+        Geometry matchtingGeom = new WKTReader()
+                .read("MULTIPOLYGON (((0.0008 0.0005, 0.0008 0.0007, 0.0012 0.0007, 0.0012 0.0005, 0.0008 0.0005)))");
+        final Point interiorPoint = matchtingGeom.getInteriorPoint();
+        String request = RESOLUTION_FEED_BASE + "&GEOM=" + interiorPoint.toText();
+        Document dom = super.getAsDOM(request);
+        // print(dom);
+        // expect 2 entires, the initial import and the delete of the building
+        assertXpathEvaluatesTo("2", "count(//atom:feed/atom:entry)", dom);
+        assertXpathEvaluatesTo(
+                "Initial import of FeatureType http://www.opengis.net/cite:Buildings",
+                "//atom:feed/atom:entry[1]/atom:title", dom);
+
+        assertXpathEvaluatesTo("Deleted building", "//atom:feed/atom:entry[2]/atom:title", dom);
+
+        request = RESOLUTION_FEED_BASE + "&GEOM=" + interiorPoint.toText() + "&spatialOp=Disjoint";
+        dom = super.getAsDOM(request);
+        print(dom);
+        assertXpathEvaluatesTo("3", "count(//atom:feed/atom:entry)", dom);
+        assertXpathEvaluatesTo("Initial import of FeatureType http://www.opengis.net/cite:Bridges",
+                "//atom:feed/atom:entry[1]/atom:title", dom);
+
+        assertXpathEvaluatesTo("Change Cam Bridge", "//atom:feed/atom:entry[2]/atom:title", dom);
+        assertXpathEvaluatesTo("Moved building", "//atom:feed/atom:entry[3]/atom:title", dom);
+    }
 }
