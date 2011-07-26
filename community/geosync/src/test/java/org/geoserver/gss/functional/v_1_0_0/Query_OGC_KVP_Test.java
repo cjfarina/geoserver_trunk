@@ -20,7 +20,6 @@ import org.w3c.dom.Element;
 import com.google.common.collect.Lists;
 import com.mockrunner.mock.web.MockHttpServletResponse;
 import com.vividsolutions.jts.geom.Geometry;
-import com.vividsolutions.jts.geom.Point;
 import com.vividsolutions.jts.io.WKTReader;
 
 /**
@@ -93,10 +92,10 @@ public class Query_OGC_KVP_Test extends GSSFunctionalTestSupport {
             ));
 
     /**
-     * The ordered list of all values for the {@code /atom:feed/atom:entry/atom:summary} XPath in
+     * The ordered list of all values for the {@code /atom:feed/atom:entry/atom:content} XPath in
      * the RESOLUTIONFEED as set up at {@link #oneTimeSetUp()}
      */
-    private final List<String> ALL_RESOLUTION_SUMMARIES = Collections.unmodifiableList(Arrays
+    private final List<String> ALL_RESOLUTION_CONTENTS = Collections.unmodifiableList(Arrays
             .asList(//
             "Initial import of FeatureType http://www.opengis.net/cite:Bridges",//
             "Initial import of FeatureType http://www.opengis.net/cite:Buildings",//
@@ -300,12 +299,14 @@ public class Query_OGC_KVP_Test extends GSSFunctionalTestSupport {
          * messages and those are the ones being returned in reverse order. The orther of feature
          * inserts/updates/deletes for a single commit is not reversed.
          */
-        testSortOder(REPLICATION_FEED_BASE, ALL_REPLICATION_SUMMARIES);
-        testSortOder(RESOLUTION_FEED_BASE, ALL_RESOLUTION_SUMMARIES);
+        testSortOder(REPLICATION_FEED_BASE, ALL_REPLICATION_SUMMARIES,
+                "//atom:feed/atom:entry/atom:summary");
+        testSortOder(RESOLUTION_FEED_BASE, ALL_RESOLUTION_CONTENTS,
+                "//atom:feed/atom:entry/atom:content");
     }
 
-    private void testSortOder(final String baseFeedRequest,
-            final List<String> ascendingOrderSummaries) throws Exception {
+    private void testSortOder(final String baseFeedRequest, final List<String> ascendingOrder,
+            final String xpath) throws Exception {
 
         String request;
         Document dom;
@@ -314,31 +315,31 @@ public class Query_OGC_KVP_Test extends GSSFunctionalTestSupport {
         request = baseFeedRequest;
         dom = super.getAsDOM(request);
         // defaults to ASCENDING
-        result = evaluateAll("//atom:feed/atom:entry/atom:summary", dom);
-        assertEquals(ascendingOrderSummaries, result);
+        result = evaluateAll(xpath, dom);
+        assertEquals(ascendingOrder, result);
 
         // explicitly ask for ASCENDING
         request = baseFeedRequest + "&sortOrder=ASCENDING";
         dom = super.getAsDOM(request);
-        result = evaluateAll("//atom:feed/atom:entry/atom:summary", dom);
-        assertEquals(ascendingOrderSummaries, result);
+        result = evaluateAll(xpath, dom);
+        assertEquals(ascendingOrder, result);
 
         request = baseFeedRequest + "&sortOrder=DESCENDING";
         dom = super.getAsDOM(request);
-        result = evaluateAll("//atom:feed/atom:entry/atom:summary", dom);
-        List<String> reverse = Lists.reverse(ascendingOrderSummaries);
+        result = evaluateAll(xpath, dom);
+        List<String> reverse = Lists.reverse(ascendingOrder);
         assertEquals(reverse, result);
     }
 
     public void testBBOXFilter() throws Exception {
         /*
-         * Bridges.1107531599613 is moved to POINT(3,4), see class javadocs for
+         * Bridges.1107531599613 is moved to POINT (0.0001 0.0006), see class javadocs for
          * GSSFunctionalTestSupport
          */
 
         // Note we use lat/lon axis order here as GSS defaults to ogc:urn:def:epsg:XXX format which
         // respects EPSG database axis order
-        String request = REPLICATION_FEED_BASE + "&BBOX=3.9,2.9,4.1,3.1";
+        String request = REPLICATION_FEED_BASE + "&BBOX=0.00055,0.00005,0.00065,0.00015";
         Document dom = super.getAsDOM(request);
         // print(dom);
         assertXpathEvaluatesTo("1", "count(//atom:feed/atom:entry)", dom);
@@ -347,7 +348,7 @@ public class Query_OGC_KVP_Test extends GSSFunctionalTestSupport {
         assertXpathEvaluatesTo("Change Cam Bridge", "//atom:feed/atom:entry/atom:summary", dom);
 
         // But if you want lon/lat, just say so
-        request = REPLICATION_FEED_BASE + "&BBOX=2.9,3.9,3.1,4.1,EPSG:4326";
+        request = REPLICATION_FEED_BASE + "&BBOX=0.00005,0.00055,0.00015,0.00065,EPSG:4326";
         dom = super.getAsDOM(request);
         // print(dom);
         assertXpathEvaluatesTo("1", "count(//atom:feed/atom:entry)", dom);
@@ -359,19 +360,19 @@ public class Query_OGC_KVP_Test extends GSSFunctionalTestSupport {
 
     public void testBBOXFilterReproject() throws Exception {
         /*
-         * Bridges.1107531599613 is moved to POINT(3,4), see class javadocs for
+         * Bridges.1107531599613 is moved to POINT (0.0001 0.0006), see class javadocs for
          * GSSFunctionalTestSupport
          */
-        CoordinateReferenceSystem orig = CRS.decode("urn:x-ogc:def:crs:EPSG:4326");
-        CoordinateReferenceSystem target = CRS.decode("urn:x-ogc:def:crs:EPSG:900913");
-        // Note: the arguments x1,x1,x2,y2 for ReferencedEnvelope are actually lat1,lat2,lon1,lon2,
+        CoordinateReferenceSystem orig = CRS.decode("urn:ogc:def:crs:EPSG::4326");
+        CoordinateReferenceSystem target = CRS.decode("urn:ogc:def:crs:EPSG::900913");
+        // Note: the arguments x1,x2,y1,y2 for ReferencedEnvelope are actually lat1,lat2,lon1,lon2,
         // as the CRS is lat/lon
-        ReferencedEnvelope envelope = new ReferencedEnvelope(3.9, 3.1, 2.9, 4.1, orig).transform(
-                target, true);
+        ReferencedEnvelope envelope = new ReferencedEnvelope(0.00055, 0.00065, 0.00005, 0.00015,
+                orig).transform(target, true);
 
         String request = REPLICATION_FEED_BASE + "&BBOX=" + envelope.getMinX() + ","
                 + envelope.getMinY() + "," + envelope.getMaxX() + "," + envelope.getMaxY()
-                + ",urn:x-ogc:def:crs:EPSG:900913";
+                + ",urn:ogc:def:crs:EPSG::900913";
 
         Document dom = super.getAsDOM(request);
         // print(dom);
@@ -383,29 +384,22 @@ public class Query_OGC_KVP_Test extends GSSFunctionalTestSupport {
 
     public void testGEOMFilter() throws Exception {
 
-        // Buildings.1107531701010
-        Geometry matchtingGeom = new WKTReader()
-                .read("MULTIPOLYGON (((0.0008 0.0005, 0.0008 0.0007, 0.0012 0.0007, 0.0012 0.0005, 0.0008 0.0005)))");
-        final Point interiorPoint = matchtingGeom.getInteriorPoint();
-        String request = RESOLUTION_FEED_BASE + "&GEOM=" + interiorPoint.toText();
+        // Bridges.1107531599613
+        Geometry matchtingGeom = new WKTReader().read("POINT (0.0002 0.0007)");
+        String request = RESOLUTION_FEED_BASE + "&GEOM=" + matchtingGeom.toText()
+                + "&CRS=EPSG:4326";
         Document dom = super.getAsDOM(request);
-        // print(dom);
+        print(dom);
         // expect 2 entires, the initial import and the delete of the building
         assertXpathEvaluatesTo("2", "count(//atom:feed/atom:entry)", dom);
-        assertXpathEvaluatesTo(
-                "Initial import of FeatureType http://www.opengis.net/cite:Buildings",
-                "//atom:feed/atom:entry[1]/atom:title", dom);
-
-        assertXpathEvaluatesTo("Deleted building", "//atom:feed/atom:entry[2]/atom:title", dom);
-
-        request = RESOLUTION_FEED_BASE + "&GEOM=" + interiorPoint.toText() + "&spatialOp=Disjoint";
-        dom = super.getAsDOM(request);
-        print(dom);
-        assertXpathEvaluatesTo("3", "count(//atom:feed/atom:entry)", dom);
         assertXpathEvaluatesTo("Initial import of FeatureType http://www.opengis.net/cite:Bridges",
-                "//atom:feed/atom:entry[1]/atom:title", dom);
+                "//atom:feed/atom:entry[1]/atom:content", dom);
 
-        assertXpathEvaluatesTo("Change Cam Bridge", "//atom:feed/atom:entry[2]/atom:title", dom);
-        assertXpathEvaluatesTo("Moved building", "//atom:feed/atom:entry[3]/atom:title", dom);
+        assertXpathEvaluatesTo("Change Cam Bridge", "//atom:feed/atom:entry[2]/atom:content", dom);
+
+        request = RESOLUTION_FEED_BASE + "&GEOM=" + matchtingGeom.toText() + "&spatialOp=Disjoint";
+        dom = super.getAsDOM(request);
+        // print(dom);
+        assertXpathEvaluatesTo("5", "count(//atom:feed/atom:entry)", dom);
     }
 }

@@ -9,29 +9,26 @@ import org.geogit.api.DiffEntry;
 import org.geogit.api.GeoGIT;
 import org.geogit.api.ObjectId;
 import org.geogit.api.RevCommit;
-import org.geogit.repository.Repository;
+import org.geogit.repository.SpatialOps;
+import org.geoserver.gss.internal.atom.CategoryImpl;
 import org.geoserver.gss.internal.atom.ContentImpl;
 import org.geoserver.gss.internal.atom.EntryImpl;
+import org.geoserver.gss.internal.atom.LinkImpl;
 import org.geoserver.gss.internal.atom.PersonImpl;
 import org.geotools.factory.CommonFactoryFinder;
 import org.geotools.factory.GeoTools;
-import org.geotools.geometry.jts.ReferencedEnvelope;
-import org.geotools.referencing.CRS;
-import org.opengis.feature.Feature;
-import org.opengis.feature.type.FeatureType;
 import org.opengis.filter.FilterFactory2;
 import org.opengis.geometry.BoundingBox;
-import org.opengis.geometry.Envelope;
-import org.opengis.referencing.crs.CoordinateReferenceSystem;
-import org.opengis.referencing.operation.MathTransform;
 
 import com.google.common.base.Function;
-import com.google.common.base.Throwables;
 import com.vividsolutions.jts.geom.GeometryFactory;
 
 /**
  * Adapts {@link RevCommit} to an Atom {@link EntryImpl}.
- * 
+ * <p>
+ * Populates the {@link EntryImpl} mapping GSS concepts (from Resolution Feed Encoding, section
+ * 9.2.3.2) to GeoGit's.
+ * </p>
  */
 class CommitToEntry implements Function<RevCommit, EntryImpl> {
 
@@ -62,16 +59,22 @@ class CommitToEntry implements Function<RevCommit, EntryImpl> {
         ObjectId objectId = commit.getId();
 
         atomEntry.setId(objectId.toString());// TODO: convert to UUID
-        atomEntry.setTitle(title(commit));
-        atomEntry.setSummary(commit.getMessage());
-        atomEntry.setUpdated(new Date(commit.getTimestamp()));
-        atomEntry.setAuthor(author(commit));
-        atomEntry.setContributor(contributor(commit));
-        atomEntry.setContent(content());
-        atomEntry.setWhere(where(commit));
 
-        // atomEntry.setCategory(category);
-        // atomEntry.setLink(link);
+        atomEntry.setAuthor(author(commit));
+        atomEntry.setCategory(category(commit));
+        atomEntry.setContent(content(commit));
+        atomEntry.setLink(link(commit));
+        atomEntry.setTitle(title(commit));
+        atomEntry.setUpdated(updated(commit));
+
+        long t = System.currentTimeMillis();
+        Object where = where(commit);
+        atomEntry.setWhere(where);
+        t = System.currentTimeMillis() - t;
+        System.out.println(getClass().getSimpleName() + ": Computing where of " + commit + " took "
+                + t + "ms. " + where);
+
+        atomEntry.setContributor(contributor(commit));
         // atomEntry.setPublished(published);
         // atomEntry.setRights(rights);
         // atomEntry.setSource(source);
@@ -79,9 +82,71 @@ class CommitToEntry implements Function<RevCommit, EntryImpl> {
         return atomEntry;
     }
 
+    /**
+     * <p>
+     * The date the change was made. All time shall be zulu time.
+     * </p>
+     */
+    private Date updated(final RevCommit commit) {
+        /*
+         * No need to perform any timezone conversion. Dates are always in GMT and presenting the
+         * timestamp in 'zulu' time is an encoding issue anyways
+         */
+        return new Date(commit.getTimestamp());
+    }
+
+    /**
+     * <p>
+     * The value of the title element shall be 'Proposal Accepted' or 'Proposal Rejected' depending
+     * of the disposition of the originating change proposal.
+     * </p>
+     */
+    private String title(RevCommit commit) {
+        return "Proposal Accepted";
+    }
+
+    /**
+     * <p>
+     * A link with the value of the "rel" attribute set to "disposition" and the value of the href
+     * attribute set to point to the change feed entry that has been accepted or rejected.
+     * </p>
+     */
+    private List<LinkImpl> link(RevCommit commit) {
+        LinkImpl link = new LinkImpl();
+        link.setRel("disposition");
+        link.setHref("http://do.no.forget/to/point/to/the/changefeed/entry");
+        return Collections.singletonList(link);
+    }
+
+    /**
+     * <p>
+     * There shall be at one category element in the entry indicating the disposition of the
+     * originating change proposal. The "term" attribute shall have a value of "Accepted" if the
+     * originating change proposal was accepted or "Rejected" if the originating change proposal was
+     * rejected. The scheme attribute shall have the value:
+     * "http://www.opengis.org/geosync/resolutions"
+     * </p>
+     */
+    private List<CategoryImpl> category(RevCommit commit) {
+        CategoryImpl cat = new CategoryImpl();
+        cat.setTerm("Accepted");
+        cat.setScheme("http://www.opengis.org/geosync/resolutions");
+        return Collections.singletonList(cat);
+    }
+
+    /**
+     * <p>
+     * If the originating change proposal was rejected, the georss:where element shall be omitted.
+     * If the originating change proposal was accepted, the georss:where element shall have a value
+     * according to the following rules: If the modified feature is non-spatial then the element
+     * shall not be specified. If the modified feature is spatial and includes a single point
+     * geometry then that geometry shall be used as the value of element. If the modified feature is
+     * spatial and includes a non-single point geometry then a gml:Envelope containing the geometry
+     * shall be used as the value of the <georss:where>element.
+     */
     private Object where(final RevCommit commit) {
         final ObjectId parentId = commit.getParentIds().get(0);
-        ReferencedEnvelope where = null;
+        BoundingBox where = null;
         Iterator<DiffEntry> diff;
         try {
             diff = geoGit.diff().setOldVersion(parentId).setNewVersion(commit.getId()).call();
@@ -91,89 +156,34 @@ class CommitToEntry implements Function<RevCommit, EntryImpl> {
             throw new RuntimeException(e);
         }
 
+        DiffEntry next;
+        BoundingBox diffEnv;
         while (diff.hasNext()) {
-            DiffEntry next = diff.next();
-            BoundingBox diffEnv = computeWhere(next);
+            next = diff.next();
+            diffEnv = next.getWhere();
             if (diffEnv != null && where == null) {
-                try {
-                    where = new ReferencedEnvelope(CRS.decode("urn:ogc:def:crs:EPSG::4326"));
-                } catch (Exception e) {
-                    Throwables.propagate(e);
-                }
+                where = SpatialOps.expandToInclude(where, diffEnv);
             }
-            expandToInclude(where, diffEnv);
+        }
+        if (where != null && where.getSpan(0) == 0D && where.getSpan(1) == 0D) {
+            // it's a single point
+            return SpatialOps.toGeometry(where);
         }
         return where;
     }
 
-    private void expandToInclude(ReferencedEnvelope where, final BoundingBox diffEnv) {
-        if (diffEnv == null) {
-            return;
-        }
-        CoordinateReferenceSystem targetCrs = where.getCoordinateReferenceSystem();
-        CoordinateReferenceSystem sourceCrs = diffEnv.getCoordinateReferenceSystem();
-        try {
-            Envelope env = diffEnv;
-            if (!CRS.equalsIgnoreMetadata(targetCrs, sourceCrs)) {
-                MathTransform mathTransform = CRS.findMathTransform(sourceCrs, targetCrs);
-                env = CRS.transform(mathTransform, diffEnv);
-            }
-            where.expandToInclude(env.getMinimum(0), env.getMinimum(0));
-            where.expandToInclude(env.getMaximum(1), env.getMaximum(1));
-        } catch (Exception e) {
-            Throwables.propagate(e);
-        }
-    }
-
-    private BoundingBox computeWhere(final DiffEntry diff) {
-        final String namespace = diff.getPath().get(0);
-        final String typeName = diff.getPath().get(1);
-        final String featureId = diff.getPath().get(2);
-
-        final FeatureType featureType = gss.getFeatureType(namespace, typeName);
-        final GeoGIT ggit = gss.getGeoGit();
-        final Repository repository = ggit.getRepository();
-        switch (diff.getType()) {
-        case ADD: {
-            ObjectId contentId = diff.getNewObjectId();
-            Feature addedFeature = repository.getFeature(featureType, featureId, contentId);
-            return addedFeature.getBounds();
-        }
-        case DELETE: {
-            ObjectId oldStateId = diff.getOldObjectId();
-            Feature oldState = repository.getFeature(featureType, featureId, oldStateId);
-            return oldState.getBounds();
-        }
-        case MODIFY: {
-
-            ObjectId oldStateId = diff.getOldObjectId();
-            ObjectId newStateId = diff.getNewObjectId();
-
-            Feature oldState = repository.getFeature(featureType, featureId, oldStateId);
-            Feature newState = repository.getFeature(featureType, featureId, newStateId);
-
-            BoundingBox oldBounds = oldState.getBounds();
-            BoundingBox newBounds = newState.getBounds();
-
-            if (newBounds == null) {
-                return oldBounds;
-            }
-            if (oldBounds == null) {
-                return newBounds;
-            }
-            ReferencedEnvelope where = new ReferencedEnvelope(
-                    oldBounds.getCoordinateReferenceSystem());
-            where.expandToInclude(newBounds.getMinX(), newBounds.getMinY());
-            where.expandToInclude(newBounds.getMaxX(), newBounds.getMaxY());
-            return where;
-        }
-        default:
-            throw new IllegalStateException();
-        }
-    }
-
-    private ContentImpl content() {
-        return null;// TODO
+    /**
+     * <p>
+     * If the change proposal was rejected then the content element may contain a narrative
+     * describing why it was rejected. If the change proposal was accepted but modified then the
+     * content element may contain a narrative describing the modifications
+     * </p>
+     */
+    private ContentImpl content(RevCommit commit) {
+        ContentImpl content = new ContentImpl();
+        content.setType("text/plain");
+        content.setValue(commit.getMessage());
+        return content;
     }
 
     /**
@@ -194,10 +204,6 @@ class CommitToEntry implements Function<RevCommit, EntryImpl> {
         PersonImpl author = new PersonImpl();
         author.setName(commit.getAuthor());
         return Collections.singletonList(author);
-    }
-
-    private String title(final RevCommit commit) {
-        return commit.getMessage();
     }
 
 }

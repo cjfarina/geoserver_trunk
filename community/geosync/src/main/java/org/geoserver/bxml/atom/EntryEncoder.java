@@ -84,9 +84,8 @@ public class EntryEncoder extends AbstractAtomEncoder<EntryImpl> {
 
             final ContentImpl econtent = e.getContent();
             if (null != econtent) {
-                Object value = econtent.getValue();
-                ContentEncoder<Object> contentEncoder = new ContentEncoder<Object>();
-                contentEncoder.encode(value, w);
+                ContentEncoder contentEncoder = new ContentEncoder();
+                contentEncoder.encode(econtent, w);
             }
 
             Object georssWhere = e.getWhere();

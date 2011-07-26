@@ -53,7 +53,7 @@ public abstract class AbstractGMLEncoder<T> extends AbstractEncoder<T> {
         if (crs == null && geometry.getSRID() > 0) {
             // may it have been set as a srid property?
             try {
-                CRS.decode("urn:x-ogc:def:crs:EPSG:" + geometry.getSRID());
+                CRS.decode("urn:ogc:def:crs:EPSG::" + geometry.getSRID());
             } catch (Exception e) {
                 // bad luck
                 if (LOGGER.isLoggable(Level.FINE)) {

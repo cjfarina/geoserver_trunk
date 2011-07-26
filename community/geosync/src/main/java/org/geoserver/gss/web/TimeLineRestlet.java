@@ -78,7 +78,7 @@ public class TimeLineRestlet extends Restlet {
                     {
                         String id = e.getId();
                         List<PersonImpl> author = e.getAuthor();
-                        String title = e.getTitle();
+                        String title = String.valueOf(e.getContent().getValue());// e.getTitle();
                         String summary = e.getSummary();
                         Date updated = e.getUpdated();
                         String feedHref = "../../ows?service=GSS&version=1.0.0&request=GetEntries&feed=REPLICATIONFEED&outputFormat=text/xml&";

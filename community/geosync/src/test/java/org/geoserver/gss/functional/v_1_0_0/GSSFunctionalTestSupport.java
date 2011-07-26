@@ -50,9 +50,9 @@ import com.vividsolutions.jts.io.WKTReader;
  * </ul>
  * </li>
  * <li>Commit Message: "Change Cam Bridge", Update of:
- * <code>Bridges.1107531599613[the_geom=POINT (3, 4), NAME="Cam Bridge2"]</code></li>
+ * <code>Bridges.1107531599613[the_geom=POINT (0.0001 0.0006), NAME="Cam Bridge2"]</code></li>
  * <li>Commit Message: "Moved building", Update of
- * <code>Buildings.1107531701011[the_geom=MULTIPOLYGON (((-1 -1, -1 -2, -2 -2, -2 -1, -1 -1)))]</code>
+ * <code>Buildings.1107531701011[the_geom=MULTIPOLYGON (((0.002 0.0007, 0.0024 0.0007, 0.0024 0.0005, 0.002 0.0005, 0.002 0.0007)))]</code>
  * </li>
  * <li>Commit Message: "Deleted building", Delete of <code>Buildings.1107531701010</code></li>
  * </ul>
@@ -95,7 +95,8 @@ public abstract class GSSFunctionalTestSupport extends GSSTestSupport {
 
         // update the bridge
         properties = Arrays.asList("NAME", "the_geom");
-        newValues = Arrays.asList("Cam Bridge2", (Object) gf.createPoint(new Coordinate(3, 4)));
+        newValues = Arrays.asList("Cam Bridge2",
+                (Object) gf.createPoint(new Coordinate(0.0001, 0.0006)));
         commitMessage = "Change Cam Bridge";
         filter = Filter.INCLUDE;
         recordUpdateCommit(gss, CITE_BRIDGES, filter, properties, newValues, commitMessage);
@@ -104,7 +105,7 @@ public abstract class GSSFunctionalTestSupport extends GSSTestSupport {
         // update second building
         filter = ff.id(Collections.singleton(ff.featureId("Buildings.1107531701011")));
         Geometry movedBuilding = new WKTReader()
-                .read("MULTIPOLYGON (((-1 -1, -1 -2, -2 -2, -2 -1, -1 -1)))");
+                .read("MULTIPOLYGON (((0.002 0.0007, 0.0024 0.0007, 0.0024 0.0005, 0.002 0.0005, 0.002 0.0007)))");
 
         properties = Arrays.asList("the_geom");
         newValues = Arrays.asList((Object) movedBuilding);
