@@ -382,7 +382,7 @@ public class BLOBS {
             value[3] = value[1];
         }
         ReferencedEnvelope bbox;
-        bbox = new ReferencedEnvelope(value[0], value[3], value[1], value[3], crs);
+        bbox = new ReferencedEnvelope(value[0], value[2], value[1], value[3], crs);
         return bbox;
     }
 
