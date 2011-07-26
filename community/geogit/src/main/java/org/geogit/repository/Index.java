@@ -203,9 +203,15 @@ public class Index {
         return fidMap;
     }
 
-    public ObjectId writeTree(final ObjectInserter objectInserter) throws Exception {
+    /**
+     * @param objectInserter
+     * @return non-null tuple, but possibly with null elements
+     * @throws Exception
+     */
+    public Tuple<ObjectId, BoundingBox> writeTree(final ObjectInserter objectInserter)
+            throws Exception {
         if (staged.size() == 0) {
-            return null;
+            return new Tuple<ObjectId, BoundingBox>(null, null);
         }
 
         final RevTree root;
@@ -213,6 +219,8 @@ public class Index {
             RevTree currRoot = repository.getRootTree();
             root = currRoot == null ? repository.newTree() : currRoot;
         }
+
+        BoundingBox bounds = null;
 
         Map<List<String>, RevTree> updates = new TreeMap<List<String>, RevTree>(PATH_COMPARATOR);
         final Set<List<String>> typeNames = new TreeSet<List<String>>(PATH_COMPARATOR);
@@ -231,12 +239,17 @@ public class Index {
             // update the tree with the leaf entries
             TreeMap<String, Entry> fidMap = staged.remove(typeName);
             TreeSet<String> fids = new TreeSet<String>(fidMap.keySet());
+            Ref ref;
             for (String fid : fids) {
                 Entry entry = fidMap.remove(fid);
                 if (entry.status == Entry.Status.DELETED) {
-                    typeNameTree.remove(fid);
+                    ref = typeNameTree.remove(fid);
                 } else {
-                    typeNameTree.put(new SpatialRef(fid, entry.blobId, TYPE.BLOB, entry.bounds));
+                    ref = new SpatialRef(fid, entry.blobId, TYPE.BLOB, entry.bounds);
+                    typeNameTree.put(ref);
+                }
+                if (ref != null && ref instanceof SpatialRef) {
+                    bounds = SpatialOps.expandToInclude(bounds, ((SpatialRef) ref).getBounds());
                 }
             }
         }
@@ -275,7 +288,7 @@ public class Index {
 
         final ObjectId newRootId = objectInserter.insert(new RevTreeWriter(root));
 
-        return newRootId;
+        return new Tuple<ObjectId, BoundingBox>(newRootId, bounds);
     }
 
     private RevTree findOrCreateTypeNameTree(RevTree root, ObjectInserter objectInserter,

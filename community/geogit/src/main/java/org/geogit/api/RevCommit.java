@@ -126,6 +126,6 @@ public class RevCommit extends RevObject {
     }
 
     public String toString() {
-        return "Commit[" + getId() + "]";
+        return "Commit[" + getId() + ", '" + message + "']";
     }
 }

@@ -175,7 +175,7 @@ public class RevSHA1Tree extends RevTree {
     }
 
     @Override
-    public void remove(final String key) {
+    public Ref remove(final String key) {
         Assert.notNull(key, "key can't be null");
         final Integer bucket = computeBucket(key);
         if (null == mySubTrees.get(bucket)) {
@@ -185,7 +185,9 @@ public class RevSHA1Tree extends RevTree {
             if (removed != null) {
                 this.size = this.size.subtract(BigInteger.ONE);
             }
+            return removed;
         } else {
+            Ref ref = this.get(key);
             // there's a subtree this key's bucket, we don't know if the subtree contains it at all
             // and it'd be too expensive to find out just now, use null value signaling the removal
             // of the entry. normalize() is gonna take care of removing it from the subtree
@@ -195,6 +197,7 @@ public class RevSHA1Tree extends RevTree {
             if (myEntries.size() >= SPLIT_FACTOR) {
                 normalize();
             }
+            return ref;
         }
     }
 

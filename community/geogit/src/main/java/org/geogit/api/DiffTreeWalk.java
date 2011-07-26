@@ -278,7 +278,7 @@ class DiffTreeWalk {
             final String newEntryName = nextNew.getName();
 
             final ChangeType changeType;
-            final ObjectId oldObject, newObject;
+            final Ref oldRef, newRef;
             final RevObject.TYPE objectType;
             final List<String> childPath;
 
@@ -287,8 +287,8 @@ class DiffTreeWalk {
                 childPath = childPath(oldEntryName);
                 changeType = ChangeType.MODIFY;
                 objectType = nextOld.getType();
-                oldObject = nextOld.getObjectId();
-                newObject = nextNew.getObjectId();
+                oldRef = nextOld;
+                newRef = nextNew;
 
             } else {
                 // not the same object (blob or tree), find out whether it's an addition or a
@@ -306,8 +306,8 @@ class DiffTreeWalk {
                     changeType = ChangeType.DELETE;
                     childPath = childPath(oldEntryName);
                     objectType = nextOld.getType();
-                    oldObject = nextOld.getObjectId();
-                    newObject = ObjectId.NULL;
+                    oldRef = nextOld;
+                    newRef = null;
                 } else {
                     // something was added in newVersion, return an "add diff" for newVersion and
                     // return the item to the "oldVersion" iterator for the next rounds of
@@ -316,15 +316,15 @@ class DiffTreeWalk {
                     changeType = ChangeType.ADD;
                     childPath = childPath(newEntryName);
                     objectType = nextNew.getType();
-                    oldObject = ObjectId.NULL;
-                    newObject = nextNew.getObjectId();
+                    oldRef = null;
+                    newRef = nextNew;
                 }
 
             }
 
             if (RevObject.TYPE.BLOB.equals(objectType)) {
-                DiffEntry singleChange = DiffEntry.newInstance(oldCommit, newCommit, oldObject,
-                        newObject, childPath);
+                DiffEntry singleChange = DiffEntry.newInstance(oldCommit, newCommit, oldRef,
+                        newRef, childPath);
                 return singleChange;
             }
 
@@ -335,7 +335,7 @@ class DiffTreeWalk {
             switch (changeType) {
             case ADD:
             case DELETE: {
-                ObjectId treeId = ObjectId.NULL.equals(oldObject) ? newObject : oldObject;
+                ObjectId treeId = null == oldRef ? newRef.getObjectId() : oldRef.getObjectId();
                 RevTree childTree = repo.getTree(treeId);
                 changesIterator = new AddRemoveAllTreeIterator(changeType, childPath, oldCommit,
                         newCommit, childTree, repo);
@@ -344,8 +344,8 @@ class DiffTreeWalk {
             case MODIFY: {
                 Assert.isTrue(RevObject.TYPE.TREE.equals(nextOld.getType()));
                 Assert.isTrue(RevObject.TYPE.TREE.equals(nextNew.getType()));
-                RevTree oldChildTree = repo.getTree(oldObject);
-                RevTree newChildTree = repo.getTree(newObject);
+                RevTree oldChildTree = repo.getTree(oldRef.getObjectId());
+                RevTree newChildTree = repo.getTree(newRef.getObjectId());
                 changesIterator = new TreeDiffEntryIterator(childPath, oldCommit, newCommit,
                         oldChildTree, newChildTree, repo);
                 break;

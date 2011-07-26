@@ -23,7 +23,6 @@ import org.gvsig.bxml.stream.BxmlStreamReader;
 import org.gvsig.bxml.stream.BxmlStreamWriter;
 import org.gvsig.bxml.stream.EventType;
 import org.opengis.geometry.BoundingBox;
-import org.opengis.referencing.FactoryException;
 import org.opengis.referencing.crs.CoordinateReferenceSystem;
 import org.springframework.util.Assert;
 
@@ -346,11 +345,11 @@ public class BLOBS {
         Assert.notNull(bounds.getCoordinateReferenceSystem());
 
         final CoordinateReferenceSystem crs = bounds.getCoordinateReferenceSystem();
-        final Integer epsgCode = lookupIdentifier(crs);
+        final String epsgCode = lookupIdentifier(crs);
 
         w.writeStartElement(WHERE);
         w.writeStartAttribute("", "epsg");
-        w.writeValue(epsgCode.intValue());
+        w.writeValue(epsgCode);
         w.writeEndAttributes();
 
         final double[] value = new double[] { bounds.getMinX(), bounds.getMinY(), bounds.getMaxX(),
@@ -366,7 +365,7 @@ public class BLOBS {
     public static BoundingBox parseWhere(final BxmlStreamReader r) throws IOException {
         r.require(EventType.START_ELEMENT, WHERE.getNamespaceURI(), WHERE.getLocalPart());
 
-        final Integer epsgCode = Integer.valueOf(r.getAttributeValue(null, "epsg"));
+        final String epsgCode = r.getAttributeValue(null, "epsg");
         final CoordinateReferenceSystem crs = lookupCrs(epsgCode);
 
         r.next();
@@ -387,18 +386,18 @@ public class BLOBS {
     }
 
     @SuppressWarnings("unchecked")
-    private static Map<CoordinateReferenceSystem, Integer> crsIdCache = Collections
+    private static Map<CoordinateReferenceSystem, String> crsIdCache = Collections
             .synchronizedMap(new LRUMap(3));
 
     @SuppressWarnings("unchecked")
-    private static Map<Integer, CoordinateReferenceSystem> crsCache = Collections
+    private static Map<String, CoordinateReferenceSystem> crsCache = Collections
             .synchronizedMap(new LRUMap(3));
 
-    private static CoordinateReferenceSystem lookupCrs(final Integer epsgCode) {
+    private static CoordinateReferenceSystem lookupCrs(final String epsgCode) {
         CoordinateReferenceSystem crs = crsCache.get(epsgCode);
         if (crs == null) {
             try {
-                crs = CRS.decode("EPSG:" + epsgCode, false);
+                crs = CRS.decode(epsgCode, false);
                 crsCache.put(epsgCode, crs);
             } catch (Exception e) {
                 Throwables.propagate(e);
@@ -407,12 +406,12 @@ public class BLOBS {
         return crs;
     }
 
-    private static Integer lookupIdentifier(CoordinateReferenceSystem crs) {
-        Integer epsgCode = crsIdCache.get(crs);
+    private static String lookupIdentifier(CoordinateReferenceSystem crs) {
+        String epsgCode = crsIdCache.get(crs);
         if (epsgCode == null) {
             try {
-                epsgCode = CRS.lookupEpsgCode(crs, true);
-            } catch (FactoryException e) {
+                epsgCode = CRS.toSRS(crs);
+            } catch (Exception e) {
                 Throwables.propagate(e);
             }
             if (epsgCode == null) {

@@ -20,7 +20,7 @@ public abstract class RevTree extends RevObject {
 
     public abstract Ref get(final String key);
 
-    public abstract void remove(final String key);
+    public abstract Ref remove(final String key);
 
     public abstract void accept(TreeVisitor visitor);
 

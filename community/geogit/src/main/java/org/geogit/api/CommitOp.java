@@ -7,8 +7,10 @@ import org.geogit.api.RevObject.TYPE;
 import org.geogit.repository.CommitBuilder;
 import org.geogit.repository.Index;
 import org.geogit.repository.Repository;
+import org.geogit.repository.Tuple;
 import org.geogit.storage.CommitWriter;
 import org.geogit.storage.ObjectInserter;
+import org.opengis.geometry.BoundingBox;
 
 public class CommitOp extends AbstractGeoGitOp<RevCommit> {
 
@@ -81,7 +83,10 @@ public class CommitOp extends AbstractGeoGitOp<RevCommit> {
 
         final Index index = repository.getIndex();
         final ObjectInserter objectInserter = repository.newObjectInserter();
-        final ObjectId treeId = index.writeTree(objectInserter);
+        Tuple<ObjectId, BoundingBox> result = index.writeTree(objectInserter);
+        final ObjectId treeId = result.getFirst();
+        final BoundingBox affectedArea = result.getLast();
+
         if (treeId == null) {
             throw new NothingToCommitException("Nothing to commit after " + currHeadCommitId);
         }
@@ -96,6 +101,7 @@ public class CommitOp extends AbstractGeoGitOp<RevCommit> {
             if (timeStamp != null) {
                 cb.setTimestamp(timeStamp.longValue());
             }
+            // cb.setBounds(bounds);
             commitId = objectInserter.insert(new CommitWriter(cb.build(ObjectId.NULL)));
         }
         final RevCommit commit = repository.getCommit(commitId);

@@ -3,6 +3,8 @@ package org.geogit.api;
 import java.util.Collections;
 import java.util.List;
 
+import org.geogit.repository.SpatialOps;
+import org.opengis.geometry.BoundingBox;
 import org.springframework.util.Assert;
 
 public class DiffEntry {
@@ -40,13 +42,16 @@ public class DiffEntry {
 
     private final ObjectId newCommitId;
 
+    private final BoundingBox where;
+
     public DiffEntry(ChangeType type, ObjectId oldCommitId, ObjectId newCommitId,
-            ObjectId oldVersion, ObjectId newVersion, List<String> path) {
+            ObjectId oldVersion, ObjectId newVersion, BoundingBox where, List<String> path) {
         this.type = type;
         this.oldCommitId = oldCommitId;
         this.newCommitId = newCommitId;
         this.oldObjectId = oldVersion;
         this.newObjectId = newVersion;
+        this.where = where;
         this.path = Collections.unmodifiableList(path);
     }
 
@@ -82,6 +87,13 @@ public class DiffEntry {
     }
 
     /**
+     * @return the affected geographic region of the change, may be {@code null}
+     */
+    public BoundingBox getWhere() {
+        return where;
+    }
+
+    /**
      * @return Path to object. Basically a three step path name made of
      *         {@code [<namespace>, <FeatureType name>, <Feature ID>]}
      */
@@ -105,12 +117,13 @@ public class DiffEntry {
 
         ObjectId oldVersion = oldObject == null ? ObjectId.NULL : oldObject.getObjectId();
         ObjectId newVersion = newObject == null ? ObjectId.NULL : newObject.getObjectId();
-
-        return newInstance(fromCommit, toCommit, oldVersion, newVersion, path);
+        BoundingBox bounds = SpatialOps.aggregatedBounds(oldObject, newObject);
+        return newInstance(fromCommit, toCommit, oldVersion, newVersion, bounds, path);
     }
 
-    public static DiffEntry newInstance(final ObjectId fromCommit, final ObjectId toCommit,
-            final ObjectId oldVersion, final ObjectId newVersion, final List<String> path) {
+    private static DiffEntry newInstance(final ObjectId fromCommit, final ObjectId toCommit,
+            final ObjectId oldVersion, final ObjectId newVersion, final BoundingBox bounds,
+            final List<String> path) {
 
         if (oldVersion != null && oldVersion.equals(newVersion)) {
             throw new IllegalArgumentException(
@@ -128,7 +141,8 @@ public class DiffEntry {
             type = ChangeType.MODIFY;
         }
 
-        DiffEntry entry = new DiffEntry(type, fromCommit, toCommit, oldVersion, newVersion, path);
+        DiffEntry entry = new DiffEntry(type, fromCommit, toCommit, oldVersion, newVersion, bounds,
+                path);
         return entry;
     }
 }

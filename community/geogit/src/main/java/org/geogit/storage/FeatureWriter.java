@@ -86,7 +86,8 @@ public class FeatureWriter implements ObjectWriter<Feature> {
                                     .getGeometryDescriptor();
                         }
                         if (descriptor != null) {
-                            CoordinateReferenceSystem crs = descriptor.getCoordinateReferenceSystem();
+                            CoordinateReferenceSystem crs = descriptor
+                                    .getCoordinateReferenceSystem();
                             geom.setUserData(crs);
                         }
                     }
