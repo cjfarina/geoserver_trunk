@@ -96,8 +96,8 @@ class DiffToEntry implements Function<DiffEntry, EntryImpl> {
         atomEntry.setTitle(title(diffEnty));
         atomEntry.setSummary(newCommit.getMessage());
         atomEntry.setUpdated(new Date(newCommit.getTimestamp()));
-        atomEntry.setAuthor(author(newCommit));
-        atomEntry.setContributor(contributor(newCommit));
+        atomEntry.getAuthor().addAll(author(newCommit));
+        atomEntry.getContributor().addAll(contributor(newCommit));
         atomEntry.setContent(content(diffEnty));
         atomEntry.setWhere(where());
 

@@ -1,6 +1,6 @@
 package org.geoserver.gss.internal.atom;
 
-import java.util.Collections;
+import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 
@@ -45,33 +45,21 @@ public class EntryImpl {
     /**
      * @return the author
      */
-    @SuppressWarnings("unchecked")
     public List<PersonImpl> getAuthor() {
-        return author == null ? Collections.EMPTY_LIST : author;
-    }
-
-    /**
-     * @param author
-     *            the author to set
-     */
-    public void setAuthor(List<PersonImpl> author) {
-        this.author = author;
+        if (author == null) {
+            author = new ArrayList<PersonImpl>(2);
+        }
+        return author;
     }
 
     /**
      * @return the category
      */
-    @SuppressWarnings("unchecked")
     public List<CategoryImpl> getCategory() {
-        return category == null ? Collections.EMPTY_LIST : category;
-    }
-
-    /**
-     * @param category
-     *            the category to set
-     */
-    public void setCategory(List<CategoryImpl> category) {
-        this.category = category;
+        if (category == null) {
+            category = new ArrayList<CategoryImpl>(2);
+        }
+        return category;
     }
 
     /**
@@ -92,17 +80,11 @@ public class EntryImpl {
     /**
      * @return the contributor
      */
-    @SuppressWarnings("unchecked")
     public List<PersonImpl> getContributor() {
-        return contributor == null ? Collections.EMPTY_LIST : contributor;
-    }
-
-    /**
-     * @param contributor
-     *            the contributor to set
-     */
-    public void setContributor(List<PersonImpl> contributor) {
-        this.contributor = contributor;
+        if (contributor == null) {
+            contributor = new ArrayList<PersonImpl>(2);
+        }
+        return contributor;
     }
 
     /**
@@ -123,17 +105,11 @@ public class EntryImpl {
     /**
      * @return the link
      */
-    @SuppressWarnings("unchecked")
     public List<LinkImpl> getLink() {
-        return link == null ? Collections.EMPTY_LIST : link;
-    }
-
-    /**
-     * @param link
-     *            the link to set
-     */
-    public void setLink(List<LinkImpl> link) {
-        this.link = link;
+        if (link == null) {
+            link = new ArrayList<LinkImpl>(2);
+        }
+        return link;
     }
 
     /**

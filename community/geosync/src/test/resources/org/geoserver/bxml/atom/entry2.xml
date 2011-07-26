@@ -1,0 +1,42 @@
+<?xml version="1.0" ?>
+<entry xmlns="http://www.w3.org/2005/Atom" xmlns:georss="http://www.georss.org/georss" xmlns:gss="http://www.opengis.net/gss/1.0"
+  xmlns:ows="http://www.opengis.net/ows/1.1" xmlns:fes="http://www.opengis.net/ogc" xmlns:xlink="http://www.w3.org/1999/xlink"
+  xmlns:wfs="http://www.opengis.net/wfs" xmlns:gml="http://www.opengis.net/gml">
+  <title>Insert of Feature building.19484</title>
+  <summary>new weird building</summary>
+  <id>212c812cde528ad912f6eda535c631e6f2e932c9</id>
+  <updated>2011-07-07T22:47:06.507Z</updated>
+  <author></author>
+  <contributor>
+    <name>geoserver</name>
+  </contributor>
+  <content>
+    <wfs:Insert xmlns:f="http://opengeo.org/osm">
+      <f:building gml:id="building.19484">
+        <f:way>
+          <gml:Polygon>
+            <gml:exterior>
+              <gml:LinearRing>
+                <gml:posList gml:srsName="urn:x-ogc:def:crs:EPSG:900913" gml:srsDimension="2" gml:count="8">-8260467.33447894
+                  5022328.082070426 -8260412.066547737 5022332.687731359 -8260370.615599336 5022293.539613425
+                  -8260379.826921202 5022247.483004089 -8260418.9750391375 5022226.757529888 -8260462.728818006
+                  5022240.574512689 -8260460.425987539 5022284.328291558 -8260467.33447894 5022328.082070426
+                </gml:posList>
+              </gml:LinearRing>
+            </gml:exterior>
+          </gml:Polygon>
+        </f:way>
+        <f:leisure></f:leisure>
+        <f:railway></f:railway>
+        <f:amenity></f:amenity>
+        <f:aeroway></f:aeroway>
+      </f:building>
+    </wfs:Insert>
+  </content>
+  <georss:where>
+    <gml:Envelope gml:srsName="urn:x-ogc:def:crs:EPSG:900913">
+      <gml:lowerCorner>-8260467.33447894 -8260467.33447894</gml:lowerCorner>
+      <gml:upperCorner>-8260370.615599336 -8260370.615599336</gml:upperCorner>
+    </gml:Envelope>
+  </georss:where>
+</entry>
