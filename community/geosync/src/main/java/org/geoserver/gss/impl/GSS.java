@@ -188,8 +188,7 @@ public class GSS implements DisposableBean {
 
         // geoGit.checkout().setName(gssTransactionID).call();
         WorkingTree workingTree = geoGit.getRepository().getWorkingTree();
-        List<String> insertedFids = workingTree.insert(typeName, affectedFeatures,
-                NULL_PROGRESS_LISTENER);
+        List<String> insertedFids = workingTree.insert(affectedFeatures, NULL_PROGRESS_LISTENER);
         geoGit.add().call();
 
         return insertedFids;
@@ -203,7 +202,7 @@ public class GSS implements DisposableBean {
 
         geoGit.checkout().setName(gssTransactionID).call();
         WorkingTree workingTree = geoGit.getRepository().getWorkingTree();
-        workingTree.update(typeName, filter, updatedProperties, newValues, affectedFeatures,
+        workingTree.update(filter, updatedProperties, newValues, affectedFeatures,
                 NULL_PROGRESS_LISTENER);
         geoGit.add().call();
     }

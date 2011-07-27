@@ -55,7 +55,7 @@ class ImportVersionedLayerTask extends LongTask<RevCommit> {
         WorkingTree workingTree = geoGit.getRepository().getWorkingTree();
         workingTree.init(schema);
         try {
-            workingTree.insert(featureTypeName, features, listener);
+            workingTree.insert(features, listener);
         } catch (Exception e) {
             e.printStackTrace();
             workingTree.delete(featureTypeName);
@@ -71,6 +71,7 @@ class ImportVersionedLayerTask extends LongTask<RevCommit> {
             final String typeName = name.getLocalPart();
             // add only the features of this type, other imports may be running in parallel and we
             // don't want to commit them all
+            // geoGit.add().addPattern(pattern).call();
             geoGit.add().call();
             revCommit = geoGit.commit().setAuthor(user).setCommitter(user)
                     .setMessage(commitMessage).call();

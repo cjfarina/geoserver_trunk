@@ -170,7 +170,7 @@ public abstract class RepositoryTestCase extends TestCase {
         List<RevCommit> commits = new ArrayList<RevCommit>();
 
         for (Feature f : features) {
-            insert(f);
+            insertAndAdd(f);
             if (oneCommitPerFeature) {
                 RevCommit commit = ggit.commit().call();
                 commits.add(commit);
@@ -185,6 +185,19 @@ public abstract class RepositoryTestCase extends TestCase {
         return commits;
     }
 
+    /**
+     * Inserts the Feature to the index and stages it to be committed.
+     */
+    protected ObjectId insertAndAdd(Feature f) throws Exception {
+        ObjectId objectId = insert(f);
+
+        new GeoGIT(getRepository()).add().call();
+        return objectId;
+    }
+
+    /**
+     * Inserts the feature to the index but does not stages it to be committed
+     */
     protected ObjectId insert(Feature f) throws Exception {
         final Index index = getRepository().getIndex();
         Name name = f.getType().getName();

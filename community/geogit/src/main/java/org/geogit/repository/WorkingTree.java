@@ -9,6 +9,7 @@ import org.geogit.api.ObjectId;
 import org.geogit.api.Ref;
 import org.geogit.api.RevTree;
 import org.geogit.storage.FeatureWriter;
+import org.geogit.storage.ObjectWriter;
 import org.geotools.feature.FeatureCollection;
 import org.geotools.feature.FeatureIterator;
 import org.geotools.feature.NameImpl;
@@ -69,6 +70,27 @@ public class WorkingTree {
     }
 
     /**
+     * Inserts a feature to the {@link Index} without staging it and returns the feature id.
+     */
+    public String insert(final Feature feature) throws Exception {
+
+        ObjectWriter<?> featureWriter = new FeatureWriter(feature);
+        final BoundingBox bounds = feature.getBounds();
+        final Name typeName = feature.getType().getName();
+
+        final String id = feature.getIdentifier().getID();
+
+        String path[];
+        if (typeName.getNamespaceURI() == null) {
+            path = new String[] { typeName.getLocalPart(), id };
+        } else {
+            path = new String[] { typeName.getNamespaceURI(), typeName.getLocalPart(), id };
+        }
+        index.inserted(featureWriter, bounds, path);
+        return id;
+    }
+
+    /**
      * @param typeName
      * @param features
      * @param listener
@@ -76,12 +98,10 @@ public class WorkingTree {
      *         {@link ProgressListener#isCanceled() listener.isCanceled()}
      * @throws Exception
      */
-    public List<String> insert(final Name typeName, final FeatureCollection features,
-            final ProgressListener listener) throws Exception {
+    public List<String> insert(final FeatureCollection features, final ProgressListener listener)
+            throws Exception {
 
         List<String> fids = new ArrayList<String>();
-        final String nsUri = typeName.getNamespaceURI();
-        final String localPart = typeName.getLocalPart();
         final float size = features.size();
 
         long t = System.currentTimeMillis();
@@ -97,11 +117,7 @@ public class WorkingTree {
                     return null;
                 }
                 Feature next = iterator.next();
-                BoundingBox bounds = next.getBounds();
-
-                String id = next.getIdentifier().getID();
-                FeatureWriter persister = new FeatureWriter(next);
-                index.inserted(persister, bounds, nsUri, localPart, id);
+                String id = insert(next);
                 fids.add(id);
                 count++;
                 if (listener.isCanceled()) {
@@ -126,11 +142,11 @@ public class WorkingTree {
         return fids;
     }
 
-    public void update(final Name typeName, Filter filter,
-            final List<PropertyName> updatedProperties, List<Object> newValues2,
-            final FeatureCollection newValues, final ProgressListener listener) throws Exception {
+    public void update(final Filter filter, final List<PropertyName> updatedProperties,
+            List<Object> newValues2, final FeatureCollection newValues,
+            final ProgressListener listener) throws Exception {
 
-        insert(typeName, newValues, listener);
+        insert(newValues, listener);
     }
 
     public boolean hasRoot(final Name typeName) {

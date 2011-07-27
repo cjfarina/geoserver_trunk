@@ -40,7 +40,7 @@ public class LogOpTest extends RepositoryTestCase {
 
     public void testHeadWithSingleCommit() throws Exception {
 
-        insert(feature1_1);
+        insertAndAdd(feature1_1);
         final RevCommit firstCommit = ggit.commit().call();
 
         Iterator<RevCommit> iterator = logOp.call();
@@ -53,10 +53,10 @@ public class LogOpTest extends RepositoryTestCase {
 
     public void testHeadWithTwoCommits() throws Exception {
 
-        insert(feature1_1);
+        insertAndAdd(feature1_1);
         final RevCommit firstCommit = ggit.commit().call();
 
-        insert(feature2_1);
+        insertAndAdd(feature2_1);
         final RevCommit secondCommit = ggit.commit().call();
 
         Iterator<RevCommit> iterator = logOp.call();
@@ -79,7 +79,7 @@ public class LogOpTest extends RepositoryTestCase {
         LinkedList<RevCommit> expected = new LinkedList<RevCommit>();
 
         for (Feature f : features) {
-            insert(f);
+            insertAndAdd(f);
             final RevCommit commit = ggit.commit().call();
             expected.addFirst(commit);
         }
@@ -101,7 +101,7 @@ public class LogOpTest extends RepositoryTestCase {
         RevCommit expectedCommit = null;
 
         for (Feature f : features) {
-            insert(f);
+            insertAndAdd(f);
             String id = f.getIdentifier().getID();
             final RevCommit commit = ggit.commit().call();
             if (id.equals(feature2_1.getIdentifier().getID())) {
@@ -125,7 +125,7 @@ public class LogOpTest extends RepositoryTestCase {
         Set<RevCommit> typeName1Commits = new HashSet<RevCommit>();
 
         for (Feature f : features) {
-            insert(f);
+            insertAndAdd(f);
             final RevCommit commit = ggit.commit().call();
             commits.addFirst(commit);
             if (typeName1.equals(f.getType().getName().getLocalPart())) {
@@ -147,7 +147,7 @@ public class LogOpTest extends RepositoryTestCase {
                 feature1_3, feature2_3);
 
         for (Feature f : features) {
-            insert(f);
+            insertAndAdd(f);
             ggit.commit().call();
         }
 
@@ -168,7 +168,7 @@ public class LogOpTest extends RepositoryTestCase {
         for (int i = 0; i < features.size(); i++) {
             Feature f = features.get(i);
             Long timestamp = timestamps.get(i);
-            insert(f);
+            insertAndAdd(f);
             final RevCommit commit = ggit.commit().setTimestamp(timestamp).call();
             allCommits.addFirst(commit);
         }
@@ -203,16 +203,16 @@ public class LogOpTest extends RepositoryTestCase {
     }
 
     public void testSinceUntil() throws Exception {
-        final ObjectId oid1_1 = insert(feature1_1);
+        final ObjectId oid1_1 = insertAndAdd(feature1_1);
         final RevCommit commit1_1 = ggit.commit().call();
 
-        final ObjectId oid1_2 = insert(feature1_2);
+        final ObjectId oid1_2 = insertAndAdd(feature1_2);
         final RevCommit commit1_2 = ggit.commit().call();
 
-        final ObjectId oid2_1 = insert(feature2_1);
+        final ObjectId oid2_1 = insertAndAdd(feature2_1);
         final RevCommit commit2_1 = ggit.commit().call();
 
-        final ObjectId oid2_2 = insert(feature2_2);
+        final ObjectId oid2_2 = insertAndAdd(feature2_2);
         final RevCommit commit2_2 = ggit.commit().call();
 
         try {

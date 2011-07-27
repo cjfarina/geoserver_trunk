@@ -22,7 +22,7 @@ public class AddOp extends AbstractGeoGitOp<Index> {
      */
     public Index call() throws Exception {
         final Index index = getRepository().getIndex();
-        // index.getStaged();
+        index.add(null);
         return index;
     }
 

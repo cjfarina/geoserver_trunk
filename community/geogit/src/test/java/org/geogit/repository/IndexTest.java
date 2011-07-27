@@ -27,11 +27,11 @@ public class IndexTest extends RepositoryTestCase {
 
     // two features with the same content and different fid should point to the same object
     public void testInsertIdenticalObjects() throws Exception {
-        ObjectId oId1 = insert(feature1_1);
+        ObjectId oId1 = insertAndAdd(feature1_1);
         Feature equalContentFeature = feature(featureType1, "DifferentId",
                 ((SimpleFeature) feature1_1).getAttributes().toArray());
 
-        ObjectId oId2 = insert(equalContentFeature);
+        ObjectId oId2 = insertAndAdd(equalContentFeature);
 
         // BLOBS.print(repo.getRawObject(insertedId1), System.err);
         // BLOBS.print(repo.getRawObject(insertedId2), System.err);
@@ -42,9 +42,9 @@ public class IndexTest extends RepositoryTestCase {
 
     // two features with different content should point to different objects
     public void testInsertNonEqualObjects() throws Exception {
-        ObjectId oId1 = insert(feature1_1);
+        ObjectId oId1 = insertAndAdd(feature1_1);
 
-        ObjectId oId2 = insert(feature1_2);
+        ObjectId oId2 = insertAndAdd(feature1_2);
         assertNotNull(oId1);
         assertNotNull(oId2);
         assertFalse(oId1.equals(oId2));
@@ -73,8 +73,8 @@ public class IndexTest extends RepositoryTestCase {
 
         Feature feature2 = builder.buildFeature("TestType.feature.2");
 
-        final ObjectId insertedId1 = insert(feature1);
-        final ObjectId insertedId2 = insert(feature2);
+        final ObjectId insertedId1 = insertAndAdd(feature1);
+        final ObjectId insertedId2 = insertAndAdd(feature2);
         assertEquals(insertedId1, insertedId2);
 
         Repository mockRepo = mock(Repository.class);

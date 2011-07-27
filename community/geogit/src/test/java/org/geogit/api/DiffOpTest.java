@@ -41,7 +41,7 @@ public class DiffOpTest extends RepositoryTestCase {
         assertNotNull(difflist);
         assertFalse(difflist.hasNext());
 
-        final ObjectId oid1 = insert(feature1_1);
+        final ObjectId oid1 = insertAndAdd(feature1_1);
         final RevCommit commit1_1 = ggit.commit().call();
         try {
             diffOp.setOldVersion(oid1).call();
@@ -67,7 +67,7 @@ public class DiffOpTest extends RepositoryTestCase {
 
     public void testNoChangeSameCommit() throws Exception {
 
-        final ObjectId newOid = insert(feature1_1);
+        final ObjectId newOid = insertAndAdd(feature1_1);
         final RevCommit commit = ggit.commit().setAll(true).call();
 
         assertFalse(diffOp.setOldVersion(commit.getId()).setNewVersion(commit.getId()).call()
@@ -76,7 +76,7 @@ public class DiffOpTest extends RepositoryTestCase {
 
     public void testSingleAddition() throws Exception {
 
-        final ObjectId newOid = insert(feature1_1);
+        final ObjectId newOid = insertAndAdd(feature1_1);
         final RevCommit commit = ggit.commit().setAll(true).call();
 
         List<DiffEntry> difflist = toList(diffOp.setOldVersion(ObjectId.NULL).call());
@@ -99,7 +99,7 @@ public class DiffOpTest extends RepositoryTestCase {
 
     public void testSingleAdditionReverseOrder() throws Exception {
 
-        final ObjectId newOid = insert(feature1_1);
+        final ObjectId newOid = insertAndAdd(feature1_1);
         final RevCommit commit = ggit.commit().setAll(true).call();
 
         List<DiffEntry> difflist = toList(diffOp.setOldVersion(commit.getId())
@@ -118,7 +118,7 @@ public class DiffOpTest extends RepositoryTestCase {
     }
 
     public void testSingleDeletion() throws Exception {
-        final ObjectId featureContentId = insert(feature1_1);
+        final ObjectId featureContentId = insertAndAdd(feature1_1);
         final RevCommit addCommit = ggit.commit().setAll(true).call();
 
         assertTrue(delete(feature1_1));
@@ -146,7 +146,7 @@ public class DiffOpTest extends RepositoryTestCase {
 
     public void testSingleDeletionReverseOrder() throws Exception {
 
-        final ObjectId featureContentId = insert(feature1_1);
+        final ObjectId featureContentId = insertAndAdd(feature1_1);
         final RevCommit addCommit = ggit.commit().setAll(true).call();
 
         assertTrue(delete(feature1_1));
@@ -176,14 +176,14 @@ public class DiffOpTest extends RepositoryTestCase {
 
     public void testSingleModification() throws Exception {
 
-        final ObjectId oldOid = insert(feature1_1);
+        final ObjectId oldOid = insertAndAdd(feature1_1);
         final RevCommit insertCommit = ggit.commit().setAll(true).call();
 
         final String featureId = feature1_1.getIdentifier().getID();
         final Feature modifiedFeature = feature((SimpleFeatureType) feature1_1.getType(),
                 featureId, "changedProp", new Integer(1500), null);
 
-        final ObjectId newOid = insert(modifiedFeature);
+        final ObjectId newOid = insertAndAdd(modifiedFeature);
 
         final RevCommit changeCommit = ggit.commit().setAll(true).call();
 
@@ -207,10 +207,10 @@ public class DiffOpTest extends RepositoryTestCase {
     public void testFilterNamespaceNoChanges() throws Exception {
 
         // two commits on different trees
-        insert(feature1_1);
+        insertAndAdd(feature1_1);
         final RevCommit commit1 = ggit.commit().setAll(true).call();
 
-        insert(feature2_1);
+        insertAndAdd(feature2_1);
         final RevCommit commit2 = ggit.commit().setAll(true).call();
 
         diffOp.setOldVersion(commit1.getId()).setNewVersion(commit2.getId());
@@ -223,10 +223,10 @@ public class DiffOpTest extends RepositoryTestCase {
     public void testFilterTypeNameNoChanges() throws Exception {
 
         // two commits on different trees
-        insert(feature1_1);
+        insertAndAdd(feature1_1);
         final RevCommit commit1 = ggit.commit().setAll(true).call();
 
-        insert(feature2_1);
+        insertAndAdd(feature2_1);
         final RevCommit commit2 = ggit.commit().setAll(true).call();
 
         diffOp.setOldVersion(commit1.getId()).setNewVersion(commit2.getId());
@@ -239,10 +239,10 @@ public class DiffOpTest extends RepositoryTestCase {
     public void testFilterDidntMatchAnything() throws Exception {
 
         // two commits on different trees
-        insert(feature1_1);
+        insertAndAdd(feature1_1);
         final RevCommit commit1 = ggit.commit().setAll(true).call();
 
-        insert(feature2_1);
+        insertAndAdd(feature2_1);
         final RevCommit commit2 = ggit.commit().setAll(true).call();
 
         // set a filter that doesn't produce any match
@@ -258,10 +258,10 @@ public class DiffOpTest extends RepositoryTestCase {
     public void testFilterFeatureIdNoChanges() throws Exception {
 
         // two commits on different trees
-        insert(feature1_1);
+        insertAndAdd(feature1_1);
         final RevCommit commit1 = ggit.commit().setAll(true).call();
 
-        insert(feature2_1);
+        insertAndAdd(feature2_1);
         final RevCommit commit2 = ggit.commit().setAll(true).call();
 
         // filter on feature1_1, it didn't change between commit2 and commit1
@@ -274,14 +274,14 @@ public class DiffOpTest extends RepositoryTestCase {
     }
 
     public void testFilterMatchesSingleBlobChange() throws Exception {
-        final ObjectId initialOid = insert(feature1_1);
+        final ObjectId initialOid = insertAndAdd(feature1_1);
         final RevCommit commit1 = ggit.commit().setAll(true).call();
 
-        insert(feature2_1);
+        insertAndAdd(feature2_1);
         final RevCommit commit2 = ggit.commit().setAll(true).call();
 
         ((SimpleFeature) feature1_1).setAttribute("sp", "modified");
-        final ObjectId modifiedOid = insert(feature1_1);
+        final ObjectId modifiedOid = insertAndAdd(feature1_1);
         final RevCommit commit3 = ggit.commit().setAll(true).call();
 
         diffOp.setOldVersion(commit1.getId()).setNewVersion(commit3.getId());
@@ -332,12 +332,12 @@ public class DiffOpTest extends RepositoryTestCase {
     public void testFilterAddressesNamespaceTree() throws Exception {
 
         // two commits on different trees
-        final ObjectId oid11 = insert(feature1_1);
-        final ObjectId oid12 = insert(feature1_2);
+        final ObjectId oid11 = insertAndAdd(feature1_1);
+        final ObjectId oid12 = insertAndAdd(feature1_2);
         final RevCommit commit1 = ggit.commit().setAll(true).call();
 
-        final ObjectId oid21 = insert(feature2_1);
-        final ObjectId oid22 = insert(feature2_2);
+        final ObjectId oid21 = insertAndAdd(feature2_1);
+        final ObjectId oid22 = insertAndAdd(feature2_2);
         final RevCommit commit2 = ggit.commit().setAll(true).call();
 
         List<DiffEntry> diffs;
@@ -374,12 +374,12 @@ public class DiffOpTest extends RepositoryTestCase {
     public void testMultipleDeletes() throws Exception {
 
         // two commits on different trees
-        final ObjectId oid11 = insert(feature1_1);
-        final ObjectId oid12 = insert(feature1_2);
-        final ObjectId oid13 = insert(feature1_3);
+        final ObjectId oid11 = insertAndAdd(feature1_1);
+        final ObjectId oid12 = insertAndAdd(feature1_2);
+        final ObjectId oid13 = insertAndAdd(feature1_3);
         final RevCommit commit1 = ggit.commit().setAll(true).call();
 
-        final ObjectId oid21 = insert(feature2_1);
+        final ObjectId oid21 = insertAndAdd(feature2_1);
         final RevCommit commit2 = ggit.commit().setAll(true).call();
 
         delete(feature1_1);
@@ -404,13 +404,13 @@ public class DiffOpTest extends RepositoryTestCase {
     public void testTreeDeletes() throws Exception {
 
         // two commits on different trees
-        final ObjectId oid11 = insert(feature1_1);
-        final ObjectId oid12 = insert(feature1_2);
-        final ObjectId oid13 = insert(feature1_3);
+        final ObjectId oid11 = insertAndAdd(feature1_1);
+        final ObjectId oid12 = insertAndAdd(feature1_2);
+        final ObjectId oid13 = insertAndAdd(feature1_3);
         final RevCommit commit1 = ggit.commit().setAll(true).call();
 
-        final ObjectId oid21 = insert(feature2_1);
-        final ObjectId oid22 = insert(feature2_2);
+        final ObjectId oid21 = insertAndAdd(feature2_1);
+        final ObjectId oid22 = insertAndAdd(feature2_2);
         final RevCommit commit2 = ggit.commit().setAll(true).call();
 
         delete(feature1_1);

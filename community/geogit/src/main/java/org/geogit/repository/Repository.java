@@ -201,14 +201,17 @@ public class Repository {
         return feature;
     }
 
+    @Deprecated
     public void beginTransaction() {
         this.repoDb.beginTransaction();
     }
 
+    @Deprecated
     public void commitTransaction() {
         this.repoDb.commitTransaction();
     }
 
+    @Deprecated
     public void rollbackTransaction() {
         this.repoDb.rollbackTransaction();
     }

@@ -1,6 +1,7 @@
 package org.geogit.repository;
 
 import java.util.Arrays;
+import java.util.Collection;
 import java.util.Comparator;
 import java.util.HashMap;
 import java.util.List;
@@ -59,33 +60,47 @@ public class Index {
     // <parents, <featureId, blobId>>
     private TreeMap<List<String>, TreeMap<String, Entry>> staged;
 
+    /**
+     * 
+     * Status of an entry in the index. Aka, status of a feature
+     * 
+     */
+    public static enum Status {
+        /**
+         * Content is new and not staged to be committed
+         */
+        NEW_UNSTAGED,
+
+        /**
+         * Content is new and staged to be committed
+         */
+        NEW_STAGED,
+
+        /**
+         * Content exists, is modified, but is not staged to be committed
+         */
+        MODIFIED_UNSTAGED,
+
+        /**
+         * Content exists, is modified, and is staged to be committed
+         */
+        MODIFIED_STAGED,
+
+        /**
+         * Content was deleted, but is not staged to be committed
+         */
+        DELETED_UNSTAGED,
+
+        /**
+         * Content was deleted and staged to be committed
+         */
+        DELETED_STAGED
+    }
+
     /*
      *
      */
-    private static class Entry {
-        /**
-         * 
-         * Status of an entry in the index. Aka, status of a feature
-         * 
-         */
-        public static enum Status {
-            /**
-             * Content is new and not staged to be committed
-             */
-            NEW,
-            /**
-             * Content is new and staged to be committed
-             */
-            ADDED,
-            /**
-             * Content exists and was modified
-             */
-            MODIFIED,
-            /**
-             * Content was deleted
-             */
-            DELETED
-        }
+    public static class Entry {
 
         private ObjectId blobId;
 
@@ -115,9 +130,9 @@ public class Index {
     }
 
     /**
-     * Deletes the object (tree or feature) addressed by {@code path}
+     * Marks the object (tree or feature) addressed by {@code path} as an unstaged delete
      */
-    public boolean deleted(String... path) {
+    public boolean deleted(final String... path) {
         Assert.notNull(path);
         Assert.isTrue(path.length > 0);
 
@@ -136,7 +151,7 @@ public class Index {
         }
 
         TreeMap<String, Entry> fidMap = getFidMap(nsuri, typeName);
-        fidMap.put(fid, new Entry(child.getObjectId(), null, Entry.Status.DELETED));
+        fidMap.put(fid, new Entry(child.getObjectId(), null, Status.DELETED_UNSTAGED));
         return true;
     }
 
@@ -157,9 +172,61 @@ public class Index {
         final String featureId = path[path.length - 1];
 
         TreeMap<String, Entry> fidMap = getFidMap(path[0], path[1]);
-        fidMap.put(featureId, new Entry(blobId, bounds, Entry.Status.NEW));
+        fidMap.put(featureId, new Entry(blobId, bounds, Status.NEW_UNSTAGED));
 
         return blobId;
+    }
+
+    /**
+     * Stages the object addressed by patht o be added, if it's marked as an unstaged change. Does
+     * nothing otherwise.
+     * 
+     * @param path
+     */
+    public void add(final String... path) {
+        if (path == null) {
+            // add all
+            for (TreeMap<String, Entry> parentPaths : staged.values()) {
+                setStaged(parentPaths.values());
+            }
+            return;
+        } else if (path.length < 2) {
+            throw new UnsupportedOperationException("not yet supported");
+        }
+        List<String> parent = Arrays.asList(path[0], path[1]);
+        TreeMap<String, Entry> fidMap = staged.get(parent);
+        if (path.length == 2) {
+            setStaged(fidMap.values());
+        } else {
+            Entry entry = fidMap.get(path[2]);
+            setStaged(entry);
+        }
+    }
+
+    private void setStaged(Collection<Entry> entries) {
+        if (entries == null) {
+            return;
+        }
+        for (Entry e : entries) {
+            setStaged(e);
+        }
+    }
+
+    private void setStaged(Entry entry) {
+        if (entry == null) {
+            return;
+        }
+        switch (entry.status) {
+        case NEW_UNSTAGED:
+            entry.status = Status.NEW_STAGED;
+            break;
+        case MODIFIED_UNSTAGED:
+            entry.status = Status.MODIFIED_STAGED;
+            break;
+        case DELETED_UNSTAGED:
+            entry.status = Status.DELETED_STAGED;
+            break;
+        }
     }
 
     /**
@@ -239,12 +306,13 @@ public class Index {
             // update the tree with the leaf entries
             TreeMap<String, Entry> fidMap = staged.remove(typeName);
             TreeSet<String> fids = new TreeSet<String>(fidMap.keySet());
-            Ref ref;
+            Ref ref = null;
             for (String fid : fids) {
                 Entry entry = fidMap.remove(fid);
-                if (entry.status == Entry.Status.DELETED) {
+                if (entry.status == Status.DELETED_STAGED) {
                     ref = typeNameTree.remove(fid);
-                } else {
+                } else if (entry.status == Status.NEW_STAGED
+                        || entry.status == Status.MODIFIED_STAGED) {
                     ref = new SpatialRef(fid, entry.blobId, TYPE.BLOB, entry.bounds);
                     typeNameTree.put(ref);
                 }
