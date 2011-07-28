@@ -1,6 +1,5 @@
 package org.geoserver.bxml.atom;
 
-import java.io.InputStream;
 import java.util.List;
 
 import javax.xml.namespace.QName;
@@ -8,14 +7,11 @@ import javax.xml.namespace.QName;
 import net.opengis.wfs.PropertyType;
 import net.opengis.wfs.UpdateElementType;
 
-import org.geoserver.bxml.atom.FeedDecoder;
 import org.geoserver.gss.internal.atom.ContentImpl;
 import org.geoserver.gss.internal.atom.EntryImpl;
 import org.geoserver.gss.internal.atom.FeedImpl;
 import org.geotools.filter.FidFilterImpl;
 import org.geotools.referencing.CRS;
-import org.gvsig.bxml.stream.BxmlFactoryFinder;
-import org.gvsig.bxml.stream.BxmlInputFactory;
 import org.gvsig.bxml.stream.BxmlStreamReader;
 import org.opengis.referencing.crs.CoordinateReferenceSystem;
 
@@ -27,13 +23,13 @@ public class UpdateDecoderTest extends BXMLDecoderTest {
 
     public void testFeedDecodeUpdate() throws Exception {
 
-        final InputStream input = getClass().getResourceAsStream(
+        /*final InputStream input = getClass().getResourceAsStream(
         "/test-data/gss/1.0.0/examples/transactions/update.bxml");
         BxmlStreamReader reader;
         BxmlInputFactory inputFactory = BxmlFactoryFinder.newInputFactory();
         inputFactory.setNamespaceAware(true);
-        reader = inputFactory.createScanner(input);
-        //BxmlStreamReader reader = super.getXmlReader("update.xml");
+        reader = inputFactory.createScanner(input);*/
+        BxmlStreamReader reader = super.getXmlReader("update.xml");
         reader.nextTag();
         FeedDecoder feedDecoder = new FeedDecoder();
         FeedImpl feed = feedDecoder.decode(reader);

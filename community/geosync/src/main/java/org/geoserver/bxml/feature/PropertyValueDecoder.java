@@ -29,7 +29,8 @@ public class PropertyValueDecoder extends SimpleDecoder<Object>{
         EventType event = r.next();
 
         if (EventType.VALUE_STRING == event) {
-            return StringDecoder.readStringValue(r);
+            value = StringDecoder.readStringValue(r);
+            event = r.getEventType();
         }
        
         if (EventType.START_ELEMENT == event) {
@@ -40,6 +41,5 @@ public class PropertyValueDecoder extends SimpleDecoder<Object>{
         r.require(EventType.END_ELEMENT, name.getNamespaceURI(), name.getLocalPart());
         return value;
     }
-
 
 }
