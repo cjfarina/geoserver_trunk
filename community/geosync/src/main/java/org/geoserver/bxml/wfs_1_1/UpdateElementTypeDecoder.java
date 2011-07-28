@@ -1,10 +1,8 @@
 package org.geoserver.bxml.wfs_1_1;
 
-import static org.geoserver.wfs.xml.v1_1_0.WFS.PROPERTY;
 import static org.geoserver.wfs.xml.v1_1_0.WFS.UPDATE;
-import static org.geotools.filter.v1_1.OGC.Filter;
 
-import java.util.Map;
+import java.util.Iterator;
 
 import javax.xml.namespace.QName;
 
@@ -12,44 +10,55 @@ import net.opengis.wfs.UpdateElementType;
 import net.opengis.wfs.WfsFactory;
 import net.opengis.wfs.impl.WfsFactoryImpl;
 
-import org.geoserver.bxml.AbstractDecoder;
+import org.eclipse.emf.ecore.EObject;
+import org.geoserver.bxml.ChoiceDecoder;
+import org.geoserver.bxml.SequenceDecoder;
+import org.geoserver.bxml.SetterDecoder;
+import org.geoserver.bxml.base.SimpleDecoder;
 import org.geoserver.bxml.feature.FeatureTypeUtil;
 import org.geoserver.bxml.feature.PropertyDecoder;
-import org.geoserver.bxml.filter_1_1.FilterDecoder;
+import org.geoserver.bxml.feature.PropertyDecoder;
 import org.geoserver.bxml.filter_1_1.FilterDecoder2;
 import org.gvsig.bxml.stream.BxmlStreamReader;
+import org.gvsig.bxml.stream.EventType;
 
-public class UpdateElementTypeDecoder extends AbstractDecoder<UpdateElementType> {
+public class UpdateElementTypeDecoder extends SimpleDecoder<EObject> {
 
-    private final UpdateElementType element;
+    private final WfsFactory factory;
 
     public UpdateElementTypeDecoder() {
         super(UPDATE);
-        final WfsFactory factory = WfsFactoryImpl.eINSTANCE;
-        element = factory.createUpdateElementType();
+        factory = WfsFactoryImpl.eINSTANCE;
     }
 
     @Override
-    protected void decodeElement(BxmlStreamReader r) throws Exception {
-        QName name = r.getElementName();
+    public EObject decode(BxmlStreamReader r) throws Exception {
+        final QName elementName = r.getElementName();
+        canHandle(elementName);
+        r.require(EventType.START_ELEMENT, elementName.getNamespaceURI(),
+                elementName.getLocalPart());
 
-        if (Filter.equals(name)) {
-            FilterDecoder2 filterDecoder = new FilterDecoder2();
-            element.setFilter(filterDecoder.decode(r));
+        final UpdateElementType element = factory.createUpdateElementType();
+
+        element.setTypeName(FeatureTypeUtil.buildFeatureTypeName(r, elementName));
+
+        ChoiceDecoder<Object> choice = new ChoiceDecoder<Object>();
+
+        choice.addOption(new SetterDecoder<Object>(new FilterDecoder2(), element, "filter"));
+        choice.addOption(new SetterDecoder<Object>(new PropertyDecoder(element.getTypeName()),
+                element, "property"));
+        
+        SequenceDecoder<Object> seq = new SequenceDecoder<Object>(1, 1);
+        seq.add(choice, 0, Integer.MAX_VALUE);
+
+        r.nextTag();
+        Iterator<Object> decode = seq.decode(r);
+        // consume and let functors do their job
+        while (decode.hasNext()) {
+            decode.next();
         }
 
-        if (PROPERTY.equals(name)) {
-            element.getProperty().add(new PropertyDecoder(element.getTypeName()).decode(r));
-        }
-    }
-
-    @Override
-    protected void decodeAttributtes(BxmlStreamReader r, Map<QName, String> attributes) {
-        element.setTypeName(FeatureTypeUtil.buildFeatureTypeName(r, attributes, name));
-    }
-
-    @Override
-    protected UpdateElementType buildResult() {
+        r.require(EventType.END_ELEMENT, elementName.getNamespaceURI(), elementName.getLocalPart());
         return element;
     }
 

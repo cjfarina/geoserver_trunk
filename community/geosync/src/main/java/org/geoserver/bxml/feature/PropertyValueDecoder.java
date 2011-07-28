@@ -1,37 +1,45 @@
 package org.geoserver.bxml.feature;
 
+import static org.geotools.filter.v1_1.OGC.Literal;
+
+import java.io.IOException;
+
 import javax.xml.namespace.QName;
 
-import org.geoserver.bxml.AbstractDecoder;
+import org.geoserver.bxml.BXMLDecoderUtil;
+import org.geoserver.bxml.base.SimpleDecoder;
+import org.geoserver.bxml.base.StringDecoder;
 import org.geoserver.bxml.gml_3_1.GMLChainDecoder;
 import org.geotools.gml3.GML;
 import org.gvsig.bxml.stream.BxmlStreamReader;
+import org.gvsig.bxml.stream.EventType;
 
-public class PropertyValueDecoder extends AbstractDecoder<Object> {
-
-    private Object value;
+public class PropertyValueDecoder extends SimpleDecoder<Object>{
 
     public PropertyValueDecoder() {
-        super(PropertyDecoder.Value);
-    }
-
-    protected void decodeElement(final BxmlStreamReader r) throws Exception {
-        QName name = r.getElementName();
-
-        if (name.getNamespaceURI().equals(GML.NAMESPACE)) {
-            value = new GMLChainDecoder().decode(r);
-        } else {
-            throw new IllegalArgumentException(name + "is not supported for WFS Property value");
-        }
-    }
-
-    protected void setStringValue(String value) throws Exception {
-        this.value = value;
+        super(new QName("http://www.opengis.net/wfs", "Value"));
     }
 
     @Override
-    protected Object buildResult() {
+    public Object decode(BxmlStreamReader r) throws Exception {
+        QName name = r.getElementName();
+        r.require(EventType.START_ELEMENT, name.getNamespaceURI(), name.getLocalPart());
+        Object value = null;
+        
+        EventType event = r.next();
+
+        if (EventType.VALUE_STRING == event) {
+            return StringDecoder.readStringValue(r);
+        }
+       
+        if (EventType.START_ELEMENT == event) {
+            value = new GMLChainDecoder().decode(r);
+            r.nextTag();
+        }
+        
+        r.require(EventType.END_ELEMENT, name.getNamespaceURI(), name.getLocalPart());
         return value;
     }
+
 
 }

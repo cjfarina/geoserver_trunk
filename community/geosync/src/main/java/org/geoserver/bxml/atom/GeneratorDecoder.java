@@ -3,46 +3,41 @@ package org.geoserver.bxml.atom;
 import static org.geoserver.gss.internal.atom.Atom.uri;
 import static org.geoserver.gss.internal.atom.Atom.version;
 
-import java.util.Map;
-
 import javax.xml.namespace.QName;
 
-import org.geoserver.bxml.AbstractDecoder;
+import org.geoserver.bxml.BXMLDecoderUtil;
+import org.geoserver.bxml.base.SimpleDecoder;
+import org.geoserver.bxml.base.StringDecoder;
 import org.geoserver.gss.internal.atom.Atom;
 import org.geoserver.gss.internal.atom.GeneratorImpl;
 import org.gvsig.bxml.stream.BxmlStreamReader;
+import org.gvsig.bxml.stream.EventType;
+import org.springframework.util.Assert;
 
-public class GeneratorDecoder extends AbstractDecoder<GeneratorImpl> {
-
-    private GeneratorImpl generator;
+public class GeneratorDecoder extends SimpleDecoder<GeneratorImpl> {
 
     public GeneratorDecoder() {
         super(Atom.generator);
-        generator = new GeneratorImpl();
     }
 
     @Override
-    protected void decodeAttributtes(BxmlStreamReader r, Map<QName, String> attributes)
-            throws Exception {
-        generator.setUri(attributes.get(uri));
-        generator.setVersion(attributes.get(version));
-    }
+    public GeneratorImpl decode(BxmlStreamReader r) throws Exception {
+        r.require(EventType.START_ELEMENT, elemName.getNamespaceURI(), elemName.getLocalPart());
+        final QName name = r.getElementName();
+        Assert.isTrue(canHandle(name));
 
-    protected void setStringValue(String value) {
-        generator.setValue(value);
-    }
+        GeneratorImpl generator = new GeneratorImpl();
 
-    @Override
-    protected void decodeElement(BxmlStreamReader r) throws Exception {
-        QName name = r.getElementName();
+        generator.setUri(r.getAttributeValue(null, uri.getLocalPart()));
+        generator.setVersion(r.getAttributeValue(null, version.getLocalPart()));
 
-        if (generator.equals(name)) {
-            generator.setValue(readStringValue(r, Atom.generator));
+        EventType event = r.next();
+
+        if (EventType.VALUE_STRING == event) {
+            generator.setValue(StringDecoder.readStringValue(r));
         }
-    }
 
-    @Override
-    protected GeneratorImpl buildResult() {
+        r.require(EventType.END_ELEMENT, elemName.getNamespaceURI(), elemName.getLocalPart());
         return generator;
     }
 

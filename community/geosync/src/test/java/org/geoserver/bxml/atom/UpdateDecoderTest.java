@@ -1,4 +1,4 @@
-package org.geoserver.gss.internal.atom;
+package org.geoserver.bxml.atom;
 
 import java.io.InputStream;
 import java.util.List;
@@ -9,6 +9,9 @@ import net.opengis.wfs.PropertyType;
 import net.opengis.wfs.UpdateElementType;
 
 import org.geoserver.bxml.atom.FeedDecoder;
+import org.geoserver.gss.internal.atom.ContentImpl;
+import org.geoserver.gss.internal.atom.EntryImpl;
+import org.geoserver.gss.internal.atom.FeedImpl;
 import org.geotools.filter.FidFilterImpl;
 import org.geotools.referencing.CRS;
 import org.gvsig.bxml.stream.BxmlFactoryFinder;
@@ -19,16 +22,19 @@ import org.opengis.referencing.crs.CoordinateReferenceSystem;
 import com.vividsolutions.jts.geom.LineString;
 import com.vividsolutions.jts.geom.Polygon;
 
+@Deprecated
 public class UpdateDecoderTest extends BXMLDecoderTest {
 
     public void testFeedDecodeUpdate() throws Exception {
 
         final InputStream input = getClass().getResourceAsStream(
-                "/test-data/gss/1.0.0/examples/transactions/update.bxml");
+        "/test-data/gss/1.0.0/examples/transactions/update.bxml");
         BxmlStreamReader reader;
         BxmlInputFactory inputFactory = BxmlFactoryFinder.newInputFactory();
         inputFactory.setNamespaceAware(true);
         reader = inputFactory.createScanner(input);
+        //BxmlStreamReader reader = super.getXmlReader("update.xml");
+        reader.nextTag();
         FeedDecoder feedDecoder = new FeedDecoder();
         FeedImpl feed = feedDecoder.decode(reader);
 
@@ -50,7 +56,7 @@ public class UpdateDecoderTest extends BXMLDecoderTest {
         assertEquals("false", property1.getValue());
 
         PropertyType property2 = property.get(1);
-        assertEquals(new QName("http://opengeo.org/osm", "way"), property2.getName());
+
         Polygon polygon = (Polygon) property2.getValue();
 
         LineString exteriorRing = polygon.getExteriorRing();

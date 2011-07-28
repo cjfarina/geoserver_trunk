@@ -1,10 +1,11 @@
-package org.geoserver.gss.internal.atom;
+package org.geoserver.bxml.atom;
 
 import java.util.Date;
 import java.util.TimeZone;
 
 import junit.framework.TestCase;
 
+import org.geoserver.bxml.BxmlTestSupport;
 import org.geotools.filter.AttributeExpressionImpl;
 import org.geotools.filter.LiteralExpressionImpl;
 import org.opengis.filter.spatial.BinarySpatialOperator;
@@ -13,15 +14,7 @@ import com.vividsolutions.jts.geom.Coordinate;
 import com.vividsolutions.jts.geom.LineString;
 import com.vividsolutions.jts.geom.Polygon;
 
-public abstract class BXMLDecoderTest extends TestCase {
-
-    protected void testLineRing(LineString exteriorRing, double[][] fs) {
-        for (int i = 0; i < fs.length; i++) {
-            Coordinate coordinate = exteriorRing.getCoordinateN(i);
-            assertEquals(fs[i][0], coordinate.x, 0.01);
-            assertEquals(fs[i][1], coordinate.y, 0.01);
-        }
-    }
+public abstract class BXMLDecoderTest extends BxmlTestSupport {
 
     protected void testSpatialBinaryOperation(BinarySpatialOperator comparisonOperator,
             String property, double[][] fs) {

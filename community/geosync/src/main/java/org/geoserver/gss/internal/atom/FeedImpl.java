@@ -1,5 +1,6 @@
 package org.geoserver.gss.internal.atom;
 
+import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Date;
 import java.util.Iterator;
@@ -62,7 +63,10 @@ public class FeedImpl {
      */
     @SuppressWarnings("unchecked")
     public List<PersonImpl> getAuthor() {
-        return author == null ? Collections.EMPTY_LIST : author;
+        if (author == null) {
+            author = new ArrayList<PersonImpl>();
+        }
+        return author;
     }
 
     /**
@@ -78,7 +82,10 @@ public class FeedImpl {
      */
     @SuppressWarnings("unchecked")
     public List<CategoryImpl> getCategory() {
-        return category == null ? Collections.EMPTY_LIST : category;
+        if (category == null) {
+            category = new ArrayList<CategoryImpl>();
+        }
+        return category;
     }
 
     /**
@@ -94,7 +101,10 @@ public class FeedImpl {
      */
     @SuppressWarnings("unchecked")
     public List<PersonImpl> getContributor() {
-        return contributor == null ? Collections.EMPTY_LIST : contributor;
+        if (contributor == null) {
+            contributor = new ArrayList<PersonImpl>();
+        }
+        return contributor;
     }
 
     /**
@@ -155,7 +165,10 @@ public class FeedImpl {
      */
     @SuppressWarnings("unchecked")
     public List<LinkImpl> getLink() {
-        return link == null ? Collections.EMPTY_LIST : link;
+        if (link == null) {
+            link = new ArrayList<LinkImpl>();
+        }
+        return link;
     }
 
     /**

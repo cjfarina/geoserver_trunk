@@ -27,7 +27,11 @@ public class FilterDecoder2 implements Decoder<Filter> {
 
         Filter filter = anyFilter.decode(r);
 
-        r.nextTag();
+        //When IdDecoder ends iteration, the parser pointer is pointing to Filter tag.
+        //It isn't necessary to do r.nextTag
+        if(!r.getElementName().equals(OGC.Filter)){ 
+            r.nextTag();
+        }
 
         r.require(EventType.END_ELEMENT, OGC.Filter.getNamespaceURI(), OGC.Filter.getLocalPart());
         return filter;

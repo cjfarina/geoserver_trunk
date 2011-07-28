@@ -1,40 +1,37 @@
 package org.geoserver.bxml.atom;
 
-import static org.geoserver.gss.internal.atom.Atom.scheme;
-import static org.geoserver.gss.internal.atom.Atom.term;
-
-import java.util.Map;
-
 import javax.xml.namespace.QName;
 
-import org.geoserver.bxml.AbstractDecoder;
+import org.geoserver.bxml.base.SimpleDecoder;
 import org.geoserver.gss.internal.atom.Atom;
 import org.geoserver.gss.internal.atom.CategoryImpl;
 import org.gvsig.bxml.stream.BxmlStreamReader;
+import org.gvsig.bxml.stream.EventType;
+import org.springframework.util.Assert;
 
-public class CategoryDecoder extends AbstractDecoder<CategoryImpl> {
-
-    private CategoryImpl category;
+public class CategoryDecoder extends SimpleDecoder<CategoryImpl> {
 
     public CategoryDecoder() {
         super(Atom.category);
-        category = new CategoryImpl();
     }
 
     @Override
-    protected void decodeAttributtes(BxmlStreamReader r, Map<QName, String> attributes)
-            throws Exception {
-        category.setScheme(attributes.get(scheme));
-        category.setTerm(attributes.get(term));
-    }
+    public CategoryImpl decode(BxmlStreamReader r) throws Exception {
+        r.require(EventType.START_ELEMENT, elemName.getNamespaceURI(), elemName.getLocalPart());
+        final QName name = r.getElementName();
+        Assert.isTrue(canHandle(name));
+        CategoryImpl category = new CategoryImpl();
+        
+        final String scheme = r.getAttributeValue(null,
+                Atom.scheme.getLocalPart());
+        final String term = r.getAttributeValue(null,
+                Atom.term.getLocalPart());
 
-    @Override
-    protected void decodeElement(BxmlStreamReader r) throws Exception {
-    }
+        r.nextTag();
 
-    @Override
-    protected CategoryImpl buildResult() {
+        category.setScheme(scheme);
+        category.setTerm(term);
+
         return category;
     }
-
 }

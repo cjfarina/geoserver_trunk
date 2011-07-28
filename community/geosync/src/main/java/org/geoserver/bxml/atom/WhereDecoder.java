@@ -2,24 +2,30 @@ package org.geoserver.bxml.atom;
 
 import static org.geoserver.gss.internal.atom.GeoRSS.where;
 
-import org.geoserver.bxml.AbstractDecoder;
+import javax.xml.namespace.QName;
+
+import org.geoserver.bxml.base.SimpleDecoder;
 import org.geoserver.bxml.gml_3_1.GMLChainDecoder;
 import org.gvsig.bxml.stream.BxmlStreamReader;
+import org.gvsig.bxml.stream.EventType;
 
-public class WhereDecoder extends AbstractDecoder<Object> {
-
-    private Object value;
+public class WhereDecoder extends SimpleDecoder<Object> {
 
     public WhereDecoder() {
         super(where);
     }
-
-    protected void decodeElement(final BxmlStreamReader r) throws Exception {
-        value = new GMLChainDecoder().decode(r);
-    }
-
+    
     @Override
-    protected Object buildResult() {
+    public Object decode(BxmlStreamReader r) throws Exception {
+        final QName elementName = r.getElementName();
+        r.require(EventType.START_ELEMENT, elementName.getNamespaceURI(),
+                elementName.getLocalPart());
+
+        r.nextTag();
+        Object value = new GMLChainDecoder().decode(r);
+        r.nextTag();
+
+        r.require(EventType.END_ELEMENT, elementName.getNamespaceURI(), elementName.getLocalPart());
         return value;
     }
 

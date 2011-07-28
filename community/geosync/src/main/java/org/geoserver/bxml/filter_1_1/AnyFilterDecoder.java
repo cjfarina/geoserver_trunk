@@ -33,11 +33,10 @@ public class AnyFilterDecoder implements Decoder<Filter> {
     @Override
     public Filter decode(BxmlStreamReader r) throws Exception {
         r.require(EventType.START_ELEMENT, null, null);
-        final QName elementName = r.getElementName();
 
         Filter filter = choice.decode(r);
 
-        r.require(EventType.END_ELEMENT, elementName.getNamespaceURI(), elementName.getLocalPart());
+        r.require(EventType.END_ELEMENT, null, null);
         return filter;
     }
 

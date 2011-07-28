@@ -1,60 +1,46 @@
 package org.geoserver.bxml.atom;
 
-import static org.geoserver.gss.internal.atom.Atom.source;
-import static org.geoserver.gss.internal.atom.Atom.type;
-import static org.geoserver.wfs.xml.v1_1_0.WFS.DELETE;
-import static org.geoserver.wfs.xml.v1_1_0.WFS.UPDATE;
-
-import java.util.Map;
-
 import javax.xml.namespace.QName;
 
-import org.geoserver.bxml.AbstractDecoder;
+import org.eclipse.emf.ecore.EObject;
+import org.geoserver.bxml.ChoiceDecoder;
+import org.geoserver.bxml.Decoder;
+import org.geoserver.bxml.base.SimpleDecoder;
 import org.geoserver.bxml.wfs_1_1.DeleteElementTypeDecoder;
 import org.geoserver.bxml.wfs_1_1.UpdateElementTypeDecoder;
 import org.geoserver.gss.internal.atom.Atom;
 import org.geoserver.gss.internal.atom.ContentImpl;
 import org.gvsig.bxml.stream.BxmlStreamReader;
+import org.gvsig.bxml.stream.EventType;
 
-public class ContentDecoder extends AbstractDecoder<ContentImpl> {
+public class ContentDecoder extends SimpleDecoder<ContentImpl> {
 
-    private final ContentImpl content;
+    private Decoder<EObject> choice;
 
+    @SuppressWarnings("unchecked")
     public ContentDecoder() {
         super(Atom.content);
-        content = new ContentImpl();
+        this.choice = new ChoiceDecoder<EObject>(new DeleteElementTypeDecoder(),
+                new UpdateElementTypeDecoder());
     }
 
     @Override
-    protected void decodeElement(BxmlStreamReader r) throws Exception {
-        QName name = r.getElementName();
+    public ContentImpl decode(BxmlStreamReader r) throws Exception {
+        final QName elementName = r.getElementName();
+        canHandle(r.getElementName());
+        r.require(EventType.START_ELEMENT, elementName.getNamespaceURI(),
+                elementName.getLocalPart());
 
-        if (DELETE.equals(name)) {
-            content.setValue(new DeleteElementTypeDecoder().decode(r));
-        }
+        ContentImpl contentImpl = new ContentImpl();
 
-        if (UPDATE.equals(name)) {
-            content.setValue(new UpdateElementTypeDecoder().decode(r));
-        }
+        contentImpl.setType(r.getAttributeValue(null, Atom.type.getLocalPart()));
+        contentImpl.setSrc(r.getAttributeValue(null, Atom.source.getLocalPart()));
+
+        r.nextTag();
+        contentImpl.setValue(choice.decode(r));
+
+        r.nextTag();
+        r.require(EventType.END_ELEMENT, elementName.getNamespaceURI(), elementName.getLocalPart());
+        return contentImpl;
     }
-
-    @Override
-    protected void decodeAttributtes(BxmlStreamReader r, Map<QName, String> attributes)
-            throws Exception {
-        QName name = r.getElementName();
-        if (Atom.content.equals(name)) {
-            if (attributes.get(type) != null) {
-                content.setType(attributes.get(type));
-            }
-            if (attributes.get(source) != null) {
-                content.setSrc(attributes.get(source));
-            }
-        }
-    }
-
-    @Override
-    protected ContentImpl buildResult() {
-        return content;
-    }
-
 }

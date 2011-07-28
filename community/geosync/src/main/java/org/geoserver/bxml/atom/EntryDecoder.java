@@ -4,6 +4,9 @@ import static org.geoserver.gss.internal.atom.Atom.author;
 import static org.geoserver.gss.internal.atom.Atom.contributor;
 import static org.geoserver.gss.internal.atom.Atom.entry;
 import static org.geoserver.gss.internal.atom.Atom.id;
+import static org.geoserver.gss.internal.atom.Atom.published;
+import static org.geoserver.gss.internal.atom.Atom.rights;
+import static org.geoserver.gss.internal.atom.Atom.source;
 import static org.geoserver.gss.internal.atom.Atom.summary;
 import static org.geoserver.gss.internal.atom.Atom.title;
 import static org.geoserver.gss.internal.atom.Atom.updated;
@@ -33,13 +36,22 @@ public class EntryDecoder implements Decoder<EntryImpl> {
 
         final EntryImpl entry = new EntryImpl();
         ChoiceDecoder<Object> choice = new ChoiceDecoder<Object>();
-        choice.addOption(new SetterDecoder<Object>(new StringDecoder(title), entry, "title"));
-        choice.addOption(new SetterDecoder<Object>(new StringDecoder(summary), entry, "summary"));
-        choice.addOption(new SetterDecoder<Object>(new StringDecoder(id), entry, "id"));
         choice.addOption(new SetterDecoder<Object>(new DateDecoder(updated), entry, "updated"));
         choice.addOption(new SetterDecoder<Object>(new PersonDecoder(author), entry, "author"));
         choice.addOption(new SetterDecoder<Object>(new PersonDecoder(contributor), entry,
                 "contributor"));
+        choice.addOption(new SetterDecoder<Object>(new CategoryDecoder(), entry,
+                "category"));
+        choice.addOption(new SetterDecoder<Object>(new LinkDecoder(), entry,
+                "link"));
+        choice.addOption(new SetterDecoder<Object>(new DateDecoder(published), entry, "published"));
+        choice.addOption(new SetterDecoder<Object>(new StringDecoder(title), entry, "title"));
+        choice.addOption(new SetterDecoder<Object>(new StringDecoder(summary), entry, "summary"));
+        choice.addOption(new SetterDecoder<Object>(new StringDecoder(id), entry, "id"));
+        choice.addOption(new SetterDecoder<Object>(new StringDecoder(rights), entry, "rights"));
+        choice.addOption(new SetterDecoder<Object>(new StringDecoder(source), entry, "source"));
+        choice.addOption(new SetterDecoder<Object>(new ContentDecoder(), entry, "content"));
+        choice.addOption(new SetterDecoder<Object>(new WhereDecoder(), entry, "where"));
 
         SequenceDecoder<Object> seq = new SequenceDecoder<Object>(1, 1);
         seq.add(choice, 0, Integer.MAX_VALUE);
@@ -52,51 +64,6 @@ public class EntryDecoder implements Decoder<EntryImpl> {
         }
 
         return entry;
-
-        // if (updated.equals(name)) {
-        // builder.setUpdated(readDateValue(r, updated));
-        // }
-        //
-        // if (author.equals(name)) {
-        // PersonDecoder personDecoder = new PersonDecoder(author);
-        // builder.addAuthor(personDecoder.decode(r));
-        // }
-        //
-        // if (contributor.equals(name)) {
-        // PersonDecoder personDecoder = new PersonDecoder(contributor);
-        // builder.addContributor(personDecoder.decode(r));
-        // }
-        //
-        // if (category.equals(name)) {
-        // CategoryDecoder categoryDecoder = new CategoryDecoder();
-        // builder.addCategory(categoryDecoder.decode(r));
-        // }
-        //
-        // if (link.equals(name)) {
-        // LinkDecoder linkDecoder = new LinkDecoder();
-        // builder.addLink(linkDecoder.decode(r));
-        // }
-        //
-        // if (published.equals(name)) {
-        // builder.setPublished(readDateValue(r, published));
-        // }
-        //
-        // if (rights.equals(name)) {
-        // builder.setRights(readStringValue(r, rights));
-        // }
-        //
-        // if (source.equals(name)) {
-        // builder.setSource(readStringValue(r, source));
-        // }
-        //
-        // if (content.equals(name)) {
-        // ContentDecoder contentDecoder = new ContentDecoder();
-        // builder.setContent(contentDecoder.decode(r));
-        // }
-        //
-        // if (where.equals(name)) {
-        // builder.setWhere(new WhereDecoder().decode(r));
-        // }
 
     }
 

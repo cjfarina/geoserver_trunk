@@ -1,43 +1,47 @@
 package org.geoserver.bxml.atom;
 
-import static org.geoserver.gss.internal.atom.Atom.email;
-import static org.geoserver.gss.internal.atom.Atom.uri;
+
+
+import java.util.Iterator;
 
 import javax.xml.namespace.QName;
 
-import org.geoserver.bxml.AbstractDecoder;
+import org.geoserver.bxml.ChoiceDecoder;
+import org.geoserver.bxml.SequenceDecoder;
+import org.geoserver.bxml.SetterDecoder;
+import org.geoserver.bxml.base.SimpleDecoder;
+import org.geoserver.bxml.base.StringDecoder;
 import org.geoserver.gss.internal.atom.Atom;
 import org.geoserver.gss.internal.atom.PersonImpl;
 import org.gvsig.bxml.stream.BxmlStreamReader;
+import org.gvsig.bxml.stream.EventType;
 
-public class PersonDecoder extends AbstractDecoder<PersonImpl> {
+public class PersonDecoder extends SimpleDecoder<PersonImpl> {
 
-    private PersonImpl person;
-
-    public PersonDecoder(final QName name) {
-        super(name);
-        person = new PersonImpl();
+    public PersonDecoder(QName elemName) {
+        super(elemName);
     }
 
     @Override
-    protected void decodeElement(BxmlStreamReader r) throws Exception {
-        QName name = r.getElementName();
+    public PersonImpl decode(BxmlStreamReader r) throws Exception {
+        r.require(EventType.START_ELEMENT, elemName.getNamespaceURI(), elemName.getLocalPart());
 
-        if (Atom.name.equals(name)) {
-            person.setName(readStringValue(r, Atom.name));
+        final PersonImpl person = new PersonImpl();
+        ChoiceDecoder<Object> choice = new ChoiceDecoder<Object>();
+        choice.addOption(new SetterDecoder<Object>(new StringDecoder(Atom.name), person, "name"));
+        choice.addOption(new SetterDecoder<Object>(new StringDecoder(Atom.email), person, "email"));
+        choice.addOption(new SetterDecoder<Object>(new StringDecoder(Atom.uri), person, "uri"));
+        
+        SequenceDecoder<Object> seq = new SequenceDecoder<Object>(1, 1);
+        seq.add(choice, 0, Integer.MAX_VALUE);
+
+        r.nextTag();
+        Iterator<Object> decode = seq.decode(r);
+
+        while (decode.hasNext()) {
+            decode.next();
         }
 
-        if (email.equals(name)) {
-            person.setEmail(readStringValue(r, email));
-        }
-
-        if (uri.equals(name)) {
-            person.setUri(readStringValue(r, uri));
-        }
-    }
-
-    @Override
-    protected PersonImpl buildResult() {
         return person;
     }
 

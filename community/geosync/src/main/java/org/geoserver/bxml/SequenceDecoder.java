@@ -50,12 +50,15 @@ public class SequenceDecoder<T> implements Decoder<Iterator<T>> {
         r.require(EventType.START_ELEMENT, null, null);
 
         Set<QName> sequenceNames = getTargets();
-        BxmlElementIterator xmlIterator = new BxmlElementIterator(r, new HashSet<QName>(
-                sequenceNames));
+        BxmlElementIterator xmlIterator = buildIterator(r, sequenceNames);
 
         Chain<T> chain = new Chain<T>(sequence, minOccurs, maxOccurs);
         Iterator<T> result = Iterators.transform(xmlIterator, chain);
         return result;
+    }
+
+    protected BxmlElementIterator buildIterator(final BxmlStreamReader r, Set<QName> sequenceNames) {
+        return new BxmlElementIterator(r, new HashSet<QName>(sequenceNames));
     }
 
     /**

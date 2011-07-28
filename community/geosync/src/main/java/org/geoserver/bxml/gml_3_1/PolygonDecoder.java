@@ -33,10 +33,10 @@ public class PolygonDecoder extends GMLLinkDecoder {
         linearRingDecoder.setCrs(getCrs());
         linearRingDecoder.setDimension(getDimension());
         if (exterior.equals(name)) {
-            r.next();
+            r.nextTag();
             shell = (LinearRing) linearRingDecoder.decode(r);
         } else if (interior.equals(name)) {
-            r.next();
+            r.nextTag();
             holes.add((LinearRing) linearRingDecoder.decode(r));
         }
     }

@@ -8,6 +8,8 @@ import java.util.Collections;
 import java.util.HashSet;
 import java.util.Set;
 
+import static org.geoserver.gss.internal.atom.Atom.entry;
+
 import javax.xml.namespace.QName;
 
 import org.gvsig.bxml.stream.BxmlStreamReader;
@@ -65,13 +67,17 @@ public class BxmlElementIterator extends AbstractIterator<BxmlStreamReader> {
                 event = reader.nextTag();
                 tagDepth = reader.getTagDepth();
 
-                if (END_ELEMENT.equals(event) && tagDepth == this.depth - 2) {
+                if ((END_ELEMENT.equals(event) && tagDepth == this.depth - 2) || finish(reader)) {
                     return endOfData();
                 }
             }
         } catch (IOException e) {
             throw new RuntimeException(e);
         }
+    }
+
+    protected boolean finish(BxmlStreamReader reader) {
+        return false;
     }
 
 }

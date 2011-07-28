@@ -20,7 +20,7 @@ public class GeometryDecoder implements Decoder<Geometry> {
         choice.addOption(new MultiPointDecoder());
         choice.addOption(new LineStringDecoder());
         choice.addOption(new MultiLineStringDecoder());
-        choice.addOption(new PolygonDecoder());
+        //choice.addOption(new PolygonDecoder());
         choice.addOption(new MultiPolygonDecoder());
     }
 

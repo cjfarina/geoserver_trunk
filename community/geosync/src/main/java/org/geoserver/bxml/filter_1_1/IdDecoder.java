@@ -1,5 +1,6 @@
 package org.geoserver.bxml.filter_1_1;
 
+import java.util.Arrays;
 import java.util.HashSet;
 import java.util.Iterator;
 import java.util.Set;
@@ -14,30 +15,28 @@ import org.gvsig.bxml.stream.BxmlStreamReader;
 import org.opengis.filter.Filter;
 import org.opengis.filter.FilterFactory2;
 import org.opengis.filter.Id;
-import org.opengis.filter.identity.Identifier;
+import org.opengis.filter.identity.FeatureId;
+
+import com.google.common.collect.Iterators;
 
 public class IdDecoder implements Decoder<Filter> {
 
     private static final FilterFactory2 ff = CommonFactoryFinder.getFilterFactory2(GeoTools
             .getDefaultHints());
 
-    private SequenceDecoder<Identifier> sequence;
+    private SequenceDecoder<FeatureId> sequence;
 
     public IdDecoder() {
-        this.sequence = new SequenceDecoder<Identifier>(1, Integer.MAX_VALUE);
+        this.sequence = new SequenceDecoder<FeatureId>(1, Integer.MAX_VALUE);
+        sequence.add(new FeatureIdDecoder(), 1, 1);
     }
 
     @Override
     public Id decode(BxmlStreamReader r) throws Exception {
-        Set<Identifier> identifiers = new HashSet<Identifier>();
+        final Iterator<FeatureId> iterator = sequence.decode(r);
+        final FeatureId[] identifiers = Iterators.toArray(iterator, FeatureId.class);
 
-        Iterator<Identifier> ids = sequence.decode(r);
-        while (ids.hasNext()) {
-            Identifier identifier = ids.next();
-            identifiers.add(identifier);
-        }
-        Id id = ff.id(identifiers);
-        return id;
+        return ff.id(new HashSet<FeatureId>(Arrays.asList(identifiers)));
     }
 
     @Override
