@@ -26,6 +26,7 @@ import org.geoserver.gss.internal.atom.EntryImpl;
 import org.geoserver.gss.internal.atom.FeedImpl;
 import org.geotools.util.logging.Logging;
 import org.gvsig.bxml.stream.BxmlStreamReader;
+import org.gvsig.bxml.stream.EventType;
 import org.springframework.util.Assert;
 
 import com.google.common.base.Function;
@@ -64,7 +65,7 @@ public class FeedDecoder extends SimpleDecoder<FeedImpl> {
     @Override
     public FeedImpl decode(BxmlStreamReader r) throws Exception {
         // r.nextTag();
-        // r.require(EventType.START_ELEMENT, elemName.getNamespaceURI(), elemName.getLocalPart());
+        r.require(EventType.START_ELEMENT, elemName.getNamespaceURI(), elemName.getLocalPart());
         final QName name = r.getElementName();
         Assert.isTrue(canHandle(name));
 

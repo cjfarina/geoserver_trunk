@@ -8,6 +8,10 @@
      <Name>f:building</Name>
      <Value>false</Value>
    </Property>
+  <Property>
+     <Name>f:value</Name>
+     <Value>25</Value>
+   </Property>
    <Property>
      <Name>f:way</Name>
      <Value>

@@ -1,30 +1,60 @@
 package org.geoserver.bxml.filter_1_1;
 
+import java.util.Collections;
+import java.util.HashSet;
 import java.util.Set;
 
 import javax.xml.namespace.QName;
 
-import org.geoserver.bxml.AbstractDecoder;
+import org.geoserver.bxml.Decoder;
 import org.geoserver.bxml.filter_1_1.expression.ExpressionDecoder;
+import org.geotools.factory.CommonFactoryFinder;
+import org.geotools.factory.GeoTools;
+import org.geotools.filter.v1_1.OGC;
 import org.gvsig.bxml.stream.BxmlStreamReader;
+import org.gvsig.bxml.stream.EventType;
+import org.opengis.filter.FilterFactory2;
 import org.opengis.filter.expression.Expression;
+import org.springframework.util.Assert;
 
-public class BoundaryFilterDecoder extends AbstractDecoder<Expression> {
+public class BoundaryFilterDecoder implements Decoder<Expression> {
+    
+    public static final QName LowerBoundary = new QName(OGC.NAMESPACE, "LowerBoundary");
 
-    private Expression expression = null;
+    public static final QName UpperBoundary = new QName(OGC.NAMESPACE, "UpperBoundary");
 
-    public BoundaryFilterDecoder(final QName name) {
-        super(name);
+    protected static FilterFactory2 ff = CommonFactoryFinder.getFilterFactory2(GeoTools
+            .getDefaultHints());
+
+    private static final Set<QName> names;
+    static {
+        Set<QName> n = new HashSet<QName>();
+        n.add(LowerBoundary);
+        n.add(UpperBoundary);
+        names = Collections.unmodifiableSet(n);
     }
-
+    
     @Override
-    protected void decodeElement(BxmlStreamReader r) throws Exception {
-        expression = new ExpressionDecoder().decode(r);
-    }
+    public Expression decode(BxmlStreamReader r) throws Exception {
+        r.require(EventType.START_ELEMENT, null, null);
+        final QName name = r.getElementName();
+        Assert.isTrue(canHandle(name));
 
-    @Override
-    protected Expression buildResult() {
+        r.nextTag();
+        Expression expression = new ExpressionDecoder().decode(r);
+        r.nextTag();
+
+        r.require(EventType.END_ELEMENT, name.getNamespaceURI(), name.getLocalPart());
+        
         return expression;
     }
+    @Override
+    public boolean canHandle(final QName name) {
+        return names.contains(name);
+    }
 
+    @Override
+    public Set<QName> getTargets() {
+        return names;
+    }
 }

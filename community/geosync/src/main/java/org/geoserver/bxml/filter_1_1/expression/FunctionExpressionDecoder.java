@@ -30,7 +30,7 @@ public class FunctionExpressionDecoder implements Decoder<Expression> {
 
         final String functionName = r.getAttributeValue(null, "name");
         Assert.notNull(functionName, "Attribute 'name' not found in element Function");
-
+        r.nextTag();
         SequenceDecoder<Expression> seq = new SequenceDecoder<Expression>();
         seq.add(new ExpressionDecoder(), 0, Integer.MAX_VALUE);
 

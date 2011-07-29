@@ -20,8 +20,13 @@ import com.vividsolutions.jts.geom.Polygon;
 
 public abstract class BxmlTestSupport extends TestCase {
 
+    Boolean isBinary = false;
     protected BxmlStreamReader getReader(final String resource) throws Exception {
-        Boolean isBinary = Boolean.parseBoolean(System.getProperty("isBinaryXML"));
+        String isBinaryString = System.getProperty("isBinaryXML");
+        if(isBinaryString != null){
+            isBinary = Boolean.parseBoolean(isBinaryString);
+            
+        }
         String resourceName = isBinary? resource + ".bxml": resource + ".xml";
         final InputStream input = getClass().getResourceAsStream(resourceName);
         assertNotNull(resourceName + " not found by " + getClass().getName(), input);

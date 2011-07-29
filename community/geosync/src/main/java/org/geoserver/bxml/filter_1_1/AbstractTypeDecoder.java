@@ -1,6 +1,5 @@
 package org.geoserver.bxml.filter_1_1;
 
-import java.io.IOException;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.HashSet;

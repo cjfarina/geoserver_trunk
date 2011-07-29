@@ -18,7 +18,7 @@ import org.geoserver.bxml.base.SimpleDecoder;
 import org.geoserver.bxml.feature.FeatureTypeUtil;
 import org.geoserver.bxml.feature.PropertyDecoder;
 import org.geoserver.bxml.feature.PropertyDecoder;
-import org.geoserver.bxml.filter_1_1.FilterDecoder2;
+import org.geoserver.bxml.filter_1_1.FilterDecoder;
 import org.gvsig.bxml.stream.BxmlStreamReader;
 import org.gvsig.bxml.stream.EventType;
 import org.springframework.util.Assert;
@@ -47,7 +47,7 @@ public class UpdateElementTypeDecoder extends SimpleDecoder<EObject> {
 
         ChoiceDecoder<Object> choice = new ChoiceDecoder<Object>();
 
-        choice.addOption(new SetterDecoder<Object>(new FilterDecoder2(), element, "filter"));
+        choice.addOption(new SetterDecoder<Object>(new FilterDecoder(), element, "filter"));
         choice.addOption(new SetterDecoder<Object>(new PropertyDecoder(element.getTypeName()),
                 element, "property"));
         
