@@ -10,7 +10,7 @@ import org.gvsig.bxml.stream.BxmlStreamReader;
 public class FeedDecoderTest extends AtomTestSupport {
 
     public void testFeed1() throws Exception {
-        BxmlStreamReader reader = super.getXmlReader("feed1.xml");
+        BxmlStreamReader reader = super.getReader("feed1");
         reader.nextTag();
         FeedDecoder feedDecoder = new FeedDecoder();
         FeedImpl feed = feedDecoder.decode(reader);
@@ -52,7 +52,7 @@ public class FeedDecoderTest extends AtomTestSupport {
     }
 
     public void testFeed2() throws Exception {
-        BxmlStreamReader reader = super.getXmlReader("feed2.xml");
+        BxmlStreamReader reader = super.getReader("feed2");
         reader.nextTag();
         FeedDecoder feedDecoder = new FeedDecoder();
         FeedImpl feed = feedDecoder.decode(reader);

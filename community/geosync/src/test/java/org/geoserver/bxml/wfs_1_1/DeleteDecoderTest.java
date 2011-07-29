@@ -13,7 +13,7 @@ public class DeleteDecoderTest extends BxmlTestSupport {
 
     public void testFeedDecodeDelete1() throws Exception {
 
-        BxmlStreamReader reader = super.getXmlReader("delete1.xml");
+        BxmlStreamReader reader = super.getReader("delete1");
         reader.nextTag();
         DeleteElementTypeDecoder decoder = new DeleteElementTypeDecoder();
         DeleteElementType deleteElement = (DeleteElementType) decoder.decode(reader);
@@ -30,7 +30,7 @@ public class DeleteDecoderTest extends BxmlTestSupport {
 
     public void testFeedDecodeDelete2() throws Exception {
 
-        BxmlStreamReader reader = super.getXmlReader("delete2.xml");
+        BxmlStreamReader reader = super.getReader("delete2");
         reader.nextTag();
         DeleteElementTypeDecoder decoder = new DeleteElementTypeDecoder();
         DeleteElementType deleteElement = (DeleteElementType) decoder.decode(reader);

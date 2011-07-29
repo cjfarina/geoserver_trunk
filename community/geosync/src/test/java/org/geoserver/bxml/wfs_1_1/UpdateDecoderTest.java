@@ -20,7 +20,7 @@ public class UpdateDecoderTest extends BxmlTestSupport {
 
     public void testFeedDecodeUpdate() throws Exception {
 
-        BxmlStreamReader reader = super.getXmlReader("update1.xml");
+        BxmlStreamReader reader = super.getReader("update1");
         reader.nextTag();
         UpdateElementTypeDecoder decoder = new UpdateElementTypeDecoder();
         UpdateElementType updateElement = (UpdateElementType) decoder.decode(reader);

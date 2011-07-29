@@ -19,7 +19,7 @@ import com.vividsolutions.jts.geom.Polygon;
 public class EntryDecoderTest extends AtomTestSupport {
 
     public void testDecodeEntry1() throws Exception {
-        BxmlStreamReader reader = super.getXmlReader("entry1.xml");
+        BxmlStreamReader reader = super.getReader("entry1");
         EntryDecoder decoder = new EntryDecoder();
 
         reader.nextTag();
@@ -39,7 +39,7 @@ public class EntryDecoderTest extends AtomTestSupport {
     }
 
     public void testDecodeEntry2() throws Exception {
-        BxmlStreamReader reader = super.getXmlReader("entry2.xml");
+        BxmlStreamReader reader = super.getReader("entry2");
         EntryDecoder decoder = new EntryDecoder();
 
         reader.nextTag();
@@ -74,7 +74,7 @@ public class EntryDecoderTest extends AtomTestSupport {
     }
 
     public void testDecodeEntry3() throws Exception {
-        BxmlStreamReader reader = super.getXmlReader("entry3.xml");
+        BxmlStreamReader reader = super.getReader("entry3");
         EntryDecoder decoder = new EntryDecoder();
 
         reader.nextTag();

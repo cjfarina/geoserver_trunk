@@ -43,7 +43,7 @@ public class FilterDecoderTest extends BxmlTestSupport {
         Object expected = new Parser(new OGCConfiguration()).parse(getClass().getResourceAsStream(
                 "filter.xml"));
 
-        BxmlStreamReader reader = getXmlReader("filter.xml");
+        BxmlStreamReader reader = getReader("filter");
         reader.nextTag();
 
         Filter f = decoder.decode(reader);
