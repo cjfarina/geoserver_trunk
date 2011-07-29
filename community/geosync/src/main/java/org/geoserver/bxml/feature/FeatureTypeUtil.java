@@ -1,18 +1,14 @@
 package org.geoserver.bxml.feature;
 
-import java.util.Map;
-
 import javax.xml.namespace.QName;
 
-import org.geoserver.gss.internal.atom.Atom;
 import org.gvsig.bxml.stream.BxmlStreamReader;
 
 public class FeatureTypeUtil {
 
     private static final String FEATURE_PREFIX = "f:";
 
-    public static QName buildFeatureTypeName(BxmlStreamReader r,
-            QName elementName) {
+    public static QName buildFeatureTypeName(BxmlStreamReader r, QName elementName) {
         QName name = r.getElementName();
 
         String namespaceURI = r.getNamespaceURI("f");

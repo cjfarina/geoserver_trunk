@@ -1,4 +1,4 @@
-package org.geoserver.bxml.atom;
+package org.geoserver.bxml.wfs_1_1;
 
 import java.util.List;
 
@@ -7,9 +7,7 @@ import javax.xml.namespace.QName;
 import net.opengis.wfs.PropertyType;
 import net.opengis.wfs.UpdateElementType;
 
-import org.geoserver.gss.internal.atom.ContentImpl;
-import org.geoserver.gss.internal.atom.EntryImpl;
-import org.geoserver.gss.internal.atom.FeedImpl;
+import org.geoserver.bxml.BxmlTestSupport;
 import org.geotools.filter.FidFilterImpl;
 import org.geotools.referencing.CRS;
 import org.gvsig.bxml.stream.BxmlStreamReader;
@@ -18,33 +16,15 @@ import org.opengis.referencing.crs.CoordinateReferenceSystem;
 import com.vividsolutions.jts.geom.LineString;
 import com.vividsolutions.jts.geom.Polygon;
 
-@Deprecated
-public class UpdateDecoderTest extends BXMLDecoderTest {
+public class UpdateDecoderTest extends BxmlTestSupport {
 
     public void testFeedDecodeUpdate() throws Exception {
 
-        /*final InputStream input = getClass().getResourceAsStream(
-        "/test-data/gss/1.0.0/examples/transactions/update.bxml");
-        BxmlStreamReader reader;
-        BxmlInputFactory inputFactory = BxmlFactoryFinder.newInputFactory();
-        inputFactory.setNamespaceAware(true);
-        reader = inputFactory.createScanner(input);*/
-        BxmlStreamReader reader = super.getXmlReader("update.xml");
+        BxmlStreamReader reader = super.getXmlReader("update1.xml");
         reader.nextTag();
-        FeedDecoder feedDecoder = new FeedDecoder();
-        FeedImpl feed = feedDecoder.decode(reader);
+        UpdateElementTypeDecoder decoder = new UpdateElementTypeDecoder();
+        UpdateElementType updateElement = (UpdateElementType) decoder.decode(reader);
 
-        assertEquals(new Long(50), feed.getMaxEntries());
-
-        assertEquals("1ea12197b04bc0990216f1bfea04fc1c05ba0aab", feed.getId());
-        EntryImpl entry = feed.getEntry().next();
-
-        assertEquals("bf5043bab0b7ed55358d4ef2909103d0d50ba276", entry.getId());
-
-        assertNotNull(entry.getContent());
-        ContentImpl content1 = entry.getContent();
-
-        UpdateElementType updateElement = (UpdateElementType) content1.getValue();
         @SuppressWarnings("unchecked")
         final List<PropertyType> property = updateElement.getProperty();
         PropertyType property1 = property.get(0);
@@ -72,12 +52,6 @@ public class UpdateDecoderTest extends BXMLDecoderTest {
             assertEquals("planet_osm_polygon." + i, id);
             i++;
         }
-
-        Polygon where = (Polygon) entry.getWhere();
-        LineString exteriorRing2 = where.getExteriorRing();
-        testLineRing(exteriorRing2, new double[][] { { 10.1, 10.5 }, { 21.5, 23.5 },
-                { 26.5, 28.7 }, { 10.1, 10.5 } });
-
         reader.close();
     }
 }

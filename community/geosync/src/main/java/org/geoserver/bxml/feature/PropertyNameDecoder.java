@@ -5,6 +5,7 @@ import javax.xml.namespace.QName;
 import org.geoserver.bxml.base.SimpleDecoder;
 import org.gvsig.bxml.stream.BxmlStreamReader;
 import org.gvsig.bxml.stream.EventType;
+import org.springframework.util.Assert;
 
 public class PropertyNameDecoder extends SimpleDecoder<QName> {
 
@@ -18,12 +19,11 @@ public class PropertyNameDecoder extends SimpleDecoder<QName> {
     @Override
     public QName decode(BxmlStreamReader r) throws Exception {
         final QName elementName = r.getElementName();
-        canHandle(elementName);
+        Assert.isTrue(canHandle(elementName));
         r.require(EventType.START_ELEMENT, elementName.getNamespaceURI(),
                 elementName.getLocalPart());
 
         StringBuilder sb = new StringBuilder();
-        Object value = null;
         EventType event;
         while ((event = r.next()).isValue()) {
             String chunk = r.getStringValue();
@@ -31,8 +31,6 @@ public class PropertyNameDecoder extends SimpleDecoder<QName> {
         }
 
         r.require(EventType.END_ELEMENT, elementName.getNamespaceURI(), elementName.getLocalPart());
-
-        value = sb.length() == 0 ? null : sb.toString();
 
         return FeatureTypeUtil.buildQName(sb.toString(), typeName.getNamespaceURI());
 

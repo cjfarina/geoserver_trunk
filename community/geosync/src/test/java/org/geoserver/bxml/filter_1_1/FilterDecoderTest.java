@@ -35,6 +35,7 @@ public class FilterDecoderTest extends BxmlTestSupport {
         Filter f = decoder.decode(reader);
         assertNotNull(f);
         assertEquals(expected.toString(), f.toString());
+        reader.close();
     }
 
     public void testFilterDecoder2() throws Exception {
@@ -61,6 +62,7 @@ public class FilterDecoderTest extends BxmlTestSupport {
         Filter f = decoder.decode(reader);
         assertNotNull(f);
         assertEquals(expected.toString(), f.toString());
+        reader.close();
     }
 
     public void testPropertyIsEqualTo() throws Exception {
@@ -72,6 +74,7 @@ public class FilterDecoderTest extends BxmlTestSupport {
         Filter f = decoder.decode(reader);
         assertNotNull(f);
         assertEquals(expected.toString(), f.toString());
+        reader.close();
     }
 
     public void testBinaryLogicComparison() throws Exception {
@@ -84,7 +87,7 @@ public class FilterDecoderTest extends BxmlTestSupport {
         Filter decoded = decoder.decode(reader);
         assertNotNull(decoded);
         assertEquals(expected.toString(), decoded.toString());
-
+        reader.close();
     }
 
     private BxmlStreamReader getXmlReader(final Filter expected) throws Exception {

@@ -14,7 +14,7 @@ public class WhereDecoder extends SimpleDecoder<Object> {
     public WhereDecoder() {
         super(where);
     }
-    
+
     @Override
     public Object decode(BxmlStreamReader r) throws Exception {
         final QName elementName = r.getElementName();

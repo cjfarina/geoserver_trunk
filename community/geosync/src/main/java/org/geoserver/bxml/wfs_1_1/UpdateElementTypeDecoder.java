@@ -21,6 +21,9 @@ import org.geoserver.bxml.feature.PropertyDecoder;
 import org.geoserver.bxml.filter_1_1.FilterDecoder2;
 import org.gvsig.bxml.stream.BxmlStreamReader;
 import org.gvsig.bxml.stream.EventType;
+import org.springframework.util.Assert;
+
+import com.google.common.collect.Iterators;
 
 public class UpdateElementTypeDecoder extends SimpleDecoder<EObject> {
 
@@ -34,7 +37,7 @@ public class UpdateElementTypeDecoder extends SimpleDecoder<EObject> {
     @Override
     public EObject decode(BxmlStreamReader r) throws Exception {
         final QName elementName = r.getElementName();
-        canHandle(elementName);
+        Assert.isTrue(canHandle(elementName));
         r.require(EventType.START_ELEMENT, elementName.getNamespaceURI(),
                 elementName.getLocalPart());
 
@@ -52,11 +55,8 @@ public class UpdateElementTypeDecoder extends SimpleDecoder<EObject> {
         seq.add(choice, 0, Integer.MAX_VALUE);
 
         r.nextTag();
-        Iterator<Object> decode = seq.decode(r);
-        // consume and let functors do their job
-        while (decode.hasNext()) {
-            decode.next();
-        }
+        Iterator<Object> iterator = seq.decode(r);
+        Iterators.toArray(iterator, Object.class);
 
         r.require(EventType.END_ELEMENT, elementName.getNamespaceURI(), elementName.getLocalPart());
         return element;

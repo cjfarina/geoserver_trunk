@@ -42,54 +42,54 @@ public class FeedDecoderTest extends AtomTestSupport {
                 .get(0));
         testLink("http://example2.org/", "alternate", "text/html", "es", "title2", null, feed
                 .getLink().get(1));
-        
+
         assertTrue(feed.getEntry().hasNext());
 
         EntryImpl entry = feed.getEntry().next();
         assertNotNull(entry);
         assertEquals("453e5a7ba8917ed3550e088d69ff1ac0aa6d1a4d", entry.getId());
-
+        reader.close();
     }
-    
+
     public void testFeed2() throws Exception {
         BxmlStreamReader reader = super.getXmlReader("feed2.xml");
         reader.nextTag();
         FeedDecoder feedDecoder = new FeedDecoder();
         FeedImpl feed = feedDecoder.decode(reader);
-        
+
         assertEquals(new Long(50), feed.getMaxEntries());
         assertEquals(new Long(1), feed.getStartPosition());
-        
+
         assertEquals("01cbd610bbf9e37714980377ffc6600dc3fef24e", feed.getId());
         assertEquals("This is a feed title.", feed.getTitle());
         assertEquals("This is an icon.", feed.getIcon());
         assertEquals("This is the rights.", feed.getRights());
-        
+
         assertEquals(new Date(DateUtil.parseDateTime("2010-03-20T21:30:03.466Z")),
                 feed.getUpdated());
-        
+
         assertEquals(2, feed.getAuthor().size());
         testPerson("cfarina", "cfarina@host.com", "www.geoserver.org", feed.getAuthor().get(0));
         testPerson("mperez", "mperez@host.com", null, feed.getAuthor().get(1));
-        
+
         assertEquals(2, feed.getCategory().size());
-        
+
         testCategory("term1", "scheme1", feed.getCategory().get(0));
         testCategory("term2", "scheme2", feed.getCategory().get(1));
-        
+
         assertEquals(1, feed.getLink().size());
-        
+
         testLink("http://example3.org/", "alternate", "text/html", "en", null, new Long(25), feed
                 .getLink().get(0));
-        
+
         assertTrue(feed.getEntry().hasNext());
-        
+
         EntryImpl entry = feed.getEntry().next();
-        
+
         assertEquals("453e5a7ba8917ed3550e088d69ff1ac0aa6d1a4d", entry.getId());
         assertEquals("Delte of Feature planet_osm_point.100", entry.getTitle());
         assertEquals("Commit automatically accepted as it comes from a WFS transaction",
                 entry.getSummary());
-        
+
     }
 }

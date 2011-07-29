@@ -19,6 +19,7 @@ public class PointDecoderTest extends BxmlTestSupport {
         PointDecoder pointDecoder = new PointDecoder();
         Geometry point = pointDecoder.decode(reader);
         assertNotNull(point);
+        reader.close();
     }
 
 }

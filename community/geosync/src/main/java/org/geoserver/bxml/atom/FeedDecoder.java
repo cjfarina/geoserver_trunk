@@ -32,20 +32,20 @@ import com.google.common.base.Function;
 import com.google.common.base.Throwables;
 import com.google.common.collect.Iterators;
 
-public class FeedDecoder extends SimpleDecoder<FeedImpl>{
+public class FeedDecoder extends SimpleDecoder<FeedImpl> {
 
     protected final Logger LOGGER;
 
     public static QName startPosition = new QName("http://www.w3.org/2005/Atom", "startPosition");
 
     public static QName maxEntries = new QName("http://www.w3.org/2005/Atom", "maxEntries");
-    
+
     private Function<BxmlStreamReader, EntryImpl> entryReaderFunction;
-    
+
     public FeedDecoder() {
         super(Atom.feed);
         LOGGER = Logging.getLogger(getClass());
-        
+
         entryReaderFunction = new Function<BxmlStreamReader, EntryImpl>() {
 
             @Override
@@ -63,23 +63,23 @@ public class FeedDecoder extends SimpleDecoder<FeedImpl>{
 
     @Override
     public FeedImpl decode(BxmlStreamReader r) throws Exception {
-        //r.nextTag();
-        //r.require(EventType.START_ELEMENT, elemName.getNamespaceURI(), elemName.getLocalPart());
+        // r.nextTag();
+        // r.require(EventType.START_ELEMENT, elemName.getNamespaceURI(), elemName.getLocalPart());
         final QName name = r.getElementName();
         Assert.isTrue(canHandle(name));
-        
+
         FeedImpl feed = new FeedImpl();
 
         String startPositionValue = r.getAttributeValue(null, startPosition.getLocalPart());
-        if(startPositionValue != null){
+        if (startPositionValue != null) {
             feed.setStartPosition(Long.parseLong(startPositionValue));
         }
-        
+
         String maxEntriesValue = r.getAttributeValue(null, maxEntries.getLocalPart());
-        if(maxEntriesValue != null){
+        if (maxEntriesValue != null) {
             feed.setMaxEntries(Long.parseLong(maxEntriesValue));
         }
-        
+
         ChoiceDecoder<Object> choice = new ChoiceDecoder<Object>();
         choice.addOption(new SetterDecoder<Object>(new StringDecoder(id), feed, "id"));
         choice.addOption(new SetterDecoder<Object>(new StringDecoder(title), feed, "title"));
@@ -88,25 +88,25 @@ public class FeedDecoder extends SimpleDecoder<FeedImpl>{
         choice.addOption(new SetterDecoder<Object>(new StringDecoder(rights), feed, "rights"));
         choice.addOption(new SetterDecoder<Object>(new DateDecoder(updated), feed, "updated"));
         choice.addOption(new SetterDecoder<Object>(new PersonDecoder(author), feed, "author"));
-        choice.addOption(new SetterDecoder<Object>(new PersonDecoder(contributor), feed, "contributor"));
+        choice.addOption(new SetterDecoder<Object>(new PersonDecoder(contributor), feed,
+                "contributor"));
         choice.addOption(new SetterDecoder<Object>(new CategoryDecoder(), feed, "category"));
         choice.addOption(new SetterDecoder<Object>(new LinkDecoder(), feed, "link"));
         choice.addOption(new SetterDecoder<Object>(new GeneratorDecoder(), feed, "generator"));
-        
 
         SequenceDecoder<Object> seq = new FeedSequenceDecoder<Object>(1, 1);
         seq.add(choice, 0, Integer.MAX_VALUE);
         r.nextTag();
         Iterator<Object> decode = seq.decode(r);
         Iterators.toArray(decode, Object.class);
-        
+
         Iterator<BxmlStreamReader> entryElemIterator = new BxmlElementIterator(r, Atom.entry);
-        
+
         Iterator<EntryImpl> entryIterator;
         entryIterator = Iterators.transform(entryElemIterator, entryReaderFunction);
-        
+
         feed.setEntry(entryIterator);
-        
+
         return feed;
     }
 

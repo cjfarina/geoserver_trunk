@@ -8,8 +8,6 @@ import java.util.Collections;
 import java.util.HashSet;
 import java.util.Set;
 
-import static org.geoserver.gss.internal.atom.Atom.entry;
-
 import javax.xml.namespace.QName;
 
 import org.gvsig.bxml.stream.BxmlStreamReader;

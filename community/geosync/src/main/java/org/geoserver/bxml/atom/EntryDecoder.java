@@ -28,6 +28,8 @@ import org.geoserver.gss.internal.atom.EntryImpl;
 import org.gvsig.bxml.stream.BxmlStreamReader;
 import org.gvsig.bxml.stream.EventType;
 
+import com.google.common.collect.Iterators;
+
 public class EntryDecoder implements Decoder<EntryImpl> {
 
     @Override
@@ -40,10 +42,8 @@ public class EntryDecoder implements Decoder<EntryImpl> {
         choice.addOption(new SetterDecoder<Object>(new PersonDecoder(author), entry, "author"));
         choice.addOption(new SetterDecoder<Object>(new PersonDecoder(contributor), entry,
                 "contributor"));
-        choice.addOption(new SetterDecoder<Object>(new CategoryDecoder(), entry,
-                "category"));
-        choice.addOption(new SetterDecoder<Object>(new LinkDecoder(), entry,
-                "link"));
+        choice.addOption(new SetterDecoder<Object>(new CategoryDecoder(), entry, "category"));
+        choice.addOption(new SetterDecoder<Object>(new LinkDecoder(), entry, "link"));
         choice.addOption(new SetterDecoder<Object>(new DateDecoder(published), entry, "published"));
         choice.addOption(new SetterDecoder<Object>(new StringDecoder(title), entry, "title"));
         choice.addOption(new SetterDecoder<Object>(new StringDecoder(summary), entry, "summary"));
@@ -57,14 +57,9 @@ public class EntryDecoder implements Decoder<EntryImpl> {
         seq.add(choice, 0, Integer.MAX_VALUE);
 
         r.nextTag();
-        Iterator<Object> decode = seq.decode(r);
-        // consume and let functors do their job
-        while (decode.hasNext()) {
-            decode.next();
-        }
-
+        Iterator<Object> iterator = seq.decode(r);
+        Iterators.toArray(iterator, Object.class);
         return entry;
-
     }
 
     @Override

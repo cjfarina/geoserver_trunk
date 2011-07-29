@@ -14,9 +14,11 @@ import org.geoserver.bxml.ChoiceDecoder;
 import org.geoserver.bxml.SequenceDecoder;
 import org.geoserver.bxml.SetterDecoder;
 import org.geoserver.bxml.base.SimpleDecoder;
-import org.geoserver.bxml.base.StringDecoder;
 import org.gvsig.bxml.stream.BxmlStreamReader;
 import org.gvsig.bxml.stream.EventType;
+import org.springframework.util.Assert;
+
+import com.google.common.collect.Iterators;
 
 public class PropertyDecoder extends SimpleDecoder<PropertyType> {
 
@@ -32,26 +34,23 @@ public class PropertyDecoder extends SimpleDecoder<PropertyType> {
     @Override
     public PropertyType decode(BxmlStreamReader r) throws Exception {
         final QName elementName = r.getElementName();
-        canHandle(elementName);
+        Assert.isTrue(canHandle(elementName));
         r.require(EventType.START_ELEMENT, elementName.getNamespaceURI(),
                 elementName.getLocalPart());
         PropertyType property = factory.createPropertyType();
 
         ChoiceDecoder<Object> choice = new ChoiceDecoder<Object>();
 
-        choice.addOption(new SetterDecoder<Object>(new PropertyNameDecoder(typeName), property, "name"));
-        choice.addOption(new SetterDecoder<Object>(new PropertyValueDecoder(),
-                property, "value"));
+        choice.addOption(new SetterDecoder<Object>(new PropertyNameDecoder(typeName), property,
+                "name"));
+        choice.addOption(new SetterDecoder<Object>(new PropertyValueDecoder(), property, "value"));
 
         SequenceDecoder<Object> seq = new SequenceDecoder<Object>(1, 1);
         seq.add(choice, 0, Integer.MAX_VALUE);
 
         r.nextTag();
-        Iterator<Object> decode = seq.decode(r);
-        // consume and let functors do their job
-        while (decode.hasNext()) {
-            decode.next();
-        }
+        Iterator<Object> iterator = seq.decode(r);
+        Iterators.toArray(iterator, Object.class);
 
         r.require(EventType.END_ELEMENT, elementName.getNamespaceURI(), elementName.getLocalPart());
         return property;

@@ -12,6 +12,7 @@ import org.geoserver.gss.internal.atom.Atom;
 import org.geoserver.gss.internal.atom.ContentImpl;
 import org.gvsig.bxml.stream.BxmlStreamReader;
 import org.gvsig.bxml.stream.EventType;
+import org.springframework.util.Assert;
 
 public class ContentDecoder extends SimpleDecoder<ContentImpl> {
 
@@ -27,7 +28,7 @@ public class ContentDecoder extends SimpleDecoder<ContentImpl> {
     @Override
     public ContentImpl decode(BxmlStreamReader r) throws Exception {
         final QName elementName = r.getElementName();
-        canHandle(r.getElementName());
+        Assert.isTrue(canHandle(r.getElementName()));
         r.require(EventType.START_ELEMENT, elementName.getNamespaceURI(),
                 elementName.getLocalPart());
 

@@ -5,7 +5,6 @@ import static org.geoserver.gss.internal.atom.Atom.version;
 
 import javax.xml.namespace.QName;
 
-import org.geoserver.bxml.BXMLDecoderUtil;
 import org.geoserver.bxml.base.SimpleDecoder;
 import org.geoserver.bxml.base.StringDecoder;
 import org.geoserver.gss.internal.atom.Atom;

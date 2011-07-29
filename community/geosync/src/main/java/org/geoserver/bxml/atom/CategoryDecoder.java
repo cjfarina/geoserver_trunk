@@ -21,11 +21,9 @@ public class CategoryDecoder extends SimpleDecoder<CategoryImpl> {
         final QName name = r.getElementName();
         Assert.isTrue(canHandle(name));
         CategoryImpl category = new CategoryImpl();
-        
-        final String scheme = r.getAttributeValue(null,
-                Atom.scheme.getLocalPart());
-        final String term = r.getAttributeValue(null,
-                Atom.term.getLocalPart());
+
+        final String scheme = r.getAttributeValue(null, Atom.scheme.getLocalPart());
+        final String term = r.getAttributeValue(null, Atom.term.getLocalPart());
 
         r.nextTag();
 

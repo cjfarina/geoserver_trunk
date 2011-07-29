@@ -15,6 +15,7 @@ import org.geoserver.bxml.filter_1_1.FilterDecoder2;
 import org.geoserver.gss.internal.atom.Atom;
 import org.gvsig.bxml.stream.BxmlStreamReader;
 import org.gvsig.bxml.stream.EventType;
+import org.springframework.util.Assert;
 
 public class DeleteElementTypeDecoder extends SimpleDecoder<EObject> {
 
@@ -28,7 +29,7 @@ public class DeleteElementTypeDecoder extends SimpleDecoder<EObject> {
     @Override
     public EObject decode(BxmlStreamReader r) throws Exception {
         final QName elementName = r.getElementName();
-        canHandle(elementName);
+        Assert.isTrue(canHandle(elementName));
         r.require(EventType.START_ELEMENT, elementName.getNamespaceURI(),
                 elementName.getLocalPart());
 
