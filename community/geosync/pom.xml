@@ -55,12 +55,6 @@
       <artifactId>je</artifactId>
       <version>4.1.7</version>
     </dependency>
-    
-    <dependency>
-      <groupId>com.amazonaws</groupId>
-      <artifactId>aws-java-sdk</artifactId>
-      <version>1.0.002</version>
-    </dependency>
 
     <dependency>
       <groupId>org.gvsig</groupId>
