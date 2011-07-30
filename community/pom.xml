@@ -182,8 +182,15 @@
       </modules>
     </profile>
     <profile>
+      <id>geogit</id>
+      <modules>
+        <module>geogit-versioning</module>
+      </modules>
+    </profile>
+    <profile>
       <id>geosync</id>
       <modules>
+        <module>geogit-versioning</module>
         <module>geosync</module>
       </modules>
     </profile>

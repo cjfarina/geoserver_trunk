@@ -10,10 +10,10 @@
   </parent>
 
   <groupId>org.geoserver.community</groupId>
-  <artifactId>geosync</artifactId>
+  <artifactId>geogit-versioning</artifactId>
   <version>${parent.version}</version>
   <packaging>jar</packaging>
-  <name>GeoSyncronization Service </name>
+  <name>Feature Versioning support through GeoGIT</name>
 
   <dependencies>
     <dependency>
@@ -29,11 +29,6 @@
     <dependency>
       <groupId>org.geoserver</groupId>
       <artifactId>wfs</artifactId>
-      <version>${project.version}</version>
-    </dependency>
-    <dependency>
-      <groupId>org.geoserver.community</groupId>
-      <artifactId>geogit-versioning</artifactId>
       <version>${project.version}</version>
     </dependency>
     <dependency>
