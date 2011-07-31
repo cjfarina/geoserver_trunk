@@ -13,6 +13,7 @@ import org.geogit.api.GeoGIT;
 import org.geoserver.catalog.Catalog;
 import org.geoserver.catalog.FeatureTypeInfo;
 import org.geoserver.config.GeoServerDataDirectory;
+import org.geoserver.geogit.GEOGIT;
 import org.geotools.feature.NameImpl;
 import org.opengis.feature.type.Name;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
@@ -28,8 +29,6 @@ public class GSSTest extends TestCase {
 
     private Catalog mockCatalog;
 
-    private GeoGIT mockGeoGIT;
-
     @Override
     protected void setUp() throws Exception {
         GrantedAuthority[] credentials = { new GrantedAuthorityImpl("ROLE_ADMINISTRATOR") };
@@ -38,12 +37,14 @@ public class GSSTest extends TestCase {
         SecurityContextHolder.getContext().setAuthentication(mockAuth);
 
         mockCatalog = mock(Catalog.class);
-        mockGeoGIT = mock(GeoGIT.class);
+        GeoGIT mockGeoGIT = mock(GeoGIT.class);
         File baseDirectory = new File(new File("target"), getClass().getName());
         FileUtils.deleteDirectory(baseDirectory);
         baseDirectory.mkdirs();
         GeoServerDataDirectory mockDataDir = new GeoServerDataDirectory(baseDirectory);
-        gss = new GSS(mockCatalog, mockDataDir);
+        GEOGIT mockGeoGitFacade = new GEOGIT(mockCatalog, mockDataDir);
+
+        gss = new GSS(mockGeoGitFacade, mockCatalog);
     }
 
     public void testInitialize() throws Exception {

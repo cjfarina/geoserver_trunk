@@ -3,22 +3,13 @@
 
 <beans>
 
-  <bean id="LongTaskMonitor" class="org.geoserver.task.LongTaskMonitor">
-  </bean>
-  <bean id="LongTasksHomePagePanelProvider" class="org.geoserver.task.web.LongTasksHomePagePanelProvider">
-  </bean>
-
   <bean id="GSS" class="org.geoserver.gss.impl.GSS">
+    <constructor-arg ref="GEOGIT" />
     <constructor-arg ref="catalog" />
-    <constructor-arg ref="dataDirectory" />
   </bean>
 
   <bean id="gssLoader" class="org.geoserver.gss.config.GSSXStreamLoader">
     <constructor-arg ref="resourceLoader" />
-  </bean>
-
-  <bean id="gssWfsRecordingTransactionListener" class="org.geoserver.gss.wfsbridge.GSSTransactionListener">
-    <constructor-arg ref="GSS" />
   </bean>
 
   <!-- gss service -->
@@ -175,29 +166,5 @@
     <property name="icon" value="server_feed.png"/>
     <property name="category" ref="servicesCategory"/>
   </bean> 
-  <bean id="gssTypesMenuPage" class="org.geoserver.web.MenuPageInfo">
-    <property name="id" value="gssTypes"/>
-    <property name="titleKey" value="GSSLayersPage.title"/>
-    <property name="descriptionKey" value="GSSLayersPage.description"/>
-    <property name="componentClass" value="org.geoserver.gss.web.GSSLayersPage"/>
-    <property name="category" ref="dataCategory"/>
-    <property name="icon" value="shape_square_feed.png"/>
-    <property name="order" value="50"/>
-  </bean>
-  
-  
-  <bean id="gssRestConfigMapping" class="org.geoserver.rest.RESTMapping">
-    <property name="routes">
-      <map>
-        <entry>
-          <key>
-            <value>/gss/timeline.xml</value>
-          </key>
-          <value>gssTimeline</value>
-        </entry>
-      </map>
-    </property>
-  </bean>
-  <bean id="gssTimeline" class="org.geoserver.gss.web.TimeLineRestlet"/>
   
 </beans>

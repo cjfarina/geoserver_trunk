@@ -59,6 +59,7 @@ import org.opengis.filter.PropertyIsGreaterThanOrEqualTo;
 import org.opengis.filter.PropertyIsLessThan;
 import org.opengis.filter.PropertyIsLessThanOrEqualTo;
 import org.opengis.filter.PropertyIsLike;
+import org.opengis.filter.PropertyIsNil;
 import org.opengis.filter.PropertyIsNotEqualTo;
 import org.opengis.filter.PropertyIsNull;
 import org.opengis.filter.expression.Add;
@@ -377,10 +378,10 @@ public class FilterEncoder extends AbstractEncoder<Filter> {
          * org.opengis.filter.FilterVisitor#visit(org.opengis.filter.PropertyIsNil,
          * java.lang.Object}
          */
-        /*
-         * @Override public Object visit(PropertyIsNil filter, Object extraData) { throw new
-         * UnsupportedOperationException("FES 2.0 encoding not yet supported"); }
-         */
+        @Override
+        public Object visit(PropertyIsNil filter, Object extraData) {
+            throw new UnsupportedOperationException("FES 2.0 encoding not yet supported");
+        }
 
         /**
          * Implements

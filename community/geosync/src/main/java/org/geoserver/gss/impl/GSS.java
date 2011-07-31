@@ -6,7 +6,6 @@ package org.geoserver.gss.impl;
 
 import java.io.File;
 import java.io.IOException;
-import java.util.Arrays;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Properties;
@@ -17,31 +16,22 @@ import java.util.logging.Logger;
 import org.geogit.api.DiffEntry;
 import org.geogit.api.DiffEntry.ChangeType;
 import org.geogit.api.GeoGIT;
-import org.geogit.api.LogOp;
 import org.geogit.api.ObjectId;
 import org.geogit.api.RevCommit;
-import org.geogit.repository.Index;
-import org.geogit.repository.Repository;
-import org.geogit.repository.WorkingTree;
-import org.geogit.storage.RepositoryDatabase;
 import org.geogit.storage.bdbje.EntityStoreConfig;
 import org.geogit.storage.bdbje.EnvironmentBuilder;
-import org.geogit.storage.bdbje.JERepositoryDatabase;
 import org.geoserver.catalog.Catalog;
 import org.geoserver.catalog.FeatureTypeInfo;
 import org.geoserver.config.GeoServer;
-import org.geoserver.config.GeoServerDataDirectory;
+import org.geoserver.geogit.AuthenticationResolver;
+import org.geoserver.geogit.GEOGIT;
 import org.geoserver.gss.config.GSSInfo;
 import org.geoserver.gss.impl.query.FeedResponse;
 import org.geoserver.gss.internal.atom.FeedImpl;
 import org.geoserver.gss.internal.storage.GeoSyncDatabase;
 import org.geoserver.platform.GeoServerExtensions;
 import org.geoserver.platform.ServiceException;
-import org.geoserver.task.LongTaskMonitor;
-import org.geotools.data.FeatureSource;
-import org.geotools.data.FeatureStore;
 import org.geotools.feature.FeatureCollection;
-import org.geotools.util.NullProgressListener;
 import org.geotools.util.logging.Logging;
 import org.opengis.feature.Feature;
 import org.opengis.feature.type.FeatureType;
@@ -50,7 +40,6 @@ import org.opengis.filter.Filter;
 import org.opengis.filter.expression.PropertyName;
 import org.opengis.filter.sort.SortOrder;
 import org.springframework.beans.factory.DisposableBean;
-import org.springframework.util.Assert;
 
 import com.sleepycat.je.Environment;
 
@@ -62,49 +51,28 @@ import com.sleepycat.je.Environment;
  */
 public class GSS implements DisposableBean {
 
-    private static final NullProgressListener NULL_PROGRESS_LISTENER = new NullProgressListener();
-
     private static final Logger LOGGER = Logging.getLogger(GSS.class);
-
-    private static final String GSS_DATA_ROOT = "gss_data";
-
-    private static final String GSS_GEOGIT_REPO = "geogit_repo";
 
     private static final String GSS_REPO = "gss_repo";
 
-    private AuthenticationResolver authResolver;
-
     private final Catalog catalog;
-
-    private final GeoGIT geoGit;
 
     private final GeoSyncDatabase gssDb;
 
-    public GSS(final Catalog catalog, final GeoServerDataDirectory dataDir) throws IOException {
+    private final GEOGIT geogitFacade;
+
+    public GSS(final GEOGIT geogitFacade, final Catalog catalog) throws IOException {
+        this.geogitFacade = geogitFacade;
         this.catalog = catalog;
-        this.authResolver = new AuthenticationResolver();
-        final File geogitRepo = dataDir.findOrCreateDataDir(GSS_DATA_ROOT, GSS_GEOGIT_REPO);
 
         EnvironmentBuilder esb = new EnvironmentBuilder(new EntityStoreConfig());
-
         Properties bdbEnvProperties = null;
-        Environment geogitEnvironment = esb.buildEnvironment(geogitRepo, bdbEnvProperties);
-        RepositoryDatabase ggitRepoDb = new JERepositoryDatabase(geogitEnvironment);
 
-        // RepositoryDatabase ggitRepoDb = new FileSystemRepositoryDatabase(geogitRepo);
-
-        Repository repository = new Repository(ggitRepoDb);
-        repository.create();
-
-        this.geoGit = new GeoGIT(repository);
-
-        // StatsConfig config = new StatsConfig();
-        // config.setClear(true);
-        // System.err.println(geogitEnvironment.getStats(config));
-
-        final File gssRepo = dataDir.findOrCreateDataDir(GSS_DATA_ROOT, GSS_REPO);
+        final File repoBase = geogitFacade.getBaseRepoDir();
+        final File gssRepo = new File(repoBase, GSS_REPO);
+        gssRepo.mkdirs();
         Environment gssEnvironment = esb.buildEnvironment(gssRepo, bdbEnvProperties);
-        gssDb = new GeoSyncDatabase(geoGit, gssEnvironment);
+        gssDb = new GeoSyncDatabase(geogitFacade.getGeoGit(), gssEnvironment);
         gssDb.create();
     }
 
@@ -117,19 +85,11 @@ public class GSS implements DisposableBean {
      * @see org.springframework.beans.factory.DisposableBean#destroy()
      */
     public void destroy() throws Exception {
-        try {
-            Repository repository = geoGit.getRepository();
-            repository.close();
-        } finally {
-            gssDb.close();
-        }
+        gssDb.close();
     }
 
     public List<Name> listLayers() throws Exception {
-        geoGit.checkout().setName("master").call();
-        WorkingTree workingTree = geoGit.getRepository().getWorkingTree();
-        List<Name> typeNames = workingTree.getFeatureTypeNames();
-        return typeNames;
+        return geogitFacade.listLayers();
     }
 
     /**
@@ -140,148 +100,19 @@ public class GSS implements DisposableBean {
      * @return
      * @throws Exception
      */
-    @SuppressWarnings("rawtypes")
     public Future<?> initialize(final Name featureTypeName) throws Exception {
-        final String user = getCurrentUserName();
-        Assert.notNull(user, "This operation shall be invoked by a logged in user");
-
-        final FeatureTypeInfo featureTypeInfo = catalog.getFeatureTypeByName(featureTypeName);
-        Assert.notNull(featureTypeInfo, "No FeatureType named " + featureTypeName
-                + " found in the Catalog");
-
-        final FeatureSource featureSource = featureTypeInfo.getFeatureSource(null, null);
-        if (featureSource == null) {
-            throw new NullPointerException(featureTypeInfo + " didn't return a FeatureSource");
-        }
-        if (!(featureSource instanceof FeatureStore)) {
-            throw new IllegalArgumentException("Can't version "
-                    + featureTypeInfo.getQualifiedName() + " because it is read only");
-        }
-
-        ImportVersionedLayerTask importTask;
-        importTask = new ImportVersionedLayerTask(user, featureSource, geoGit);
-        LongTaskMonitor monitor = GeoServerExtensions.bean(LongTaskMonitor.class);
-        Future<RevCommit> future = monitor.dispatch(importTask);
-        return future;
+        return geogitFacade.initialize(featureTypeName);
     }
 
     public boolean isReplicated(final Name featureTypeName) {
-        return geoGit.getRepository().getWorkingTree().hasRoot(featureTypeName);
-    }
-
-    public void initChangeSet(final String gssTransactionID) throws Exception {
-        // branch master
-        geoGit.checkout().setName("master").call();
-        geoGit.branchCreate().setName(gssTransactionID).call();
-    }
-
-    /**
-     * @param gssTransactionID
-     * @param typeName
-     * @param affectedFeatures
-     * @return the list of feature ids of the inserted features, in the order they were added
-     * @throws Exception
-     */
-    @SuppressWarnings("rawtypes")
-    public List<String> stageInsert(final String gssTransactionID, final Name typeName,
-            FeatureCollection affectedFeatures) throws Exception {
-
-        // geoGit.checkout().setName(gssTransactionID).call();
-        WorkingTree workingTree = geoGit.getRepository().getWorkingTree();
-        List<String> insertedFids = workingTree.insert(affectedFeatures, NULL_PROGRESS_LISTENER);
-        geoGit.add().call();
-
-        return insertedFids;
-    }
-
-    @SuppressWarnings("rawtypes")
-    public void stageUpdate(final String gssTransactionID, final Name typeName,
-            final Filter filter, final List<PropertyName> updatedProperties,
-            final List<Object> newValues, final FeatureCollection affectedFeatures)
-            throws Exception {
-
-        geoGit.checkout().setName(gssTransactionID).call();
-        WorkingTree workingTree = geoGit.getRepository().getWorkingTree();
-        workingTree.update(filter, updatedProperties, newValues, affectedFeatures,
-                NULL_PROGRESS_LISTENER);
-        geoGit.add().call();
-    }
-
-    @SuppressWarnings("rawtypes")
-    public void stageDelete(final String gssTransactionID, Name typeName, Filter filter,
-            FeatureCollection affectedFeatures) throws Exception {
-
-        geoGit.checkout().setName(gssTransactionID).call();
-        WorkingTree workingTree = geoGit.getRepository().getWorkingTree();
-        workingTree.delete(typeName, filter, affectedFeatures);
-        geoGit.add().call();
-    }
-
-    public void stageRename(final Name typeName, final String oldFid, final String newFid) {
-
-        Index index = geoGit.getRepository().getIndex();
-
-        final String namespaceURI = typeName.getNamespaceURI();
-        final String localPart = typeName.getLocalPart();
-
-        List<String> from = Arrays.asList(namespaceURI, localPart, oldFid);
-        List<String> to = Arrays.asList(namespaceURI, localPart, newFid);
-
-        index.renamed(from, to);
-    }
-
-    /**
-     * Merges branch named after {@code gssTransactionID} back to master and commits.
-     * 
-     * @param gssTransactionID
-     * @param commitMsg
-     * @return
-     * @throws Exception
-     */
-    public RevCommit commitChangeSet(final String gssTransactionID, final String commitMsg)
-            throws Exception {
-        String userName = getCurrentUserName();
-        LOGGER.info("Committing changeset " + gssTransactionID + " by user " + userName);
-
-        // final Ref branch = geoGit.checkout().setName(gssTransactionID).call();
-        // commit to the branch
-        RevCommit commit;
-        // checkout master
-        // final Ref master = geoGit.checkout().setName("master").call();
-        // merge branch to master
-        // MergeResult mergeResult = geoGit.merge().include(branch).call();
-        // TODO: check mergeResult is success?
-        // geoGit.branchDelete().setName(gssTransactionID).call();
-        commit = geoGit.commit().setAuthor(userName).setCommitter("geoserver")
-                .setMessage(commitMsg).call();
-        return commit;
-    }
-
-    /**
-     * Discards branch named after {@code gssTransactionID}.
-     * 
-     * @param gssTransactionID
-     * @throws Exception
-     */
-    public void rollBackChangeSet(final String gssTransactionID) throws Exception {
-        String userName = getCurrentUserName();
-        System.err.println("Rolling back changeset " + gssTransactionID + " by user " + userName);
-
-        // TODO: implement ResetOp instead?!
-        geoGit.getRepository().getIndex().reset();
-
-        String deletedBranch = geoGit.branchDelete().setName(gssTransactionID).setForce(true)
-                .call();
-        if (deletedBranch == null) {
-            LOGGER.info("Tried to delete branch " + gssTransactionID + " but it didn't exist");
-        }
+        return geogitFacade.isReplicated(featureTypeName);
     }
 
     /**
      * @return {@code null} if annonymous, the name of the current user otherwise
      */
     public String getCurrentUserName() {
-        return authResolver.getCurrentUserName();
+        return geogitFacade.getCurrentUserName();
     }
 
     /**
@@ -289,11 +120,7 @@ public class GSS implements DisposableBean {
      * class.
      */
     public void setAuthenticationResolver(AuthenticationResolver resolver) {
-        this.authResolver = resolver;
-    }
-
-    public LogOp log() {
-        return this.geoGit.log();
+        geogitFacade.setAuthenticationResolver(resolver);
     }
 
     public GSSInfo getGssInfo() {
@@ -301,7 +128,7 @@ public class GSS implements DisposableBean {
     }
 
     public GeoGIT getGeoGit() {
-        return this.geoGit;
+        return geogitFacade.getGeoGit();
     }
 
     /**
@@ -329,6 +156,7 @@ public class GSS implements DisposableBean {
             final Long startPosition, final Long maxEntries, final SortOrder sortOrder)
             throws ServiceException {
 
+        GeoGIT geoGit = getGeoGit();
         DiffEntryListBuilder diffEntryListBuilder = new DiffEntryListBuilder(this, geoGit);
         diffEntryListBuilder.setSearchTerms(searchTerms);
         diffEntryListBuilder.setFilter(filter);
@@ -361,6 +189,7 @@ public class GSS implements DisposableBean {
     public FeedImpl queryResolutionFeed(final List<String> searchTerms, final Filter filter,
             final Long startPosition, final Long maxEntries, final SortOrder sortOrder) {
 
+        GeoGIT geoGit = getGeoGit();
         CommitsEntryListBuilder commitEntryListBuilder = new CommitsEntryListBuilder(this, geoGit);
         commitEntryListBuilder.setSearchTerms(searchTerms);
         commitEntryListBuilder.setFilter(filter);
@@ -429,6 +258,24 @@ public class GSS implements DisposableBean {
      */
     public DiffEntry getEntryByUUID(final String uuid) {
         return null;
+    }
+
+    public void stageDelete(String gssTransactionID, Name typeName, Filter filter,
+            @SuppressWarnings("rawtypes") FeatureCollection affectedFeatures) throws Exception {
+        geogitFacade.stageDelete(gssTransactionID, typeName, filter, affectedFeatures);
+    }
+
+    public RevCommit commitChangeSet(String gssTransactionID, String commitMessage)
+            throws Exception {
+        return geogitFacade.commitChangeSet(gssTransactionID, commitMessage);
+    }
+
+    public void stageUpdate(String gssTransactionID, Name typeName, Filter filter,
+            List<PropertyName> updatedProperties, List<Object> newValues,
+            @SuppressWarnings("rawtypes") FeatureCollection affectedFeatures) throws Exception {
+
+        geogitFacade.stageUpdate(gssTransactionID, typeName, filter, updatedProperties, newValues,
+                affectedFeatures);
     }
 
 }

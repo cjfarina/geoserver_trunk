@@ -51,7 +51,7 @@ public class GEOGIT implements DisposableBean {
 
     private static final Logger LOGGER = Logging.getLogger(GEOGIT.class);
 
-    public static final String VERSIONING_DATA_ROOT = "gss_data";
+    public static final String VERSIONING_DATA_ROOT = "versioning_data";
 
     private static final String GEOGIT_REPO = "geogit_repo";
 
@@ -61,9 +61,12 @@ public class GEOGIT implements DisposableBean {
 
     private final GeoGIT geoGit;
 
+    private File baseRepoDir;
+
     public GEOGIT(final Catalog catalog, final GeoServerDataDirectory dataDir) throws IOException {
         this.catalog = catalog;
         this.authResolver = new AuthenticationResolver();
+        this.baseRepoDir = dataDir.findOrCreateDataDir(VERSIONING_DATA_ROOT);
         final File geogitRepo = dataDir.findOrCreateDataDir(VERSIONING_DATA_ROOT, GEOGIT_REPO);
 
         EnvironmentBuilder esb = new EnvironmentBuilder(new EntityStoreConfig());
@@ -82,6 +85,10 @@ public class GEOGIT implements DisposableBean {
         // StatsConfig config = new StatsConfig();
         // config.setClear(true);
         // System.err.println(geogitEnvironment.getStats(config));
+    }
+
+    public File getBaseRepoDir() {
+        return baseRepoDir;
     }
 
     public static GEOGIT get() {
