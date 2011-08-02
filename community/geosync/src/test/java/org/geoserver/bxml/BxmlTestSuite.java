@@ -6,7 +6,6 @@ import junit.framework.TestSuite;
 import org.geoserver.bxml.atom.EntryDecoderTest;
 import org.geoserver.bxml.atom.FeedDecoderTest;
 import org.geoserver.bxml.filter_1_1.FilterDecoderTest;
-import org.geoserver.bxml.gml_3_1.PointDecoderTest;
 import org.geoserver.bxml.wfs_1_1.DeleteDecoderTest;
 import org.geoserver.bxml.wfs_1_1.UpdateDecoderTest;
 
@@ -22,6 +21,7 @@ public class BxmlTestSuite {
         //suite.addTestSuite(PointDecoderTest.class);
         suite.addTestSuite(DeleteDecoderTest.class);
         suite.addTestSuite(UpdateDecoderTest.class);
+        suite.addTestSuite(PrimitiveValuesDecoderTest.class);
 
         return suite;
     }
