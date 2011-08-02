@@ -2,50 +2,38 @@ package org.geoserver.bxml.gml_3_1;
 
 import static org.geotools.gml3.GML.LinearRing;
 
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Map;
-
 import javax.xml.namespace.QName;
 
+import org.geoserver.bxml.BXMLDecoderUtil;
+import org.geoserver.bxml.ChoiceDecoder;
 import org.gvsig.bxml.stream.BxmlStreamReader;
+import org.opengis.referencing.crs.CoordinateReferenceSystem;
 
-import com.vividsolutions.jts.geom.Coordinate;
+import com.vividsolutions.jts.geom.CoordinateSequence;
 import com.vividsolutions.jts.geom.Geometry;
+import com.vividsolutions.jts.geom.GeometryFactory;
 import com.vividsolutions.jts.geom.LinearRing;
 
-public class LinearRingDecoder extends GMLLinkDecoder {
+public class LinearRingDecoder extends AbstractGeometryDecoder<Geometry> {
 
-    private List<Coordinate> coordinates = new ArrayList<Coordinate>();
+    private ChoiceDecoder<CoordinateSequence> choice;
 
-    public LinearRingDecoder() {
-        super(LinearRing);
-    }
-
-    @SuppressWarnings("unchecked")
-    protected void decodeElement(final BxmlStreamReader r) throws Exception {
-        QName name = r.getElementName();
-        CoordinatePostListParser coordinatePostListParser = new CoordinatePostListParser(name,
-                getDimension());
-        Object postList = coordinatePostListParser.decode(r);
-        if (getCrs() == null) {
-            setCrs(coordinatePostListParser.getCrs());
-        }
-        if (getDimension() == -1) {
-            setDimension(coordinatePostListParser.getDimension());
-        }
-        coordinates.addAll((List<Coordinate>) postList);
-    }
-
-    protected void decodeAttributtes(final BxmlStreamReader r, Map<QName, String> attributes)
-            throws Exception {
-        super.decodeAttributtes(r, attributes);
+    public LinearRingDecoder(CoordinateReferenceSystem crs, int dimension) {
+        super(crs, dimension, LinearRing);
+        choice = new ChoiceDecoder<CoordinateSequence>();
+        choice.addOption(new PosDecoder());
+        choice.addOption(new PosListDecoder());
+        choice.addOption(new CoordinatesDecoder());
+        choice.addOption(new CoordDecoder());
     }
 
     @Override
-    protected Geometry buildResult() {
-        LinearRing linearRing = gf.createLinearRing(coordinates.toArray(new Coordinate[coordinates
-                .size()]));
+    public Geometry decodeInternal(final BxmlStreamReader r, final QName name) throws Exception {
+        r.nextTag();
+
+        CoordinateSequence coordinates = choice.decode(r);
+
+        LinearRing linearRing = new GeometryFactory().createLinearRing(coordinates);
         linearRing.setUserData(getCrs());
         return linearRing;
     }

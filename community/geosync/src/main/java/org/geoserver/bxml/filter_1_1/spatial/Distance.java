@@ -5,6 +5,12 @@ public class Distance {
     private double value;
 
     private String units;
+    
+    public Distance(double value, String units) {
+        super();
+        this.value = value;
+        this.units = units;
+    }
 
     public double getValue() {
         return value;

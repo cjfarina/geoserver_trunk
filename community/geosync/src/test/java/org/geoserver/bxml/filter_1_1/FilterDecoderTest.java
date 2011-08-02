@@ -84,6 +84,12 @@ public class FilterDecoderTest extends BxmlTestSupport {
         testFilter("property4 = sin([dispersion])");
     }
 
+    /*public void testEquals() throws Exception {
+        testFilter("equals(geometry, POLYGON ((10 10, 20 20, 30 30, 40 40, 10 10), "
+                + "(15 16, 17 18, 19 20, 21 21, 15 16), (5 5, 7 7, 11 11, 13 13, 5 5)))");
+
+    }*/
+
     private BxmlStreamReader getXmlReader(final Filter expected) throws Exception {
         ByteArrayOutputStream out = new ByteArrayOutputStream();
 

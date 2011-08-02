@@ -38,8 +38,6 @@ public class ArithmeticOperatorDecoder extends AbstractTypeDecoder<Expression> {
 
         Expression[] expressions = Iterators.toArray(seq.decode(r), Expression.class);
 
-        r.require(EventType.END_ELEMENT, name.getNamespaceURI(), name.getLocalPart());
-
         if (Add.equals(name)) {
             return ff.add(expressions[0], expressions[1]);
         }

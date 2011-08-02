@@ -2,64 +2,58 @@ package org.geoserver.bxml.gml_3_1;
 
 import static org.geotools.gml3.GML.srsName;
 
-import java.util.Map;
-
 import javax.xml.namespace.QName;
 
-import org.geoserver.bxml.AbstractDecoder;
+import org.geoserver.bxml.BXMLDecoderUtil;
+import org.geoserver.bxml.filter_1_1.AbstractTypeDecoder;
 import org.geotools.referencing.CRS;
 import org.geotools.referencing.crs.DefaultGeographicCRS;
 import org.gvsig.bxml.stream.BxmlStreamReader;
+import org.gvsig.bxml.stream.EventType;
 import org.opengis.referencing.FactoryException;
 import org.opengis.referencing.NoSuchAuthorityCodeException;
 import org.opengis.referencing.crs.CoordinateReferenceSystem;
+import org.springframework.util.Assert;
 
-import com.vividsolutions.jts.geom.GeometryFactory;
-
-public abstract class GMLLinkDecoder extends AbstractDecoder<Object> {
+public abstract class AbstractGeometryDecoder<T> extends AbstractTypeDecoder<T> {
 
     public static final QName srsDimension = new QName("http://www.opengis.net/gml", "srsDimension");
-
-    protected static final GeometryFactory gf = new GeometryFactory();
-
-    protected GMLLinkDecoder link;
 
     private CoordinateReferenceSystem crs;
 
     private int dimension = -1;
-
-    public GMLLinkDecoder(final QName name) {
-        super(name);
+    
+    public AbstractGeometryDecoder(final QName... names) {
+        super(names);
     }
-
-    public GMLLinkDecoder(final QName name, final GMLLinkDecoder link) {
-        this(name);
-        this.link = link;
+    
+    public AbstractGeometryDecoder(final CoordinateReferenceSystem crs, final int dimension, final QName... names) {
+        this(names);
+        this.crs = crs;
+        this.dimension = dimension;
     }
-
+    
     @Override
-    public Object decode(final BxmlStreamReader r) throws Exception {
-        QName name = r.getElementName();
-
-        if (this.name.equals(name)) {
-            return super.decode(r);
-        } else if (link != null) {
-            return link.decode(r);
-        } else {
-            return null;
-        }
-    }
-
-    protected void decodeAttributtes(final BxmlStreamReader r, Map<QName, String> attributes)
-            throws Exception {
+    public final T decode(final BxmlStreamReader r) throws Exception {
+        r.require(EventType.START_ELEMENT, null, null);
+        final QName name = r.getElementName();
+        Assert.isTrue(canHandle(name));
+        
         if (crs == null) {
-            crs = parseCrs(attributes.get(srsName));
+            crs = parseCrs(r.getAttributeValue(null, srsName.getLocalPart()));
         }
         if (dimension == -1) {
-            dimension = parseCrsDimension(attributes.get(srsDimension));
+            dimension = parseCrsDimension(r.getAttributeValue(null, srsDimension.getLocalPart()));
         }
-    }
+        
+        T result = decodeInternal(r, name);
 
+        BXMLDecoderUtil.goToEnd(r, name);
+        
+        r.require(EventType.END_ELEMENT, name.getNamespaceURI(), name.getLocalPart());
+        return result;
+    }
+    
     protected CoordinateReferenceSystem parseCrs(String srsName)
             throws NoSuchAuthorityCodeException, FactoryException {
         if (srsName == null) {

@@ -1,36 +1,36 @@
 package org.geoserver.bxml.filter_1_1.spatial;
 
-import java.util.Map;
-
 import javax.xml.namespace.QName;
 
-import org.geoserver.bxml.AbstractDecoder;
-import org.geoserver.gss.internal.atom.Atom;
+import org.geoserver.bxml.filter_1_1.AbstractTypeDecoder;
 import org.geotools.filter.v1_1.OGC;
 import org.gvsig.bxml.stream.BxmlStreamReader;
+import org.gvsig.bxml.stream.EventType;
 
-public class DistanceTypeDecoder extends AbstractDecoder<Distance> {
+public class DistanceTypeDecoder extends AbstractTypeDecoder<Distance> {
 
     public static final QName Distance = new QName(OGC.NAMESPACE, "Distance");
-
-    private Distance distance = new Distance();
 
     public DistanceTypeDecoder() {
         super(Distance);
     }
 
-    protected void decodeAttributtes(final BxmlStreamReader r, Map<QName, String> attributes)
-            throws Exception {
-        distance.setUnits(attributes.get(new QName(Atom.NAMESPACE, "units")));
-    }
-
-    protected void setStringValue(String value) throws Exception {
-        distance.setValue(new Double(value));
-    }
-
     @Override
-    protected Distance buildResult() {
+    protected Distance decodeInternal(BxmlStreamReader r, QName name) throws Exception {
+        StringBuilder sb = new StringBuilder();
+        String units = r.getAttributeValue(null, "units");
+
+        EventType event;
+        
+        while ((event = r.next()).isValue()) {
+            String chunk = r.getStringValue();
+            sb.append(chunk);
+        }
+
+        String value = sb.length() == 0 ? null : sb.toString();
+        
+        Distance distance = new Distance(Double.parseDouble(value), units);
         return distance;
     }
-
+    
 }

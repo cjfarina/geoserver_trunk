@@ -4,7 +4,7 @@ import javax.xml.namespace.QName;
 
 import org.geoserver.bxml.base.SimpleDecoder;
 import org.geoserver.bxml.base.StringDecoder;
-import org.geoserver.bxml.gml_3_1.GMLChainDecoder;
+import org.geoserver.bxml.gml_3_1.GeometryDecoder;
 import org.gvsig.bxml.stream.BxmlStreamReader;
 import org.gvsig.bxml.stream.EventType;
 
@@ -28,7 +28,7 @@ public class PropertyValueDecoder extends SimpleDecoder<Object> {
         }
 
         if (EventType.START_ELEMENT == event) {
-            value = new GMLChainDecoder().decode(r);
+            value = new GeometryDecoder().decode(r);
             r.nextTag();
         }
 

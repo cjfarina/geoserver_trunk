@@ -82,7 +82,7 @@
 			</fes:Function>
 		</fes:PropertyIsEqualTo>
         
-        <!-- fes:Equals>
+        <fes:Equals>
           <fes:PropertyName>geometry</fes:PropertyName>
           <gml:Polygon srsName="http://www.opengis.net/gml/srs/epsg.xml#63266405">
             <gml:exterior>
@@ -204,7 +204,7 @@
             <gml:lowerCorner>13.0983 31.5899</gml:lowerCorner>
             <gml:upperCorner>35.5472 42.8143</gml:upperCorner>
           </gml:Envelope>
-        </fes:BBOX-->
+        </fes:BBOX>
       </fes:And>
     </fes:Not>
   </fes:Or>

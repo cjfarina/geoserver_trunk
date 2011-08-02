@@ -11,56 +11,54 @@ import static org.geotools.filter.v1_1.OGC.Within;
 
 import javax.xml.namespace.QName;
 
-import org.geoserver.bxml.SequenceDecoder;
 import org.geoserver.bxml.filter_1_1.AbstractTypeDecoder;
 import org.geoserver.bxml.filter_1_1.expression.ExpressionDecoder;
+import org.geoserver.bxml.gml_3_1.GeometryDecoder;
 import org.geotools.factory.CommonFactoryFinder;
 import org.geotools.factory.GeoTools;
 import org.gvsig.bxml.stream.BxmlStreamReader;
-import org.gvsig.bxml.stream.EventType;
 import org.opengis.filter.Filter;
 import org.opengis.filter.FilterFactory2;
 import org.opengis.filter.expression.Expression;
 
-import com.google.common.collect.Iterators;
+import com.vividsolutions.jts.geom.Geometry;
 
 public class BinarySpatialOperationDecoder extends AbstractTypeDecoder<Filter> {
 
     protected static FilterFactory2 ff = CommonFactoryFinder.getFilterFactory2(GeoTools
             .getDefaultHints());
 
+    
     public BinarySpatialOperationDecoder() {
-        super(Equals, Disjoint, Touches, Within, Overlaps, Crosses, Intersects, Contains);
+        super(Equals, Disjoint, Touches, Within, Overlaps, Intersects, Crosses, Contains);
     }
 
     @Override
     protected Filter decodeInternal(final BxmlStreamReader r, final QName name) throws Exception {
 
-        SequenceDecoder<Expression> seq = new SequenceDecoder<Expression>();
-        seq.add(new ExpressionDecoder(), 2, 2);
-
         r.nextTag();
-        Expression[] expressions = Iterators.toArray(seq.decode(r), Expression.class);
-        r.require(EventType.END_ELEMENT, name.getNamespaceURI(), name.getLocalPart());
-        // r.nextTag();
+        Expression expression = new ExpressionDecoder().decode(r);
+        r.nextTag();
+        Geometry geometry = new GeometryDecoder().decode(r);
+        r.nextTag();
 
         Filter f;
         if (Equals.equals(name)) {
-            f = ff.equal(expressions[0], expressions[1]);
+            f = ff.equal(expression, ff.literal(geometry));
         } else if (Disjoint.equals(name)) {
-            f = ff.disjoint(expressions[0], expressions[1]);
+            f = ff.disjoint(expression, ff.literal(geometry));
         } else if (Touches.equals(name)) {
-            f = ff.touches(expressions[0], expressions[1]);
+            f = ff.touches(expression, ff.literal(geometry));
         } else if (Within.equals(name)) {
-            f = ff.within(expressions[0], expressions[1]);
+            f = ff.within(expression, ff.literal(geometry));
         } else if (Overlaps.equals(name)) {
-            f = ff.overlaps(expressions[0], expressions[1]);
+            f = ff.overlaps(expression, ff.literal(geometry));
         } else if (Crosses.equals(name)) {
-            f = ff.crosses(expressions[0], expressions[1]);
+            f = ff.crosses(expression, ff.literal(geometry));
         } else if (Intersects.equals(name)) {
-            f = ff.intersects(expressions[0], expressions[1]);
+            f = ff.intersects(expression, ff.literal(geometry));
         } else if (Contains.equals(name)) {
-            f = ff.contains(expressions[0], expressions[1]);
+            f = ff.contains(expression, ff.literal(geometry));
         } else {
             throw new IllegalArgumentException(this.getClass().getName() + " can not decode "
                     + name);

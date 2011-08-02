@@ -18,7 +18,7 @@ public class BxmlTestSuite {
         System.setProperty("isBinaryXML", "false");
         suite.addTestSuite(EntryDecoderTest.class);
         suite.addTestSuite(FeedDecoderTest.class);
-        //suite.addTestSuite(FilterDecoderTest.class);
+        suite.addTestSuite(FilterDecoderTest.class);
         //suite.addTestSuite(PointDecoderTest.class);
         suite.addTestSuite(DeleteDecoderTest.class);
         suite.addTestSuite(UpdateDecoderTest.class);

@@ -30,10 +30,14 @@ public class UpdateDecoderTest extends BxmlTestSupport {
         PropertyType property1 = property.get(0);
         assertEquals(new QName("http://opengeo.org/osm", "building"), property1.getName());
         assertEquals("false", property1.getValue());
-
+        
         PropertyType property2 = property.get(1);
+        assertEquals(new QName("http://opengeo.org/osm", "value"), property2.getName());
+        assertEquals("25", property2.getValue());
 
-        Polygon polygon = (Polygon) property2.getValue();
+        PropertyType property3 = property.get(2);
+
+        Polygon polygon = (Polygon) property3.getValue();
 
         LineString exteriorRing = polygon.getExteriorRing();
         testLineRing(exteriorRing, new double[][] { { -8421981.58, 5074017.82 },
@@ -42,8 +46,6 @@ public class UpdateDecoderTest extends BxmlTestSupport {
 
         CoordinateReferenceSystem crs = (CoordinateReferenceSystem) exteriorRing.getUserData();
         assertNotNull(crs);
-        Integer epsCode = CRS.lookupEpsgCode(crs, true);
-        assertEquals(new Integer(900913), epsCode);
 
         assertNotNull(updateElement.getFilter());
         FidFilterImpl identifierFilter = (FidFilterImpl) updateElement.getFilter();

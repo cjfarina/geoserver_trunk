@@ -1,9 +1,14 @@
 package org.geoserver.bxml;
 
+import java.io.IOException;
 import java.util.logging.Logger;
+
+import javax.xml.namespace.QName;
 
 import org.geoserver.bxml.atom.AbstractAtomEncoder;
 import org.geotools.util.logging.Logging;
+import org.gvsig.bxml.stream.BxmlStreamReader;
+import org.gvsig.bxml.stream.EventType;
 
 public class BXMLDecoderUtil {
 
@@ -24,6 +29,12 @@ public class BXMLDecoderUtil {
             }
         }
         return null;
+    }
+    
+    public static void goToEnd(final BxmlStreamReader r, final QName name) throws IOException {
+        while (!EventType.END_ELEMENT.equals(r.getEventType()) || !name.equals(r.getElementName())) {
+            r.next();
+        }
     }
 
 }

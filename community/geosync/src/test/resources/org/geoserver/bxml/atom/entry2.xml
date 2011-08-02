@@ -31,11 +31,33 @@
     </content>
     <georss:where>
       <gml:Polygon srsName="http://www.opengis.net/gml/srs/epsg.xml#63266405">
-          <gml:exterior>
-              <gml:LinearRing>
-                  <gml:posList>10 10 20 20 30 30 40 40 10 10</gml:posList>
+			<gml:exterior>
+			  <gml:LinearRing>
+                <gml:pos>5 5</gml:pos>
+                <gml:pos>7 7</gml:pos>
+                <gml:pos>11 11</gml:pos>
+                <gml:pos>13 13</gml:pos>
+                <gml:pos>5 5</gml:pos>
               </gml:LinearRing>
-          </gml:exterior>
+			</gml:exterior>
+			<gml:interior>
+			  <gml:LinearRing>
+                <gml:pos>2 2</gml:pos>
+                <gml:pos>4 4</gml:pos>
+                <gml:pos>6 8</gml:pos>
+                <gml:pos>10 12</gml:pos>
+                <gml:pos>2 2</gml:pos>
+              </gml:LinearRing>
+			</gml:interior>
+			<gml:interior>
+			  <gml:LinearRing>
+			    <gml:pos>18 20</gml:pos>
+			    <gml:pos>22 24</gml:pos>
+			    <gml:pos>26 28</gml:pos>
+			    <gml:pos>29 30</gml:pos>
+			    <gml:pos>18 20</gml:pos>
+			  </gml:LinearRing>
+			</gml:interior>
       </gml:Polygon>
     </georss:where>
 </entry>

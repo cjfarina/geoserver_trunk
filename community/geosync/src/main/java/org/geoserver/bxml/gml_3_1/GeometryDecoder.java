@@ -7,6 +7,8 @@ import javax.xml.namespace.QName;
 import org.geoserver.bxml.ChoiceDecoder;
 import org.geoserver.bxml.Decoder;
 import org.gvsig.bxml.stream.BxmlStreamReader;
+import org.gvsig.bxml.stream.EventType;
+import org.opengis.filter.Filter;
 
 import com.vividsolutions.jts.geom.Geometry;
 
@@ -17,17 +19,21 @@ public class GeometryDecoder implements Decoder<Geometry> {
     public GeometryDecoder() {
         choice = new ChoiceDecoder<Geometry>();
         choice.addOption(new PointDecoder());
-        choice.addOption(new MultiPointDecoder());
-        choice.addOption(new LineStringDecoder());
-        choice.addOption(new MultiLineStringDecoder());
-        //choice.addOption(new PolygonDecoder());
-        choice.addOption(new MultiPolygonDecoder());
+        //choice.addOption(new MultiPointDecoder());
+        //choice.addOption(new LineStringDecoder());
+        //choice.addOption(new MultiLineStringDecoder());
+        choice.addOption(new PolygonDecoder());
+        //choice.addOption(new MultiPolygonDecoder());
     }
 
     @Override
     public Geometry decode(BxmlStreamReader r) throws Exception {
-        // TODO Auto-generated method stub
-        return null;
+        r.require(EventType.START_ELEMENT, null, null);
+
+        Geometry geometry = choice.decode(r);
+
+        r.require(EventType.END_ELEMENT, null, null);
+        return geometry;
     }
 
     @Override

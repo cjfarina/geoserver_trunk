@@ -66,9 +66,16 @@ public class EntryDecoderTest extends AtomTestSupport {
 
         assertEquals(expected.toString(), filter.toString());
         Polygon where = (Polygon) entry.getWhere();
-        LineString exteriorRing4 = where.getExteriorRing();
-        testLineRing(exteriorRing4, new double[][] { { 10, 10 }, { 20, 20 }, { 30, 30 },
-                { 40, 40 }, { 10, 10 } });
+        LineString exteriorRing = where.getExteriorRing();
+        testLineRing(exteriorRing, new double[][] { { 5, 5 }, { 7, 7 }, { 11, 11 }, { 13, 13 },
+                { 5, 5 } });
+        
+        LineString interior1 = where.getInteriorRingN(0);
+        testLineRing(interior1, new double[][] { { 2, 2 }, { 4, 4}, { 6, 8 }, { 10, 12 },
+                { 2, 2 } });
+        LineString interior2 = where.getInteriorRingN(1);
+        testLineRing(interior2, new double[][] { { 18, 20 }, { 22, 24}, { 26, 28 }, { 29, 30 },
+                { 18, 20 } });
 
         reader.close();
     }
