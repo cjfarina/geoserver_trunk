@@ -84,7 +84,7 @@
         
         <fes:Equals>
           <fes:PropertyName>geometry</fes:PropertyName>
-          <gml:Polygon srsName="http://www.opengis.net/gml/srs/epsg.xml#63266405">
+          <gml:Polygon srsName="urn:ogc:def:crs:EPSG::900913">
             <gml:exterior>
               <gml:LinearRing>
                 <gml:posList>10 10 20 20 30 30 40 40 10 10</gml:posList>
@@ -108,7 +108,7 @@
         </fes:Equals>
         <fes:Disjoint>
           <fes:PropertyName>geometry2</fes:PropertyName>
-          <gml:Polygon srsName="http://www.opengis.net/gml/srs/epsg.xml#63266405">
+          <gml:Polygon srsName="urn:ogc:def:crs:EPSG::900913">
             <gml:exterior>
               <gml:LinearRing>
                 <gml:posList>10 10 20 20 30 30 40 40 10 10</gml:posList>
@@ -118,7 +118,7 @@
         </fes:Disjoint>
         <fes:Touches>
           <fes:PropertyName>geometry3</fes:PropertyName>
-          <gml:Polygon srsName="http://www.opengis.net/gml/srs/epsg.xml#63266405">
+          <gml:Polygon srsName="urn:ogc:def:crs:EPSG::900913">
             <gml:exterior>
               <gml:LinearRing>
                 <gml:posList>10 10 20 20 30 30 40 40 10 10</gml:posList>
@@ -128,7 +128,7 @@
         </fes:Touches>
         <fes:Within>
           <fes:PropertyName>geometry4</fes:PropertyName>
-          <gml:Polygon srsName="http://www.opengis.net/gml/srs/epsg.xml#63266405">
+          <gml:Polygon srsName="urn:ogc:def:crs:EPSG::900913">
             <gml:exterior>
               <gml:LinearRing>
                 <gml:posList>10 10 20 20 30 30 40 40 10 10</gml:posList>
@@ -138,7 +138,7 @@
         </fes:Within>
         <fes:Overlaps>
           <fes:PropertyName>geometry5</fes:PropertyName>
-          <gml:Polygon srsName="http://www.opengis.net/gml/srs/epsg.xml#63266405">
+          <gml:Polygon srsName="urn:ogc:def:crs:EPSG::900913">
             <gml:exterior>
               <gml:LinearRing>
                 <gml:posList>10 10 20 20 30 30 40 40 10 10</gml:posList>
@@ -148,7 +148,7 @@
         </fes:Overlaps>
         <fes:Crosses>
           <fes:PropertyName>geometry6</fes:PropertyName>
-          <gml:Polygon srsName="http://www.opengis.net/gml/srs/epsg.xml#63266405">
+          <gml:Polygon srsName="urn:ogc:def:crs:EPSG::900913">
             <gml:exterior>
               <gml:LinearRing>
                 <gml:posList>10 10 20 20 30 30 40 40 10 10</gml:posList>
@@ -158,7 +158,7 @@
         </fes:Crosses>
         <fes:Intersects>
           <fes:PropertyName>geometry7</fes:PropertyName>
-          <gml:Polygon srsName="http://www.opengis.net/gml/srs/epsg.xml#63266405">
+          <gml:Polygon srsName="urn:ogc:def:crs:EPSG::900913">
             <gml:exterior>
               <gml:LinearRing>
                 <gml:posList>10 10 20 20 30 30 40 40 10 10</gml:posList>
@@ -168,7 +168,7 @@
         </fes:Intersects>
         <fes:Contains>
           <fes:PropertyName>geometry8</fes:PropertyName>
-          <gml:Polygon srsName="http://www.opengis.net/gml/srs/epsg.xml#63266405">
+          <gml:Polygon srsName="urn:ogc:def:crs:EPSG::900913">
             <gml:exterior>
               <gml:LinearRing>
                 <gml:posList>10 10 20 20 30 30 40 40 10 10</gml:posList>
@@ -178,7 +178,7 @@
         </fes:Contains>
         <fes:DWithin>
           <fes:PropertyName>geometry9</fes:PropertyName>
-          <gml:Polygon srsName="http://www.opengis.net/gml/srs/epsg.xml#63266405">
+          <gml:Polygon srsName="urn:ogc:def:crs:EPSG::900913">
             <gml:exterior>
               <gml:LinearRing>
                 <gml:posList>10 10 20 20 30 30 40 40 10 10</gml:posList>
@@ -189,7 +189,7 @@
         </fes:DWithin>
         <fes:Beyond>
           <fes:PropertyName>geometry10</fes:PropertyName>
-          <gml:Polygon srsName="http://www.opengis.net/gml/srs/epsg.xml#63266405">
+          <gml:Polygon srsName="urn:ogc:def:crs:EPSG::900913">
             <gml:exterior>
               <gml:LinearRing>
                 <gml:posList>10 10 20 20 30 30 40 40 10 10</gml:posList>
@@ -200,7 +200,7 @@
         </fes:Beyond>
         <fes:BBOX>
           <fes:PropertyName>geometry11</fes:PropertyName>
-          <gml:Envelope srsName="http://www.opengis.net/gml/srs/epsg.xml#63266405">
+          <gml:Envelope srsName="urn:ogc:def:crs:EPSG::900913">
             <gml:lowerCorner>13.0983 31.5899</gml:lowerCorner>
             <gml:upperCorner>35.5472 42.8143</gml:upperCorner>
           </gml:Envelope>

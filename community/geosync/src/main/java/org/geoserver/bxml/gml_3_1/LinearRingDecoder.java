@@ -18,8 +18,8 @@ public class LinearRingDecoder extends AbstractGeometryDecoder<Geometry> {
 
     private ChoiceDecoder<CoordinateSequence> choice;
 
-    public LinearRingDecoder(CoordinateReferenceSystem crs, int dimension) {
-        super(crs, dimension, LinearRing);
+    public LinearRingDecoder() {
+        super(LinearRing);
         choice = new ChoiceDecoder<CoordinateSequence>();
         choice.addOption(new PosDecoder());
         choice.addOption(new PosListDecoder());

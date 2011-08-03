@@ -1,6 +1,7 @@
 package org.geoserver.bxml.filter_1_1;
 
 import java.io.ByteArrayInputStream;
+
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 
@@ -12,10 +13,18 @@ import org.geotools.filter.text.ecql.ECQL;
 import org.geotools.filter.v1_1.OGCConfiguration;
 import org.geotools.xml.Parser;
 import org.gvsig.bxml.adapt.stax.XmlStreamWriterAdapter;
+import org.gvsig.bxml.geoserver.DefaultEncoderConfig;
+import org.gvsig.bxml.geoserver.EncoderConfig;
 import org.gvsig.bxml.stream.BxmlStreamReader;
 import org.gvsig.bxml.stream.BxmlStreamWriter;
 import org.gvsig.bxml.stream.EncodingOptions;
 import org.opengis.filter.Filter;
+import org.geoserver.platform.GeoServerExtensions;
+import org.geoserver.wfs.GMLInfo;
+
+import static org.mockito.Matchers.eq;
+import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.when;
 
 public class FilterDecoderTest extends BxmlTestSupport {
 
@@ -24,6 +33,16 @@ public class FilterDecoderTest extends BxmlTestSupport {
     public void setUp() {
         decoder = new FilterDecoder();
     }
+    
+    /*protected void setUpInternal() throws Exception {
+        decoder = new FilterDecoder();
+        EncoderConfig mockEncoderConfig = mock(EncoderConfig.class);
+        when(mockEncoderConfig.getConfiguration()).thenReturn(
+                new org.geotools.wfs.v1_1.WFSConfiguration());
+        when(mockEncoderConfig.getSrsNameStyle()).thenReturn(
+                GMLInfo.SrsNameStyle.XML);
+        
+    }*/
 
     public void testFilterDecoder() throws Exception {
         testFilter("a = 'a1' OR NOT(b='b1' AND c<'c1' AND d>'d1' AND e<='e1' AND f>='f1')");
@@ -84,11 +103,32 @@ public class FilterDecoderTest extends BxmlTestSupport {
         testFilter("property4 = sin([dispersion])");
     }
 
-    /*public void testEquals() throws Exception {
+    public void testEquals() throws Exception {
         testFilter("equals(geometry, POLYGON ((10 10, 20 20, 30 30, 40 40, 10 10), "
                 + "(15 16, 17 18, 19 20, 21 21, 15 16), (5 5, 7 7, 11 11, 13 13, 5 5)))");
 
-    }*/
+    }
+
+    /*
+     * public void testEquals() throws Exception {
+     * testFilterFromFile("[ geometry equals POLYGON ((10 10, 20 20, 30 30, 40 40, 10 10), " +
+     * "(15 16, 17 18, 19 20, 21 21, 15 16), (5 5, 7 7, 11 11, 13 13, 5 5)) ]", "equals");
+     * 
+     * }
+     */
+
+    public void testDisjoint() throws Exception {
+        testFilterFromFile("[ geometry2 disjoint POLYGON ((10 10, 20 20, 30 30, 40 40, 10 10)) ]",
+                "disjoint");
+    }
+
+    // TODO: This method is commented because toString() of TouchesImpl return
+    // [ geometry3nullPOLYGON ((10 10, 20 20, 30 30, 40 40, 10 10)) ]
+    /*
+     * public void testTouches() throws Exception {
+     * testFilterFromFile("[ geometry3 touches POLYGON ((10 10, 20 20, 30 30, 40 40, 10 10)) ]",
+     * "touches"); }
+     */
 
     private BxmlStreamReader getXmlReader(final Filter expected) throws Exception {
         ByteArrayOutputStream out = new ByteArrayOutputStream();
@@ -104,6 +144,17 @@ public class FilterDecoderTest extends BxmlTestSupport {
 
         ByteArrayInputStream in = new ByteArrayInputStream(string.getBytes("UTF-8"));
         return getXmlReader(in);
+    }
+
+    private void testFilterFromFile(final String expected, final String fileName) throws Exception,
+            IOException {
+        BxmlStreamReader reader = getReader(fileName);
+        reader.nextTag();
+        
+        Filter f = decoder.decode(reader);
+        System.out.println(f.toString());
+        assertNotNull(f);
+        assertEquals(expected.toString(), f.toString());
     }
 
     private void testFilter(final String expected) throws Exception, IOException {

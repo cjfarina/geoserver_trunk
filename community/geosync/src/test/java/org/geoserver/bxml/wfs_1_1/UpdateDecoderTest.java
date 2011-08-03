@@ -40,7 +40,7 @@ public class UpdateDecoderTest extends BxmlTestSupport {
         Polygon polygon = (Polygon) property3.getValue();
 
         LineString exteriorRing = polygon.getExteriorRing();
-        testLineRing(exteriorRing, new double[][] { { -8421981.58, 5074017.82 },
+        testLineString(exteriorRing, new double[][] { { -8421981.58, 5074017.82 },
                 { -8421975.14, 5074027.33 }, { -8421933.13, 5073998.82 },
                 { -8421939.57, 5073990.31 }, { -8421981.58, 5074017.82 } });
 

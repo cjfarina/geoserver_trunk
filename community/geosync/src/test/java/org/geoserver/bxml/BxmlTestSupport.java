@@ -6,6 +6,7 @@ import javax.xml.stream.XMLInputFactory;
 
 import junit.framework.TestCase;
 
+import org.geoserver.test.GeoServerTestSupport;
 import org.geotools.filter.AttributeExpressionImpl;
 import org.geotools.filter.LiteralExpressionImpl;
 import org.gvsig.bxml.adapt.stax.XmlStreamReaderAdapter;
@@ -53,11 +54,14 @@ public abstract class BxmlTestSupport extends TestCase {
         return reader;
     }
 
-    protected void testLineRing(LineString exteriorRing, double[][] fs) {
+    protected void testLineString(LineString exteriorRing, double[][] fs) {
         for (int i = 0; i < fs.length; i++) {
             Coordinate coordinate = exteriorRing.getCoordinateN(i);
             assertEquals(fs[i][0], coordinate.x, 0.01);
             assertEquals(fs[i][1], coordinate.y, 0.01);
+            if(fs[i].length > 2){
+                assertEquals(fs[i][2], coordinate.z, 0.01);
+            }
         }
     }
 
@@ -68,7 +72,7 @@ public abstract class BxmlTestSupport extends TestCase {
         Polygon p = (Polygon) ((LiteralExpressionImpl) comparisonOperator.getExpression2())
                 .getValue();
         LineString exteriorRing = p.getExteriorRing();
-        testLineRing(exteriorRing, fs);
+        testLineString(exteriorRing, fs);
     }
 
 }

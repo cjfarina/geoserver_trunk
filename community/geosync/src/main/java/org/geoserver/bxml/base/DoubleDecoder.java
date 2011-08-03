@@ -1,4 +1,4 @@
-package org.geoserver.bxml.gml_3_1;
+package org.geoserver.bxml.base;
 
 import java.util.Collections;
 import java.util.Set;

@@ -17,7 +17,7 @@ public class PolygonLineRingDecoder extends AbstractGeometryDecoder<Geometry> {
     @Override
     public Geometry decodeInternal(BxmlStreamReader r, QName name) throws Exception {
         r.nextTag();
-        return new LinearRingDecoder(getCrs(), getDimension()).decode(r);
+        return new LinearRingDecoder().decode(r);
     }
 
 }

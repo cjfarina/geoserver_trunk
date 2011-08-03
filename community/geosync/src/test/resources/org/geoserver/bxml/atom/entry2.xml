@@ -30,7 +30,7 @@
       </wfs:Delete>
     </content>
     <georss:where>
-      <gml:Polygon srsName="http://www.opengis.net/gml/srs/epsg.xml#63266405">
+      <gml:Polygon srsName="urn:ogc:def:crs:EPSG::900913">
 			<gml:exterior>
 			  <gml:LinearRing>
                 <gml:pos>5 5</gml:pos>

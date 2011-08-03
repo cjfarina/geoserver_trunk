@@ -7,17 +7,16 @@ import java.util.Set;
 
 import javax.xml.namespace.QName;
 
-import org.geoserver.bxml.Decoder;
 import org.geoserver.bxml.SequenceDecoder;
+import org.geoserver.bxml.base.DoubleDecoder;
 import org.geotools.gml2.GML;
 import org.gvsig.bxml.stream.BxmlStreamReader;
-import org.gvsig.bxml.stream.EventType;
 
 import com.google.common.collect.Iterators;
 import com.vividsolutions.jts.geom.CoordinateSequence;
 import com.vividsolutions.jts.geom.impl.PackedCoordinateSequence;
 
-public class CoordDecoder implements Decoder<CoordinateSequence> {
+public class CoordDecoder extends AbstractGeometryDecoder<CoordinateSequence> {
 
     private static final QName X = new QName(GML.NAMESPACE, "X");
 
@@ -28,18 +27,17 @@ public class CoordDecoder implements Decoder<CoordinateSequence> {
     private SequenceDecoder<Double> seq;
 
     public CoordDecoder() {
+        super(coord);
         seq = new SequenceDecoder<Double>();
         seq.add(new DoubleDecoder(X), 1, 1);
-        seq.add(new DoubleDecoder(Y), 0, 0);
-        seq.add(new DoubleDecoder(Z), 0, 0);
+        seq.add(new DoubleDecoder(Y), 1, 1);
+        seq.add(new DoubleDecoder(Z), 1, 1);
     }
 
     @Override
-    public CoordinateSequence decode(final BxmlStreamReader r) throws Exception {
-        r.require(EventType.START_ELEMENT, coord.getNamespaceURI(), coord.getLocalPart());
+    public CoordinateSequence decodeInternal(final BxmlStreamReader r, QName name) throws Exception {
         r.nextTag();
         Double[] doubles = Iterators.toArray(seq.decode(r), Double.class);
-        r.require(EventType.END_ELEMENT, coord.getNamespaceURI(), coord.getLocalPart());
 
         final int dimension = doubles.length;
         double[] values = new double[dimension];
@@ -47,16 +45,6 @@ public class CoordDecoder implements Decoder<CoordinateSequence> {
             values[i] = doubles[i].doubleValue();
         }
         return new PackedCoordinateSequence.Double(values, dimension);
-    }
-
-    @Override
-    public boolean canHandle(QName name) {
-        return coord.equals(name);
-    }
-
-    @Override
-    public Set<QName> getTargets() {
-        return Collections.singleton(coord);
     }
 
 }

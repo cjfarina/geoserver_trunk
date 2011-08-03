@@ -50,6 +50,7 @@ public class PolygonDecoder extends AbstractGeometryDecoder<Geometry> {
                         polygonRing.getExterior(),
                         polygonRing.getInterior().toArray(
                                 new LinearRing[polygonRing.getInterior().size()]));
+        geometry.setUserData(getCrs());
 
         return geometry;
     }

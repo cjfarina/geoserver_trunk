@@ -1,32 +1,39 @@
 package org.geoserver.bxml.gml_3_1;
 
-import java.util.Set;
+import static org.geotools.gml3.GML.LineString;
 
 import javax.xml.namespace.QName;
 
-import org.geoserver.bxml.Decoder;
+import org.geoserver.bxml.ChoiceDecoder;
 import org.gvsig.bxml.stream.BxmlStreamReader;
 
+import com.vividsolutions.jts.geom.CoordinateSequence;
 import com.vividsolutions.jts.geom.Geometry;
+import com.vividsolutions.jts.geom.GeometryFactory;
+import com.vividsolutions.jts.geom.LineString;
 
-public class LineStringDecoder implements Decoder<Geometry> {
+public class LineStringDecoder extends AbstractGeometryDecoder<Geometry> {
 
-    @Override
-    public Geometry decode(BxmlStreamReader r) throws Exception {
-        // TODO Auto-generated method stub
-        return null;
+    private ChoiceDecoder<CoordinateSequence> choice;
+    
+    public LineStringDecoder() {
+        super(LineString);
+        choice = new ChoiceDecoder<CoordinateSequence>();
+        choice.addOption(new PosDecoder());
+        choice.addOption(new PosListDecoder());
+        choice.addOption(new CoordinatesDecoder());
+        choice.addOption(new CoordDecoder());
     }
-
+    
     @Override
-    public boolean canHandle(QName name) {
-        // TODO Auto-generated method stub
-        return false;
-    }
+    public Geometry decodeInternal(final BxmlStreamReader r, final QName name) throws Exception {
+        r.nextTag();
 
-    @Override
-    public Set<QName> getTargets() {
-        // TODO Auto-generated method stub
-        return null;
+        CoordinateSequence coordinates = choice.decode(r);
+
+        LineString lineString = new GeometryFactory().createLineString(coordinates);
+        lineString.setUserData(getCrs());
+        return lineString;
     }
 
 }
