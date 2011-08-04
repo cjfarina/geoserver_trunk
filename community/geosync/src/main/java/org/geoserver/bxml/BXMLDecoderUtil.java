@@ -30,7 +30,7 @@ public class BXMLDecoderUtil {
         }
         return null;
     }
-    
+
     public static void goToEnd(final BxmlStreamReader r, final QName name) throws IOException {
         while (!EventType.END_ELEMENT.equals(r.getEventType()) || !name.equals(r.getElementName())) {
             r.next();

@@ -69,7 +69,7 @@ public class BinaryComparisonOperatorDecoder implements Decoder<Filter> {
         Assert.isTrue(expressions.length == 2);
 
         r.require(EventType.END_ELEMENT, name.getNamespaceURI(), name.getLocalPart());
-        
+
         if (PropertyIsEqualTo.equals(name)) {
             return ff.equals(expressions[0], expressions[1]);
         }

@@ -19,15 +19,16 @@ public class PolygonDecoderTest extends BxmlTestSupport {
         assertEquals(CRS.decode("urn:ogc:def:crs:EPSG::900913"), userData);
 
         LineString exteriorRing = polygon.getExteriorRing();
-        testLineString(exteriorRing, new double[][] { { 5, 5 }, { 7, 7 }, { 11, 11 }, { 13, 13 },
-                { 5, 5 } });
-        
+        testLineString(new double[][] { { 5, 5 }, { 7, 7 }, { 11, 11 }, { 13, 13 }, { 5, 5 } },
+                exteriorRing);
+
         LineString interior1 = polygon.getInteriorRingN(0);
-        testLineString(interior1, new double[][] { { 2, 2 }, { 4, 4}, { 6, 8 }, { 10, 12 },
-                { 2, 2 } });
+        testLineString(new double[][] { { 2, 2 }, { 4, 4 }, { 6, 8 }, { 10, 12 }, { 2, 2 } },
+                interior1);
         LineString interior2 = polygon.getInteriorRingN(1);
-        testLineString(interior2, new double[][] { { 18, 20 }, { 22, 24}, { 26, 28 }, { 29, 30 },
-                { 18, 20 } });
+        testLineString(
+                new double[][] { { 18, 20 }, { 22, 24 }, { 26, 28 }, { 29, 30 }, { 18, 20 } },
+                interior2);
 
         reader.close();
     }

@@ -4,10 +4,8 @@ import static org.geotools.gml3.GML.LinearRing;
 
 import javax.xml.namespace.QName;
 
-import org.geoserver.bxml.BXMLDecoderUtil;
 import org.geoserver.bxml.ChoiceDecoder;
 import org.gvsig.bxml.stream.BxmlStreamReader;
-import org.opengis.referencing.crs.CoordinateReferenceSystem;
 
 import com.vividsolutions.jts.geom.CoordinateSequence;
 import com.vividsolutions.jts.geom.Geometry;

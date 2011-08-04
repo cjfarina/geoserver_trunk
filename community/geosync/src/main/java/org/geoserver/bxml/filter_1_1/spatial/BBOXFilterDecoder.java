@@ -23,7 +23,7 @@ public class BBOXFilterDecoder extends AbstractTypeDecoder<Filter> {
 
     protected static FilterFactory2 ff = CommonFactoryFinder.getFilterFactory2(GeoTools
             .getDefaultHints());
-    
+
     public BBOXFilterDecoder() {
         super(BBOX);
     }
@@ -32,14 +32,14 @@ public class BBOXFilterDecoder extends AbstractTypeDecoder<Filter> {
     protected Filter decodeInternal(BxmlStreamReader r, QName name) throws Exception {
         r.nextTag();
         AttributeExpressionImpl expression = (AttributeExpressionImpl) new ExpressionDecoder()
-        .decode(r);
+                .decode(r);
         String propertyName = expression.getPropertyName();
         r.nextTag();
         ReferencedEnvelope envelope = (ReferencedEnvelope) new EnvelopeDecoder().decode(r);
         r.nextTag();
-        
+
         String epsCode = null;
-        if(envelope.crs() != null){
+        if (envelope.crs() != null) {
             try {
                 epsCode = CRS.lookupEpsgCode(envelope.crs(), true).toString();
             } catch (FactoryException e) {

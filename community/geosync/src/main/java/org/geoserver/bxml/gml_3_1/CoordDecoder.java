@@ -2,9 +2,6 @@ package org.geoserver.bxml.gml_3_1;
 
 import static org.geotools.gml3.GML.coord;
 
-import java.util.Collections;
-import java.util.Set;
-
 import javax.xml.namespace.QName;
 
 import org.geoserver.bxml.SequenceDecoder;

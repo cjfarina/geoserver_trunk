@@ -15,7 +15,7 @@ import com.vividsolutions.jts.geom.LineString;
 public class LineStringDecoder extends AbstractGeometryDecoder<Geometry> {
 
     private ChoiceDecoder<CoordinateSequence> choice;
-    
+
     public LineStringDecoder() {
         super(LineString);
         choice = new ChoiceDecoder<CoordinateSequence>();
@@ -24,7 +24,7 @@ public class LineStringDecoder extends AbstractGeometryDecoder<Geometry> {
         choice.addOption(new CoordinatesDecoder());
         choice.addOption(new CoordDecoder());
     }
-    
+
     @Override
     public Geometry decodeInternal(final BxmlStreamReader r, final QName name) throws Exception {
         r.nextTag();

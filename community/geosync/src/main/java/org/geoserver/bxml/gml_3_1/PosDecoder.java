@@ -19,14 +19,14 @@ import com.vividsolutions.jts.geom.CoordinateSequence;
 import com.vividsolutions.jts.geom.impl.PackedCoordinateSequence;
 
 public class PosDecoder implements Decoder<CoordinateSequence> {
-    
+
     @Override
     public CoordinateSequence decode(BxmlStreamReader r) throws Exception {
 
         r.require(EventType.START_ELEMENT, pos.getNamespaceURI(), pos.getLocalPart());
 
         final String dimensionAtt = r.getAttributeValue(null, "dimension");
-        
+
         SequenceDecoder seq = new SequenceDecoder<Double[]>(1, Integer.MAX_VALUE);
         seq.add(new DoubleListDecoder(pos), 1, Integer.MAX_VALUE);
 
@@ -38,7 +38,7 @@ public class PosDecoder implements Decoder<CoordinateSequence> {
             dimension = coord.length;
             for (int i = 0; i < coord.length; i++) {
                 coords.add(coord[i]);
-                
+
             }
         }
 
@@ -50,7 +50,7 @@ public class PosDecoder implements Decoder<CoordinateSequence> {
         dimension = dimensionAtt == null ? dimension : Integer.parseInt(dimensionAtt);
         return new PackedCoordinateSequence.Double(arrayCoord, dimension);
     }
-    
+
     @Override
     public boolean canHandle(QName name) {
         return pos.equals(name);

@@ -17,7 +17,7 @@ public class LineStringDecoderTest extends BxmlTestSupport {
         Object userData = line.getUserData();
         assertEquals(CRS.decode("urn:ogc:def:crs:EPSG::900913"), userData);
         assertNotNull(line);
-        testLineString(line, new double[][] { { 5, 7 }, { 9, 10 }, { 11, 15 }, { 13, 17 } });
+        testLineString(new double[][] { { 5, 7 }, { 9, 10 }, { 11, 15 }, { 13, 17 } }, line);
         reader.close();
     }
 
@@ -30,7 +30,7 @@ public class LineStringDecoderTest extends BxmlTestSupport {
         Object userData = line.getUserData();
         assertEquals(CRS.decode("urn:ogc:def:crs:EPSG::900913"), userData);
         assertNotNull(line);
-        testLineString(line, new double[][] { { 15, 16 }, { 17, 18 }, { 19, 20 }, { 21, 22 } });
+        testLineString(new double[][] { { 15, 16 }, { 17, 18 }, { 19, 20 }, { 21, 22 } }, line);
         reader.close();
     }
 
@@ -43,7 +43,7 @@ public class LineStringDecoderTest extends BxmlTestSupport {
         Object userData = line.getUserData();
         assertEquals(CRS.decode("urn:ogc:def:crs:EPSG::900913"), userData);
         assertNotNull(line);
-        testLineString(line, new double[][] { { 15, 16, 17 }, { 18, 19, 20 }, { 21, 22, 23 } });
+        testLineString(new double[][] { { 15, 16, 17 }, { 18, 19, 20 }, { 21, 22, 23 } }, line);
         reader.close();
     }
 
@@ -56,8 +56,22 @@ public class LineStringDecoderTest extends BxmlTestSupport {
         Object userData = line.getUserData();
         assertEquals(CRS.decode("urn:ogc:def:crs:EPSG::900913"), userData);
         assertNotNull(line);
-        testLineString(line,
-                new double[][] { { 45.67, 88.56 }, { 55.56, 89.44 }, { 56.34, 32.98 } });
+        testLineString(new double[][] { { 45.67, 88.56 }, { 55.56, 89.44 }, { 56.34, 32.98 } },
+                line);
+        reader.close();
+    }
+
+    public void testLineStringCoordinate2() throws Exception {
+        BxmlStreamReader reader = getReader("lineStringCoordinate2");
+        reader.nextTag();
+        LineStringDecoder lineDecoder = new LineStringDecoder();
+
+        LineString line = (LineString) lineDecoder.decode(reader);
+        Object userData = line.getUserData();
+        assertEquals(CRS.decode("urn:ogc:def:crs:EPSG::900913"), userData);
+        assertNotNull(line);
+        testLineString(new double[][] { { 45.67, 88.56 }, { 55.56, 89.44 }, { 56.34, 32.98 } },
+                line);
         reader.close();
     }
 }

@@ -18,7 +18,7 @@ import org.springframework.util.Assert;
 public abstract class AbstractTypeDecoder<T> implements Decoder<T> {
 
     private final Set<QName> canHandle;
-    
+
     protected static final Logger LOGGER = Logging.getLogger(AbstractAtomEncoder.class);
 
     public AbstractTypeDecoder(final QName... names) {

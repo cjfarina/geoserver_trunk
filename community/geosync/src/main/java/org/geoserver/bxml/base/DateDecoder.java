@@ -19,11 +19,11 @@ public class DateDecoder extends SimpleDecoder<Date> {
 
     @Override
     public Date decode(BxmlStreamReader r) throws Exception {
-        r.require(EventType.START_ELEMENT, elemName.getNamespaceURI(), elemName.getLocalPart());
+        r.require(EventType.START_ELEMENT, null, elemName.getLocalPart());
         r.next();
         Date value = readDateValue(r);
 
-        r.require(EventType.END_ELEMENT, elemName.getNamespaceURI(), elemName.getLocalPart());
+        r.require(EventType.END_ELEMENT, null, elemName.getLocalPart());
         return value;
     }
 

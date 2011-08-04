@@ -17,7 +17,6 @@ import org.geoserver.bxml.SetterDecoder;
 import org.geoserver.bxml.base.SimpleDecoder;
 import org.geoserver.bxml.feature.FeatureTypeUtil;
 import org.geoserver.bxml.feature.PropertyDecoder;
-import org.geoserver.bxml.feature.PropertyDecoder;
 import org.geoserver.bxml.filter_1_1.FilterDecoder;
 import org.gvsig.bxml.stream.BxmlStreamReader;
 import org.gvsig.bxml.stream.EventType;
@@ -50,7 +49,7 @@ public class UpdateElementTypeDecoder extends SimpleDecoder<EObject> {
         choice.addOption(new SetterDecoder<Object>(new FilterDecoder(), element, "filter"));
         choice.addOption(new SetterDecoder<Object>(new PropertyDecoder(element.getTypeName()),
                 element, "property"));
-        
+
         SequenceDecoder<Object> seq = new SequenceDecoder<Object>(1, 1);
         seq.add(choice, 0, Integer.MAX_VALUE);
 

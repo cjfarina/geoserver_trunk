@@ -19,12 +19,12 @@ public class PosListDecoder implements Decoder<CoordinateSequence> {
     @Override
     public CoordinateSequence decode(BxmlStreamReader r) throws Exception {
         r.require(EventType.START_ELEMENT, posList.getNamespaceURI(), posList.getLocalPart());
-        
+
         final String dimensionAtt = r.getAttributeValue(null, "dimension");
-        
+
         final double[] coords = new DoubleListDecoder(posList).decode(r);
-        
-        int dimension = dimensionAtt == null? 2 : Integer.parseInt(dimensionAtt);
+
+        int dimension = dimensionAtt == null ? 2 : Integer.parseInt(dimensionAtt);
         r.require(EventType.END_ELEMENT, null, null);
         return new PackedCoordinateSequence.Double(coords, dimension);
     }

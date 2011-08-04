@@ -30,7 +30,7 @@ public class PointDecoder extends AbstractGeometryDecoder<Geometry> {
         r.nextTag();
 
         CoordinateSequence coordinates = choice.decode(r);
-        
+
         BXMLDecoderUtil.goToEnd(r, name);
         r.require(EventType.END_ELEMENT, name.getNamespaceURI(), name.getLocalPart());
 

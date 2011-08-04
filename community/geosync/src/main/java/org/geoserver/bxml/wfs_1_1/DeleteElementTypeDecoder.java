@@ -12,7 +12,6 @@ import org.eclipse.emf.ecore.EObject;
 import org.geoserver.bxml.base.SimpleDecoder;
 import org.geoserver.bxml.feature.FeatureTypeUtil;
 import org.geoserver.bxml.filter_1_1.FilterDecoder;
-import org.geoserver.gss.internal.atom.Atom;
 import org.gvsig.bxml.stream.BxmlStreamReader;
 import org.gvsig.bxml.stream.EventType;
 import org.springframework.util.Assert;

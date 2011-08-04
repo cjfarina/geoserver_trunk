@@ -12,7 +12,6 @@ import org.geoserver.bxml.filter_1_1.AbstractTypeDecoder;
 import org.geotools.factory.CommonFactoryFinder;
 import org.geotools.factory.GeoTools;
 import org.gvsig.bxml.stream.BxmlStreamReader;
-import org.gvsig.bxml.stream.EventType;
 import org.opengis.filter.FilterFactory2;
 import org.opengis.filter.expression.Expression;
 

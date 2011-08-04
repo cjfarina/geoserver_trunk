@@ -21,16 +21,16 @@ public class DistanceTypeDecoder extends AbstractTypeDecoder<Distance> {
         String units = r.getAttributeValue(null, "units");
 
         EventType event;
-        
+
         while ((event = r.next()).isValue()) {
             String chunk = r.getStringValue();
             sb.append(chunk);
         }
 
         String value = sb.length() == 0 ? null : sb.toString();
-        
+
         Distance distance = new Distance(Double.parseDouble(value), units);
         return distance;
     }
-    
+
 }

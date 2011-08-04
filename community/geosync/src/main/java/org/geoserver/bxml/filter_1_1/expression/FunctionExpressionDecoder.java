@@ -26,7 +26,7 @@ public class FunctionExpressionDecoder extends AbstractTypeDecoder<Expression> {
     public FunctionExpressionDecoder() {
         super(Function);
     }
-    
+
     @Override
     public Expression decodeInternal(final BxmlStreamReader r, final QName name) throws Exception {
 

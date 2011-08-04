@@ -1,32 +1,42 @@
 package org.geoserver.bxml.gml_3_1;
 
-import java.util.Set;
+import java.util.ArrayList;
+import java.util.Iterator;
+import java.util.List;
 
 import javax.xml.namespace.QName;
 
-import org.geoserver.bxml.Decoder;
+import org.geoserver.bxml.SequenceDecoder;
+import org.geotools.gml2.GML;
 import org.gvsig.bxml.stream.BxmlStreamReader;
 
 import com.vividsolutions.jts.geom.Geometry;
+import com.vividsolutions.jts.geom.GeometryFactory;
+import com.vividsolutions.jts.geom.MultiPoint;
+import com.vividsolutions.jts.geom.Point;
 
-public class MultiPointDecoder implements Decoder<Geometry> {
+public class MultiPointDecoder extends AbstractGeometryDecoder<Geometry> {
 
-    @Override
-    public Geometry decode(BxmlStreamReader r) throws Exception {
-        // TODO Auto-generated method stub
-        return null;
+    public MultiPointDecoder() {
+        super(GML.MultiPoint);
     }
 
     @Override
-    public boolean canHandle(QName name) {
-        // TODO Auto-generated method stub
-        return false;
-    }
+    protected MultiPoint decodeInternal(BxmlStreamReader r, QName name) throws Exception {
+        SequenceDecoder<Geometry> seq = new SequenceDecoder<Geometry>(1, Integer.MAX_VALUE);
+        seq.add(new GeometryMemberDecoder(GML.pointMember, new PointDecoder()), 1, 1);
 
-    @Override
-    public Set<QName> getTargets() {
-        // TODO Auto-generated method stub
-        return null;
+        r.nextTag();
+        Iterator<Geometry> iterator = seq.decode(r);
+        List<Point> points = new ArrayList<Point>();
+        while (iterator.hasNext()) {
+            points.add((Point) iterator.next());
+
+        }
+        MultiPoint multiPoint = new GeometryFactory().createMultiPoint(points
+                .toArray(new Point[points.size()]));
+        multiPoint.setUserData(getCrs());
+        return multiPoint;
     }
 
 }

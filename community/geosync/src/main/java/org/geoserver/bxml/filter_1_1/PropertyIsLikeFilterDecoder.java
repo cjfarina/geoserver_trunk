@@ -1,5 +1,7 @@
 package org.geoserver.bxml.filter_1_1;
 
+import static org.geotools.filter.v1_1.OGC.PropertyIsLike;
+
 import java.util.Iterator;
 
 import javax.xml.namespace.QName;
@@ -16,17 +18,16 @@ import org.opengis.filter.Filter;
 import org.opengis.filter.FilterFactory2;
 import org.opengis.filter.expression.Expression;
 import org.springframework.util.Assert;
-import static org.geotools.filter.v1_1.OGC.PropertyIsLike;
 
 import com.google.common.collect.Iterators;
 
-public class PropertyIsLikeFilterDecoder extends SimpleDecoder<Filter>{
+public class PropertyIsLikeFilterDecoder extends SimpleDecoder<Filter> {
 
     private SequenceDecoder<Expression> seq;
-    
+
     protected static FilterFactory2 ff = CommonFactoryFinder.getFilterFactory2(GeoTools
             .getDefaultHints());
-    
+
     public PropertyIsLikeFilterDecoder() {
         super(PropertyIsLike);
         seq = new SequenceDecoder<Expression>(2, 2);
@@ -47,7 +48,7 @@ public class PropertyIsLikeFilterDecoder extends SimpleDecoder<Filter>{
         Assert.isTrue(expressions.length == 2);
 
         r.require(EventType.END_ELEMENT, name.getNamespaceURI(), name.getLocalPart());
-        
+
         Object value = ((LiteralExpressionImpl) expressions[1]).getValue();
         Assert.notNull(value, "Literal in IsLike filte can't be null");
         return ff.like(expressions[0], value.toString());

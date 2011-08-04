@@ -32,10 +32,10 @@ public class EnvelopeDecoder extends AbstractTypeDecoder<ReferencedEnvelope> {
         ChoiceDecoder<Object> choice = new ChoiceDecoder<Object>();
 
         EnvelopeParams params = new EnvelopeParams();
-        choice.addOption(new SetterDecoder<Object>(new DoubleListDecoder(lowerCorner),
-                params, "lowerCornerValues"));
-        choice.addOption(new SetterDecoder<Object>(new DoubleListDecoder(upperCorner),
-                params, "uperCornerValues"));
+        choice.addOption(new SetterDecoder<Object>(new DoubleListDecoder(lowerCorner), params,
+                "lowerCornerValues"));
+        choice.addOption(new SetterDecoder<Object>(new DoubleListDecoder(upperCorner), params,
+                "uperCornerValues"));
 
         SequenceDecoder<Object> seq = new SequenceDecoder<Object>(1, 1);
         seq.add(choice, 0, Integer.MAX_VALUE);
@@ -44,16 +44,17 @@ public class EnvelopeDecoder extends AbstractTypeDecoder<ReferencedEnvelope> {
         final Iterator<Object> iterator = seq.decode(r);
         Iterators.toArray(iterator, Object.class);
 
-        Envelope envelope = new Envelope(params.getLowerCornerValues()[0], params.getUperCornerValues()[0],
-                params.getLowerCornerValues()[1], params.getUperCornerValues()[1]);
-        //TODO: set crs
+        Envelope envelope = new Envelope(params.getLowerCornerValues()[0],
+                params.getUperCornerValues()[0], params.getLowerCornerValues()[1],
+                params.getUperCornerValues()[1]);
+        // TODO: set crs
         ReferencedEnvelope referencedEnvelope = new ReferencedEnvelope(envelope, null);
-        
+
         return referencedEnvelope;
     }
-    
+
     public class EnvelopeParams {
-        
+
         private double[] lowerCornerValues;
 
         private double[] uperCornerValues;
@@ -61,7 +62,7 @@ public class EnvelopeDecoder extends AbstractTypeDecoder<ReferencedEnvelope> {
         public double[] getUperCornerValues() {
             return uperCornerValues;
         }
-        
+
         public void setUperCornerValues(double[] uperCornerValues) {
             this.uperCornerValues = uperCornerValues;
         }

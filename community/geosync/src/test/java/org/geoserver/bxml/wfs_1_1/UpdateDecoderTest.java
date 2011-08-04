@@ -9,7 +9,6 @@ import net.opengis.wfs.UpdateElementType;
 
 import org.geoserver.bxml.BxmlTestSupport;
 import org.geotools.filter.FidFilterImpl;
-import org.geotools.referencing.CRS;
 import org.gvsig.bxml.stream.BxmlStreamReader;
 import org.opengis.referencing.crs.CoordinateReferenceSystem;
 
@@ -30,7 +29,7 @@ public class UpdateDecoderTest extends BxmlTestSupport {
         PropertyType property1 = property.get(0);
         assertEquals(new QName("http://opengeo.org/osm", "building"), property1.getName());
         assertEquals("false", property1.getValue());
-        
+
         PropertyType property2 = property.get(1);
         assertEquals(new QName("http://opengeo.org/osm", "value"), property2.getName());
         assertEquals("25", property2.getValue());
@@ -40,9 +39,9 @@ public class UpdateDecoderTest extends BxmlTestSupport {
         Polygon polygon = (Polygon) property3.getValue();
 
         LineString exteriorRing = polygon.getExteriorRing();
-        testLineString(exteriorRing, new double[][] { { -8421981.58, 5074017.82 },
-                { -8421975.14, 5074027.33 }, { -8421933.13, 5073998.82 },
-                { -8421939.57, 5073990.31 }, { -8421981.58, 5074017.82 } });
+        testLineString(new double[][] { { -8421981.58, 5074017.82 }, { -8421975.14, 5074027.33 },
+                { -8421933.13, 5073998.82 }, { -8421939.57, 5073990.31 },
+                { -8421981.58, 5074017.82 } }, exteriorRing);
 
         CoordinateReferenceSystem crs = (CoordinateReferenceSystem) exteriorRing.getUserData();
         assertNotNull(crs);

@@ -25,12 +25,20 @@ public class CoordinatesDecoder implements Decoder<CoordinateSequence> {
         r.require(EventType.START_ELEMENT, coordinates.getNamespaceURI(),
                 coordinates.getLocalPart());
 
+        String decimal = r.getAttributeValue(null, "decimal") != null ? r.getAttributeValue(null,
+                "decimal") : ".";
+        char cs = r.getAttributeValue(null, "cs") != null ? r.getAttributeValue(null, "cs").charAt(
+                0) : ',';
+        char ts = r.getAttributeValue(null, "ts") != null ? r.getAttributeValue(null, "ts").charAt(
+                0) : ' ';
+
         String value = new StringDecoder(coordinates).decode(r);
-        Coordinate[] coordinates = parse(value);
+
+        Coordinate[] coordinates = parse(value, decimal, cs, ts);
         return new PackedCoordinateSequence.Double(coordinates);
     }
 
-    private Coordinate[] parse(String string) {
+    private Coordinate[] parse(String string, String decimal, char cs, char ts) {
         String trim = string.trim();
         final int len = trim.length();
 
@@ -38,42 +46,42 @@ public class CoordinatesDecoder implements Decoder<CoordinateSequence> {
 
         List<Coordinate> coordinates = new ArrayList<Coordinate>();
         List<String> strings = new ArrayList<String>();
-        Boolean comma = true;
+        Boolean isCs = true;
         for (int i = 0; i < len; i++) {
             char c = trim.charAt(i);
-            if (!Character.isWhitespace(c) && c != ',') {
+            if (c != ts && c != cs) {
                 curr.append(c);
             } else if (curr.length() > 0) {
-                if (comma) {
+                if (isCs) {
                     if (curr.length() > 0) {
-                        strings.add(curr.toString());
+                        strings.add(curr.toString().replace(decimal, "."));
                     }
                     curr.setLength(0);
                 } else {
-                    coordinates.add(buildCoordinate(strings));
+                    coordinates.add(buildCoordinate(strings, decimal));
                     strings = new ArrayList<String>();
                     if (curr.length() > 0) {
-                        strings.add(curr.toString());
+                        strings.add(curr.toString().replace(decimal, "."));
                     }
                     curr.setLength(0);
                 }
-                comma = false;
+                isCs = false;
             }
-            if (c == ',') {
-                comma = true;
+            if (c == cs) {
+                isCs = true;
             }
             if (i == (len - 1)) {
                 if (curr.length() > 0) {
-                    strings.add(curr.toString());
+                    strings.add(curr.toString().replace(decimal, "."));
                 }
-                coordinates.add(buildCoordinate(strings));
+                coordinates.add(buildCoordinate(strings, decimal));
             }
         }
 
         return coordinates.toArray(new Coordinate[coordinates.size()]);
     }
 
-    private Coordinate buildCoordinate(List<String> strings) {
+    private Coordinate buildCoordinate(List<String> strings, String decimal) {
         Coordinate coordinate = new Coordinate();
         coordinate.x = Double.parseDouble(strings.get(0));
         coordinate.y = Double.parseDouble(strings.get(1));

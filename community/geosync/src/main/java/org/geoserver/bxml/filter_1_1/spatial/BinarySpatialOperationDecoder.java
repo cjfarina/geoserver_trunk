@@ -28,7 +28,6 @@ public class BinarySpatialOperationDecoder extends AbstractTypeDecoder<Filter> {
     protected static FilterFactory2 ff = CommonFactoryFinder.getFilterFactory2(GeoTools
             .getDefaultHints());
 
-    
     public BinarySpatialOperationDecoder() {
         super(Equals, Disjoint, Touches, Within, Overlaps, Intersects, Crosses, Contains);
     }

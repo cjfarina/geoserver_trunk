@@ -27,9 +27,9 @@ public class FilterDecoder implements Decoder<Filter> {
 
         Filter filter = anyFilter.decode(r);
 
-        //When IdDecoder ends iteration, the parser pointer is pointing to Filter tag.
-        //It isn't necessary to do r.nextTag
-        if(!r.getElementName().equals(OGC.Filter)){ 
+        // When IdDecoder ends iteration, the parser pointer is pointing to Filter tag.
+        // It isn't necessary to do r.nextTag
+        if (!r.getElementName().equals(OGC.Filter)) {
             r.nextTag();
         }
 

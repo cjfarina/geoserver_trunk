@@ -49,9 +49,8 @@ public class BinaryLogicOperatorDecoder implements Decoder<Filter> {
         seq.add(new AnyFilterDecoder(), 1, 1);
 
         Filter[] filters = Iterators.toArray(seq.decode(r), Filter.class);
-        //r.nextTag();
-        r.require(EventType.END_ELEMENT, elementName.getNamespaceURI(),
-                elementName.getLocalPart());
+        // r.nextTag();
+        r.require(EventType.END_ELEMENT, elementName.getNamespaceURI(), elementName.getLocalPart());
 
         Filter f;
         if (And.equals(elementName)) {

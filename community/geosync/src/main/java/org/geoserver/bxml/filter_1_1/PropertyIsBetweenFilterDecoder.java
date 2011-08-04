@@ -1,5 +1,7 @@
 package org.geoserver.bxml.filter_1_1;
 
+import static org.geotools.filter.v1_1.OGC.PropertyIsBetween;
+
 import java.util.Iterator;
 
 import javax.xml.namespace.QName;
@@ -17,9 +19,6 @@ import org.opengis.filter.expression.Expression;
 import org.springframework.util.Assert;
 
 import com.google.common.collect.Iterators;
-
-import static org.geotools.filter.v1_1.OGC.PropertyIsBetween;
-
 
 public class PropertyIsBetweenFilterDecoder extends SimpleDecoder<Filter> {
 
@@ -49,9 +48,9 @@ public class PropertyIsBetweenFilterDecoder extends SimpleDecoder<Filter> {
         Assert.isTrue(expressions.length == 3);
 
         r.require(EventType.END_ELEMENT, name.getNamespaceURI(), name.getLocalPart());
-        
+
         return ff.between(expressions[0], expressions[1], expressions[2]);
-        
+
     }
 
 }

@@ -18,7 +18,7 @@ import org.opengis.filter.expression.Expression;
 import org.springframework.util.Assert;
 
 public class BoundaryFilterDecoder implements Decoder<Expression> {
-    
+
     public static final QName LowerBoundary = new QName(OGC.NAMESPACE, "LowerBoundary");
 
     public static final QName UpperBoundary = new QName(OGC.NAMESPACE, "UpperBoundary");
@@ -33,7 +33,7 @@ public class BoundaryFilterDecoder implements Decoder<Expression> {
         n.add(UpperBoundary);
         names = Collections.unmodifiableSet(n);
     }
-    
+
     @Override
     public Expression decode(BxmlStreamReader r) throws Exception {
         r.require(EventType.START_ELEMENT, null, null);
@@ -45,9 +45,10 @@ public class BoundaryFilterDecoder implements Decoder<Expression> {
         r.nextTag();
 
         r.require(EventType.END_ELEMENT, name.getNamespaceURI(), name.getLocalPart());
-        
+
         return expression;
     }
+
     @Override
     public boolean canHandle(final QName name) {
         return names.contains(name);
