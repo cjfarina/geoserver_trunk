@@ -1,0 +1,17 @@
+<?xml version="1.0" encoding="ISO-8859-1"?>
+<Insert xmlns="http://www.opengis.net/wfs" xmlns:fes="http://www.opengis.net/ogc"
+	xmlns:gml="http://www.opengis.net/gml" xmlns:f="http://opengeo.org/osm">
+	<f:planet_osm_point gml:id="planet_osm_point.1">
+		<f:osm_id>158607824</f:osm_id>
+		<f:ele>166</f:ele>
+		<f:name>New Center Historical Place</f:name>
+		<f:power_source></f:power_source>
+		<f:place>hamlet</f:place>
+		<f:way>
+			<gml:Point>
+				<gml:pos gml:srsName="urn:x-ogc:def:crs:EPSG:900913">-8426871.63467172 4991071.85937995
+				</gml:pos>
+			</gml:Point>
+		</f:way>
+	</f:planet_osm_point>
+</Insert>

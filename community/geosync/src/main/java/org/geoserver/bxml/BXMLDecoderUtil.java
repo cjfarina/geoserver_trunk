@@ -6,6 +6,8 @@ import java.util.logging.Logger;
 import javax.xml.namespace.QName;
 
 import org.geoserver.bxml.atom.AbstractAtomEncoder;
+import org.geoserver.bxml.base.StringDecoder;
+import org.geoserver.bxml.gml_3_1.GeometryDecoder;
 import org.geotools.util.logging.Logging;
 import org.gvsig.bxml.stream.BxmlStreamReader;
 import org.gvsig.bxml.stream.EventType;
@@ -35,6 +37,21 @@ public class BXMLDecoderUtil {
         while (!EventType.END_ELEMENT.equals(r.getEventType()) || !name.equals(r.getElementName())) {
             r.next();
         }
+    }
+    
+    public static Object readValue(BxmlStreamReader r) throws IOException, Exception {
+        EventType event = r.next();
+        Object value = null;
+        if (EventType.VALUE_STRING == event) {
+            value = StringDecoder.readStringValue(r);
+            event = r.getEventType();
+        }
+
+        if (EventType.START_ELEMENT == event) {
+            value = new GeometryDecoder().decode(r);
+            r.nextTag();
+        }
+        return value;
     }
 
 }

@@ -57,7 +57,7 @@ public class BxmlElementIterator extends AbstractIterator<BxmlStreamReader> {
 
             while (true) {
                 QName elementName = reader.getElementName();
-                boolean isExpectedElement = siblingNames.contains(elementName);
+                boolean isExpectedElement = isExpectedElement(elementName);
 
                 if (tagDepth == this.depth && START_ELEMENT.equals(event) && isExpectedElement) {
                     return reader;
@@ -72,6 +72,10 @@ public class BxmlElementIterator extends AbstractIterator<BxmlStreamReader> {
         } catch (IOException e) {
             throw new RuntimeException(e);
         }
+    }
+
+    protected boolean isExpectedElement(QName elementName) {
+        return siblingNames.contains(elementName);
     }
 
     protected boolean finish(BxmlStreamReader reader) {
