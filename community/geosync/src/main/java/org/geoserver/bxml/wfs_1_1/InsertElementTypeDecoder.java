@@ -2,6 +2,8 @@ package org.geoserver.bxml.wfs_1_1;
 
 import static org.geoserver.wfs.xml.v1_1_0.WFS.INSERT;
 
+import java.util.Iterator;
+
 import javax.xml.namespace.QName;
 
 import net.opengis.wfs.InsertElementType;
@@ -43,23 +45,22 @@ public class InsertElementTypeDecoder extends SimpleDecoder<EObject> {
         r.require(EventType.START_ELEMENT, elementName.getNamespaceURI(),
                 elementName.getLocalPart());
 
-        final InsertElementType element = factory.createInsertElementType();
+        final InsertElementType insertElement = factory.createInsertElementType();
 
         String namespaceURI = r.getNamespaceURI("f");
-        SequenceDecoder<SimpleFeature> sequenceDecoder = new SequenceDecoder<SimpleFeature>(1, 1);
-        SimpleFeatureDecoder simpleFeatureDecoder = new SimpleFeatureDecoder(catalog, namespaceURI);
-        SetterDecoder<SimpleFeature> setterDecoder = new SetterDecoder<SimpleFeature>(
-                simpleFeatureDecoder, element, "feature");
-        sequenceDecoder.add(setterDecoder, 1, Integer.MAX_VALUE);
+        SimpleFeatureSequenceDecoder<SimpleFeature> sequenceDecoder = new SimpleFeatureSequenceDecoder<SimpleFeature>(
+                namespaceURI, 1, 1);
+        sequenceDecoder.add(new SimpleFeatureDecoder(catalog, namespaceURI), 1, Integer.MAX_VALUE);
 
         r.nextTag();
-
-        SimpleFeature decode = simpleFeatureDecoder.decode(r);
-
-        r.nextTag();
+        Iterator<SimpleFeature> iterator = sequenceDecoder.decode(r);
+        while (iterator.hasNext()) {
+            SimpleFeature simpleFeature = (SimpleFeature) iterator.next();
+            insertElement.getFeature().add(simpleFeature);
+        }
 
         r.require(EventType.END_ELEMENT, elementName.getNamespaceURI(), elementName.getLocalPart());
-        return element;
+        return insertElement;
     }
 
 }

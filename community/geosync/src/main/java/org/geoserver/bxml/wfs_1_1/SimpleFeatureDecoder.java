@@ -2,6 +2,7 @@ package org.geoserver.bxml.wfs_1_1;
 
 import static org.geotools.gml3.GML.id;
 
+import java.util.HashSet;
 import java.util.Iterator;
 import java.util.Set;
 
@@ -70,7 +71,7 @@ public class SimpleFeatureDecoder implements Decoder<SimpleFeature> {
 
     @Override
     public Set<QName> getTargets() {
-        return null;
+        return new HashSet<QName>();
     }
 
 }
