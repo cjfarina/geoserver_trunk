@@ -58,6 +58,7 @@ import org.geotools.data.DataStore;
 import org.geotools.data.DataUtilities;
 import org.geotools.data.FeatureSource;
 import org.geotools.data.DataAccessFactory.Param;
+import org.geotools.data.Join;
 import org.geotools.data.ows.Layer;
 import org.geotools.data.ows.WMSCapabilities;
 import org.geotools.data.simple.SimpleFeatureSource;
@@ -78,6 +79,7 @@ import org.geotools.xml.Schemas;
 import org.opengis.coverage.grid.GridCoverage;
 import org.opengis.coverage.grid.GridCoverageReader;
 import org.opengis.feature.Feature;
+import org.opengis.feature.simple.SimpleFeature;
 import org.opengis.feature.simple.SimpleFeatureType;
 import org.opengis.feature.type.AttributeDescriptor;
 import org.opengis.feature.type.FeatureType;
@@ -109,13 +111,19 @@ public class ResourcePool {
      * resource.
      */
     public static Hints.Key REPROJECT = new Hints.Key( Boolean.class );
-    
+
+    /**
+     * Hint to specify additional joined attributes when loading a feature type
+     */
+    public static Hints.Key JOINS = new Hints.Key(List.class);
+
     /** logging */
     static Logger LOGGER = Logging.getLogger( "org.geoserver.catalog");
     
     static Class VERSIONING_FS = null;
     static Class GS_VERSIONING_FS = null;
     
+    static final Class<?> GEOGIT_VERSIONING_FS;
     static {
         try {
             // only support versioning if on classpath
@@ -124,6 +132,14 @@ public class ResourcePool {
         } catch (ClassNotFoundException e) {
             //fall through
         }
+        Class<?> geogitVersioning = null;
+        try {
+            // only support versioning if on classpath
+            geogitVersioning = Class.forName("org.geoserver.data.versioning.VersioningAdapterFactory");
+        } catch (ClassNotFoundException e) {
+            //fall through
+        }
+        GEOGIT_VERSIONING_FS = geogitVersioning;
     }
     
     /**
@@ -284,6 +300,7 @@ public class ResourcePool {
      * 
      * @throws IOException Any errors that occur connecting to the resource.
      */
+    @SuppressWarnings({ "rawtypes", "unchecked" })
     public DataAccess<? extends FeatureType, ? extends Feature> getDataStore( DataStoreInfo info ) throws IOException {
         try {
             String id = info.getId();
@@ -355,6 +372,17 @@ public class ResourcePool {
                         if ( dataStore == null ) {
                             throw new NullPointerException("Could not acquire data access '" + info.getName() + "'");
                         }
+                        
+//                        if (GEOGIT_VERSIONING_FS != null) {
+//                            LOGGER.fine("Creating versioning wrapper for DataStore " + info.getName()
+//                                    + ". Whether or not version info is available is FeatureTypeInfo dependant.");
+//                            try {
+//                                Method m = GEOGIT_VERSIONING_FS.getMethod("create", DataAccess.class);
+//                                dataStore = (DataAccess) m.invoke(null, dataStore);
+//                            } catch (Exception e) {
+//                                throw new DataSourceException("Creation of a versioning wrapper failed", e);
+//                            }
+//                        }
                         
                         // cache only if the id is not null, no need to cache the stores
                         // returned from un-saved DataStoreInfo objects (it would be actually
@@ -910,10 +938,36 @@ public class ResourcePool {
             } catch( ClassCastException e ) {
                 //fall through
             } 
-            
+
+            //joining, check for join hint which requires us to create a shcema with some additional
+            // attributes
+            if (hints != null && hints.containsKey(JOINS)) {
+                List<Join> joins = (List<Join>) hints.get(JOINS);
+                SimpleFeatureTypeBuilder typeBuilder = new SimpleFeatureTypeBuilder();
+                typeBuilder.init(schema);
+                
+                for (Join j : joins) {
+                    String attName = j.getAlias() != null ? j.getAlias() : j.getTypeName();
+                    typeBuilder.add(attName, SimpleFeature.class);
+                }
+                schema = typeBuilder.buildFeatureType();
+            }
+
             //return a normal 
-            return GeoServerFeatureLocking.create(fs, schema,
+            fs = GeoServerFeatureLocking.create(fs, schema,
                     info.getFilter(), resultCRS, info.getProjectionPolicy().getCode());
+            
+            if (GEOGIT_VERSIONING_FS != null) {
+                LOGGER.fine("Creating versioning wrapper for FeatureSource " + typeName
+                        + ". Whether or not version info is available is FeatureTypeInfo dependant");
+                try {
+                    Method m = GEOGIT_VERSIONING_FS.getMethod("create", FeatureSource.class);
+                    fs = (SimpleFeatureSource) m.invoke(null, fs);
+                } catch (Exception e) {
+                    throw new DataSourceException("Creation of a versioning wrapper failed", e);
+                }
+            }
+            return fs;
         }
     }
     
