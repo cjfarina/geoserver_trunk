@@ -10,10 +10,13 @@ import java.util.logging.Logger;
 import org.geogit.api.RevCommit;
 import org.geoserver.catalog.FeatureTypeInfo;
 import org.geoserver.data.test.MockData;
-import org.geoserver.geogit.AuthenticationResolver;
+import org.geoserver.data.versioning.GeoToolsCommitStateResolver;
+import org.geoserver.data.versioning.VersioningFeatureStore;
 import org.geoserver.gss.GSSTestSupport;
 import org.geoserver.gss.impl.GSS;
 import org.geoserver.platform.GeoServerExtensions;
+import org.geotools.data.DefaultTransaction;
+import org.geotools.data.Transaction;
 import org.geotools.data.simple.SimpleFeatureStore;
 import org.geotools.factory.CommonFactoryFinder;
 import org.geotools.feature.FeatureCollection;
@@ -22,7 +25,6 @@ import org.geotools.util.logging.Logging;
 import org.opengis.feature.type.Name;
 import org.opengis.filter.Filter;
 import org.opengis.filter.FilterFactory2;
-import org.opengis.filter.expression.PropertyName;
 import org.w3c.dom.Document;
 import org.w3c.dom.Node;
 import org.w3c.dom.NodeList;
@@ -73,12 +75,6 @@ public abstract class GSSFunctionalTestSupport extends GSSTestSupport {
         super.oneTimeSetUp();
 
         GSS gss = GeoServerExtensions.bean(GSS.class, applicationContext);
-        gss.setAuthenticationResolver(new AuthenticationResolver() {
-            @Override
-            public String getCurrentUserName() {
-                return "admin";
-            }
-        });
 
         // insert the single bridge in cite:Bridges
         assertTrue(makeVersioned(gss, CITE_BRIDGES) instanceof RevCommit);
@@ -123,18 +119,27 @@ public abstract class GSSFunctionalTestSupport extends GSSTestSupport {
 
         FeatureTypeInfo typeInfo = getCatalog().getFeatureTypeByName(typeName);
         SimpleFeatureStore store = (SimpleFeatureStore) typeInfo.getFeatureSource(null, null);
+        assertTrue(store instanceof VersioningFeatureStore);
+        Transaction tx = new DefaultTransaction();
+        store.setTransaction(tx);
+        tx.putProperty(GeoToolsCommitStateResolver.GEOGIT_COMMIT_MESSAGE, commitMessage);
+        tx.putProperty(GeoToolsCommitStateResolver.GEOGIT_USER_NAME, "admin");
+        try {
+            @SuppressWarnings("rawtypes")
+            FeatureCollection affectedFeatures = store.getFeatures(filter);
+            assertTrue("affectedFeatures" + affectedFeatures.size(), affectedFeatures.size() > 0);
 
-        @SuppressWarnings("rawtypes")
-        FeatureCollection affectedFeatures = store.getFeatures(filter);
-        assertTrue("affectedFeatures" + affectedFeatures.size(), affectedFeatures.size() > 0);
+            LOGGER.info("Creating commit '" + commitMessage + "'");
 
-        LOGGER.info("Creating commit '" + commitMessage + "'");
-        gss.stageDelete("d1", typeName, filter, affectedFeatures);
+            store.removeFeatures(filter);
 
-        store.removeFeatures(filter);
-
-        assertNotNull(gss.commitChangeSet("d1", commitMessage));
-        LOGGER.info("Delete committed");
+            tx.commit();
+            LOGGER.info("Delete committed");
+        } catch (Exception e) {
+            tx.rollback();
+        } finally {
+            tx.close();
+        }
     }
 
     private void recordUpdateCommit(final GSS gss, final Name typeName, final Filter filter,
@@ -143,22 +148,29 @@ public abstract class GSSFunctionalTestSupport extends GSSTestSupport {
 
         FeatureTypeInfo typeInfo = getCatalog().getFeatureTypeByName(typeName);
         SimpleFeatureStore store = (SimpleFeatureStore) typeInfo.getFeatureSource(null, null);
+        assertTrue(store instanceof VersioningFeatureStore);
+        
+        Transaction tx = new DefaultTransaction();
+        store.setTransaction(tx);
+        tx.putProperty(GeoToolsCommitStateResolver.GEOGIT_COMMIT_MESSAGE, commitMessage);
+        tx.putProperty(GeoToolsCommitStateResolver.GEOGIT_USER_NAME, "admin");
+        try {
+            @SuppressWarnings("rawtypes")
+            FeatureCollection affectedFeatures = store.getFeatures(filter);
+            assertTrue("affectedFeatures" + affectedFeatures.size(), affectedFeatures.size() > 0);
 
-        @SuppressWarnings("rawtypes")
-        FeatureCollection affectedFeatures = store.getFeatures(filter);
-        assertTrue("affectedFeatures" + affectedFeatures.size(), affectedFeatures.size() > 0);
+            store.modifyFeatures(properties.toArray(new String[properties.size()]),
+                    newValues.toArray(), filter);
 
-        List<PropertyName> updatedProperties = Arrays.asList(ff.property("NAME"),
-                ff.property("the_geom"));
+            LOGGER.info("Creating commit '" + commitMessage + "'");
+            tx.commit();
 
-        store.modifyFeatures(properties.toArray(new String[properties.size()]),
-                newValues.toArray(), filter);
-
-        LOGGER.info("Creating commit '" + commitMessage + "'");
-        gss.stageUpdate("t1", typeName, filter, updatedProperties, newValues, affectedFeatures);
-
-        assertNotNull(gss.commitChangeSet("t1", commitMessage));
-        LOGGER.info("Update committed");
+            LOGGER.info("Update committed");
+        } catch (Exception e) {
+            tx.rollback();
+        } finally {
+            tx.close();
+        }
     }
 
     private Object makeVersioned(final GSS gss, final Name featureTypeName) throws Exception {

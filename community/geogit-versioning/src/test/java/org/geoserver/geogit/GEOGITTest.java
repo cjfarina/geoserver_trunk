@@ -13,7 +13,6 @@ import org.geogit.api.GeoGIT;
 import org.geoserver.catalog.Catalog;
 import org.geoserver.catalog.FeatureTypeInfo;
 import org.geoserver.config.GeoServerDataDirectory;
-import org.geoserver.geogit.GEOGIT;
 import org.geotools.feature.NameImpl;
 import org.opengis.feature.type.Name;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
@@ -25,7 +24,7 @@ import org.springframework.security.core.userdetails.User;
 
 public class GEOGITTest extends TestCase {
 
-    private GEOGIT gss;
+    private GEOGIT geogitFacade;
 
     private Catalog mockCatalog;
 
@@ -44,14 +43,14 @@ public class GEOGITTest extends TestCase {
         FileUtils.deleteDirectory(baseDirectory);
         baseDirectory.mkdirs();
         GeoServerDataDirectory mockDataDir = new GeoServerDataDirectory(baseDirectory);
-        gss = new GEOGIT(mockCatalog, mockDataDir);
+        geogitFacade = new GEOGIT(mockCatalog, mockDataDir);
     }
 
     public void testInitialize() throws Exception {
         fail("Not yet implemented");
-        Name typeName = new NameImpl("http://geoserver/gss/test", "states");
+        Name typeName = new NameImpl("http://geoserver/geogit/test", "states");
         try {
-            gss.initialize(typeName);
+            geogitFacade.initialize(typeName);
             fail("Expected IAE on non existent type");
         } catch (IllegalArgumentException e) {
             assertTrue(e.getMessage().contains("No FeatureType"));
@@ -59,7 +58,7 @@ public class GEOGITTest extends TestCase {
 
         FeatureTypeInfo mockFeatureTypeInfo = mock(FeatureTypeInfo.class);
         when(mockCatalog.getFeatureTypeByName(eq(typeName))).thenReturn(mockFeatureTypeInfo);
-        gss.initialize(typeName);
+        geogitFacade.initialize(typeName);
     }
 
     public void testIsReplicated() {

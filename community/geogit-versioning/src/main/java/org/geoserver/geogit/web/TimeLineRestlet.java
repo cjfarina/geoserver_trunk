@@ -87,7 +87,7 @@ public class TimeLineRestlet extends Restlet {
                         w.writeValue(feedHref);
 
                         w.writeStartAttribute(XMLConstants.NULL_NS_URI, "image");
-                        w.writeValue("../../web/resources/org.geoserver.gss.web.ChangesPanel/feed-icon-14x14.png");
+                        w.writeValue("../../web/resources/org.geoserver.geogit.web.VersionedLayersPage/feed-icon-14x14.png");
 
                         // this is the icon of the event in the timeline, might be useful to
                         // distinguish different types of events in the future

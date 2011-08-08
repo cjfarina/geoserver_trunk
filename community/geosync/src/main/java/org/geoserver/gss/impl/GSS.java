@@ -17,13 +17,11 @@ import org.geogit.api.DiffEntry;
 import org.geogit.api.DiffEntry.ChangeType;
 import org.geogit.api.GeoGIT;
 import org.geogit.api.ObjectId;
-import org.geogit.api.RevCommit;
 import org.geogit.storage.bdbje.EntityStoreConfig;
 import org.geogit.storage.bdbje.EnvironmentBuilder;
 import org.geoserver.catalog.Catalog;
 import org.geoserver.catalog.FeatureTypeInfo;
 import org.geoserver.config.GeoServer;
-import org.geoserver.geogit.AuthenticationResolver;
 import org.geoserver.geogit.GEOGIT;
 import org.geoserver.gss.config.GSSInfo;
 import org.geoserver.gss.impl.query.FeedResponse;
@@ -31,13 +29,11 @@ import org.geoserver.gss.internal.atom.FeedImpl;
 import org.geoserver.gss.internal.storage.GeoSyncDatabase;
 import org.geoserver.platform.GeoServerExtensions;
 import org.geoserver.platform.ServiceException;
-import org.geotools.feature.FeatureCollection;
 import org.geotools.util.logging.Logging;
 import org.opengis.feature.Feature;
 import org.opengis.feature.type.FeatureType;
 import org.opengis.feature.type.Name;
 import org.opengis.filter.Filter;
-import org.opengis.filter.expression.PropertyName;
 import org.opengis.filter.sort.SortOrder;
 import org.springframework.beans.factory.DisposableBean;
 
@@ -106,21 +102,6 @@ public class GSS implements DisposableBean {
 
     public boolean isReplicated(final Name featureTypeName) {
         return geogitFacade.isReplicated(featureTypeName);
-    }
-
-    /**
-     * @return {@code null} if annonymous, the name of the current user otherwise
-     */
-    public String getCurrentUserName() {
-        return geogitFacade.getCurrentUserName();
-    }
-
-    /**
-     * Set an alternate auth resolver, mainly used to aid in unit testing code that depends on this
-     * class.
-     */
-    public void setAuthenticationResolver(AuthenticationResolver resolver) {
-        geogitFacade.setAuthenticationResolver(resolver);
     }
 
     public GSSInfo getGssInfo() {
@@ -258,24 +239,6 @@ public class GSS implements DisposableBean {
      */
     public DiffEntry getEntryByUUID(final String uuid) {
         return null;
-    }
-
-    public void stageDelete(String gssTransactionID, Name typeName, Filter filter,
-            @SuppressWarnings("rawtypes") FeatureCollection affectedFeatures) throws Exception {
-        geogitFacade.stageDelete(gssTransactionID, typeName, filter, affectedFeatures);
-    }
-
-    public RevCommit commitChangeSet(String gssTransactionID, String commitMessage)
-            throws Exception {
-        return geogitFacade.commitChangeSet(gssTransactionID, commitMessage);
-    }
-
-    public void stageUpdate(String gssTransactionID, Name typeName, Filter filter,
-            List<PropertyName> updatedProperties, List<Object> newValues,
-            @SuppressWarnings("rawtypes") FeatureCollection affectedFeatures) throws Exception {
-
-        geogitFacade.stageUpdate(gssTransactionID, typeName, filter, updatedProperties, newValues,
-                affectedFeatures);
     }
 
 }

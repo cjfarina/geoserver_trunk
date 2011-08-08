@@ -49,27 +49,27 @@ import com.vividsolutions.jts.geom.Geometry;
 
 public class VersionedLayersPage extends GeoServerSecuredPage implements IHeaderContributor {
 
-    private final GSSLayerProvider provider;
+    private final VersionedLayerProvider provider;
 
     private GeoServerTablePanel<VersionedLayerInfo> publishedLayersTable;
 
     private GeoServerDialog removalDialog;
 
-    private GSSLayerSelectionRemovalLink removalLink;
+    private VersionedLayerSelectionRemovalLink removalLink;
 
     /**
      * @see org.apache.wicket.markup.html.IHeaderContributor#renderHead(org.apache.wicket.markup.html.IHeaderResponse)
      */
     public void renderHead(IHeaderResponse header) {
         header.renderJavascriptReference("http://static.simile.mit.edu/timeline/api-2.3.0/timeline-api.js?bundle=true");
-        // header.renderJavascriptReference(new ResourceReference(GSSLayersPage.class,
+        // header.renderJavascriptReference(new ResourceReference(VersionedLayersPage.class,
         // "timeline.js"));
         header.renderOnLoadJavascript("onLoad()");
         header.renderOnEventJavascript("window", "resize", "onResize()");
     }
 
     public VersionedLayersPage() throws Exception {
-        provider = new GSSLayerProvider();
+        provider = new VersionedLayerProvider();
 
         // get the date of the latest change to position the timeline at
         final Date lastChange;
@@ -154,7 +154,7 @@ public class VersionedLayersPage extends GeoServerSecuredPage implements IHeader
     }
 
     private Component cachedLayerLink(String id, IModel<VersionedLayerInfo> itemModel) {
-        IModel<Name> nameModel = GSSLayerProvider.NAME.getModel(itemModel);
+        IModel<Name> nameModel = VersionedLayerProvider.NAME.getModel(itemModel);
         Name layerName = nameModel.getObject();
         FeatureTypeInfo featureType = getCatalog().getFeatureTypeByName(layerName);
         Label link = new Label(id, featureType.getPrefixedName());
@@ -168,7 +168,7 @@ public class VersionedLayersPage extends GeoServerSecuredPage implements IHeader
         header.add(new BookmarkablePageLink("addNew", NewVersionedLayerPage.class));
 
         // the removal button
-        header.add(removalLink = new GSSLayerSelectionRemovalLink("removeSelected",
+        header.add(removalLink = new VersionedLayerSelectionRemovalLink("removeSelected",
                 publishedLayersTable, removalDialog));
         removalLink.setEnabled(false);
         // removal.setOutputMarkupId(true);
@@ -177,7 +177,8 @@ public class VersionedLayersPage extends GeoServerSecuredPage implements IHeader
         return header;
     }
 
-    private final class GeoSynchronizedTypesTablePanel extends GeoServerTablePanel<VersionedLayerInfo> {
+    private final class GeoSynchronizedTypesTablePanel extends
+            GeoServerTablePanel<VersionedLayerInfo> {
         private static final long serialVersionUID = 1L;
 
         private GeoSynchronizedTypesTablePanel(final String id,
@@ -187,8 +188,8 @@ public class VersionedLayersPage extends GeoServerSecuredPage implements IHeader
 
         @Override
         protected void onSelectionUpdate(AjaxRequestTarget target) {
-            VersionedLayersPage.this.removalLink
-                    .setEnabled(publishedLayersTable.getSelection().size() > 0);
+            VersionedLayersPage.this.removalLink.setEnabled(publishedLayersTable.getSelection()
+                    .size() > 0);
             target.addComponent(removalLink);
         }
 
@@ -197,7 +198,7 @@ public class VersionedLayersPage extends GeoServerSecuredPage implements IHeader
         protected Component getComponentForProperty(String id, IModel itemModel,
                 Property<VersionedLayerInfo> property) {
 
-            if (property == GSSLayerProvider.TYPE) {
+            if (property == VersionedLayerProvider.TYPE) {
                 final CatalogIconFactory icons = CatalogIconFactory.get();
                 Fragment f = new Fragment(id, "iconFragment", VersionedLayersPage.this);
                 VersionedLayerInfo layerInfo = (VersionedLayerInfo) itemModel.getObject();
@@ -217,19 +218,19 @@ public class VersionedLayersPage extends GeoServerSecuredPage implements IHeader
                 }
                 f.add(new Image("layerIcon", layerIcon));
                 return f;
-            } else if (property == GSSLayerProvider.NAME) {
+            } else if (property == VersionedLayerProvider.NAME) {
                 return cachedLayerLink(id, itemModel);
             }
             throw new IllegalArgumentException("Don't know a property named " + property.getName());
         }
     }
 
-    private static class GSSLayerSelectionRemovalLink extends AjaxLink<VersionedLayerInfo> {
+    private static class VersionedLayerSelectionRemovalLink extends AjaxLink<VersionedLayerInfo> {
 
         private static final long serialVersionUID = 1L;
 
-        public GSSLayerSelectionRemovalLink(String string, GeoServerTablePanel<VersionedLayerInfo> table,
-                GeoServerDialog dialog) {
+        public VersionedLayerSelectionRemovalLink(String string,
+                GeoServerTablePanel<VersionedLayerInfo> table, GeoServerDialog dialog) {
             super(string);
         }
 
@@ -239,12 +240,12 @@ public class VersionedLayersPage extends GeoServerSecuredPage implements IHeader
         }
     }
 
-    private static class GSSLayerProvider extends GeoServerDataProvider<VersionedLayerInfo> {
+    private static class VersionedLayerProvider extends GeoServerDataProvider<VersionedLayerInfo> {
 
         private static final long serialVersionUID = 4641819017764643297L;
 
-        static final Property<VersionedLayerInfo> TYPE = new BeanProperty<VersionedLayerInfo>("type",
-                "geometryType") {
+        static final Property<VersionedLayerInfo> TYPE = new BeanProperty<VersionedLayerInfo>(
+                "type", "geometryType") {
 
             private static final long serialVersionUID = 1L;
 
@@ -267,7 +268,8 @@ public class VersionedLayersPage extends GeoServerSecuredPage implements IHeader
             }
         };
 
-        static final Property<VersionedLayerInfo> NAME = new BeanProperty<VersionedLayerInfo>("name", "name");
+        static final Property<VersionedLayerInfo> NAME = new BeanProperty<VersionedLayerInfo>(
+                "name", "name");
 
         @SuppressWarnings("unchecked")
         static final List<Property<VersionedLayerInfo>> PROPERTIES = Arrays.asList(TYPE, NAME);
@@ -291,8 +293,8 @@ public class VersionedLayersPage extends GeoServerSecuredPage implements IHeader
         /**
          * @see org.geoserver.web.wicket.GeoServerDataProvider#newModel(java.lang.Object)
          */
-        public IModel<VersionedLayerInfo> newModel(final Object GSSLayerInfo) {
-            return new VersionedLayerDetachableModel((VersionedLayerInfo) GSSLayerInfo);
+        public IModel<VersionedLayerInfo> newModel(final Object versionedLayerInfo) {
+            return new VersionedLayerDetachableModel((VersionedLayerInfo) versionedLayerInfo);
         }
 
         /**

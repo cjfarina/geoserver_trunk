@@ -20,8 +20,6 @@ public class VersionedLayerInfo implements Comparable<VersionedLayerInfo>, Seria
 
     private static final long serialVersionUID = 7737632010950106656L;
 
-    public static final String GSS_PUBLISHED_METADATA_KEY = "gss.published";
-
     private final String ns;
 
     private final String name;

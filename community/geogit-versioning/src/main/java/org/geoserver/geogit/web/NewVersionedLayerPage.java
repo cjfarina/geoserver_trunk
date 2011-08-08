@@ -7,6 +7,7 @@ package org.geoserver.geogit.web;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Comparator;
+import java.util.Iterator;
 import java.util.List;
 import java.util.ListIterator;
 import java.util.logging.Level;
@@ -116,7 +117,8 @@ public class NewVersionedLayerPage extends GeoServerSecuredPage {
 
             @Override
             public List<VersionedLayerInfo> getSelection() {
-                List<VersionedLayerInfo> selection = new ArrayList<VersionedLayerInfo>(super.getSelection());
+                List<VersionedLayerInfo> selection = new ArrayList<VersionedLayerInfo>(
+                        super.getSelection());
                 for (ListIterator<VersionedLayerInfo> li = selection.listIterator(); li.hasNext();) {
                     VersionedLayerInfo next = li.next();
                     if (next.isPublished() || next.isReadOnly()) {
@@ -136,21 +138,21 @@ public class NewVersionedLayerPage extends GeoServerSecuredPage {
             protected Component getComponentForProperty(String id, IModel itemModel,
                     Property<VersionedLayerInfo> property) {
 
-                final VersionedLayerInfo gssType = (VersionedLayerInfo) itemModel.getObject();
+                final VersionedLayerInfo versionedType = (VersionedLayerInfo) itemModel.getObject();
 
                 if (property == NewVersionedLayerPageProvider.PUBLISHED) {
                     final CatalogIconFactory icons = CatalogIconFactory.get();
                     final ResourceReference icon;
                     final String labelKey;
-                    if (gssType.isPublished()) {
+                    if (versionedType.isPublished()) {
                         icon = icons.getEnabledIcon();
-                        labelKey = "NewGSSLayerPage.alreadyPublished";
-                    } else if (gssType.isReadOnly()) {
+                        labelKey = "NewVersionedLayerPage.alreadyPublished";
+                    } else if (versionedType.isReadOnly()) {
                         icon = new ResourceReference(NewVersionedLayerPage.class, "prohibited.gif");
-                        labelKey = "NewGSSLayerPage.readOnly";
+                        labelKey = "NewVersionedLayerPage.readOnly";
                     } else {
                         icon = icons.getDisabledIcon();
-                        labelKey = "NewGSSLayerPage.unpublished";
+                        labelKey = "NewVersionedLayerPage.unpublished";
                     }
                     IModel<String> label = new ResourceModel(labelKey);
                     IconWithLabel iconLabel = new IconWithLabel(id, icon, label);
@@ -158,7 +160,8 @@ public class NewVersionedLayerPage extends GeoServerSecuredPage {
                 }
                 if (property == NewVersionedLayerPageProvider.GEOMTYPE) {
                     final CatalogIconFactory icons = CatalogIconFactory.get();
-                    final ResourceReference icon = icons.getVectorIcon(gssType.getGeometryType());
+                    final ResourceReference icon = icons.getVectorIcon(versionedType
+                            .getGeometryType());
                     Fragment f = new Fragment(id, "iconFragment", NewVersionedLayerPage.this);
                     f.add(new Image("layerIcon", icon));
                     return f;
@@ -235,11 +238,11 @@ public class NewVersionedLayerPage extends GeoServerSecuredPage {
     }
 
     private void publishLayers(List<VersionedLayerInfo> selection) throws Exception {
-        final GEOGIT gss = GEOGIT.get();
+        final GEOGIT geogitFacade = GEOGIT.get();
         Name featureTypeName;
         for (VersionedLayerInfo info : selection) {
             featureTypeName = info.getName();
-            gss.initialize(featureTypeName);
+            geogitFacade.initialize(featureTypeName);
         }
     }
 
@@ -303,6 +306,11 @@ public class NewVersionedLayerPage extends GeoServerSecuredPage {
         @Override
         protected List<DataStoreInfo> load() {
             List<DataStoreInfo> stores = new ArrayList<DataStoreInfo>(getCatalog().getDataStores());
+            for (Iterator<DataStoreInfo> it = stores.iterator(); it.hasNext();) {
+                if (!it.next().isEnabled()) {
+                    it.remove();
+                }
+            }
             Collections.sort(stores, new Comparator<StoreInfo>() {
                 public int compare(StoreInfo o1, StoreInfo o2) {
                     if (o1.getWorkspace().equals(o2.getWorkspace())) {

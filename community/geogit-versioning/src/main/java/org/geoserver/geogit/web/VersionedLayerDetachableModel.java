@@ -33,11 +33,11 @@ public class VersionedLayerDetachableModel extends LoadableDetachableModel<Versi
 
     private static VersionedLayerInfo load(FeatureTypeInfo featureType) {
         final Name featureTypeName = featureType.getQualifiedName();
-        final GEOGIT gss = GEOGIT.get();
-        final boolean published = gss.isReplicated(featureTypeName);
-        VersionedLayerInfo gssLayerInfo = new VersionedLayerInfo(featureType);
-        gssLayerInfo.setPublished(published);
-        return gssLayerInfo;
+        final GEOGIT geogitFacade = GEOGIT.get();
+        final boolean published = geogitFacade.isReplicated(featureTypeName);
+        VersionedLayerInfo versionedLayerInfo = new VersionedLayerInfo(featureType);
+        versionedLayerInfo.setPublished(published);
+        return versionedLayerInfo;
     }
 
     public static List<VersionedLayerInfo> getItems() {
@@ -55,8 +55,8 @@ public class VersionedLayerDetachableModel extends LoadableDetachableModel<Versi
         List<VersionedLayerInfo> types = new ArrayList<VersionedLayerInfo>();
         for (Name typeName : typeNames) {
             FeatureTypeInfo featureType = catalog.getFeatureTypeByName(typeName);
-            VersionedLayerInfo gssLayerInfo = load(featureType);
-            types.add(gssLayerInfo);
+            VersionedLayerInfo versionedLayerInfo = load(featureType);
+            types.add(versionedLayerInfo);
         }
         return types;
     }
