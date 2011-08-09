@@ -53,6 +53,13 @@ public class EntryImpl {
     }
 
     /**
+     * @param author the author to set
+     */
+    public void setAuthor(List<PersonImpl> author) {
+        this.author = author;
+    }
+
+    /**
      * @return the category
      */
     public List<CategoryImpl> getCategory() {
@@ -63,6 +70,13 @@ public class EntryImpl {
     }
 
     /**
+     * @param category the category to set
+     */
+    public void setCategory(List<CategoryImpl> category) {
+        this.category = category;
+    }
+
+    /**
      * @return the content
      */
     public ContentImpl getContent() {
@@ -70,8 +84,7 @@ public class EntryImpl {
     }
 
     /**
-     * @param content
-     *            the content to set
+     * @param content the content to set
      */
     public void setContent(ContentImpl content) {
         this.content = content;
@@ -88,6 +101,13 @@ public class EntryImpl {
     }
 
     /**
+     * @param contributor the contributor to set
+     */
+    public void setContributor(List<PersonImpl> contributor) {
+        this.contributor = contributor;
+    }
+
+    /**
      * @return the id
      */
     public String getId() {
@@ -95,8 +115,7 @@ public class EntryImpl {
     }
 
     /**
-     * @param id
-     *            the id to set
+     * @param id the id to set
      */
     public void setId(String id) {
         this.id = id;
@@ -113,6 +132,13 @@ public class EntryImpl {
     }
 
     /**
+     * @param link the link to set
+     */
+    public void setLink(List<LinkImpl> link) {
+        this.link = link;
+    }
+
+    /**
      * @return the published
      */
     public Date getPublished() {
@@ -120,8 +146,7 @@ public class EntryImpl {
     }
 
     /**
-     * @param published
-     *            the published to set
+     * @param published the published to set
      */
     public void setPublished(Date published) {
         this.published = published;
@@ -135,8 +160,7 @@ public class EntryImpl {
     }
 
     /**
-     * @param rights
-     *            the rights to set
+     * @param rights the rights to set
      */
     public void setRights(String rights) {
         this.rights = rights;
@@ -150,8 +174,7 @@ public class EntryImpl {
     }
 
     /**
-     * @param source
-     *            the source to set
+     * @param source the source to set
      */
     public void setSource(String source) {
         this.source = source;
@@ -165,8 +188,7 @@ public class EntryImpl {
     }
 
     /**
-     * @param summary
-     *            the summary to set
+     * @param summary the summary to set
      */
     public void setSummary(String summary) {
         this.summary = summary;
@@ -180,8 +202,7 @@ public class EntryImpl {
     }
 
     /**
-     * @param title
-     *            the title to set
+     * @param title the title to set
      */
     public void setTitle(String title) {
         this.title = title;
@@ -195,8 +216,7 @@ public class EntryImpl {
     }
 
     /**
-     * @param updated
-     *            the updated to set
+     * @param updated the updated to set
      */
     public void setUpdated(Date updated) {
         this.updated = updated;
@@ -210,8 +230,7 @@ public class EntryImpl {
     }
 
     /**
-     * @param where
-     *            the {@code georss:where} object, usually a bounding box, point, or polygon
+     * @param where the {@code georss:where} object, usually a bounding box, point, or polygon
      */
     public void setWhere(Object where) {
         this.where = where;
