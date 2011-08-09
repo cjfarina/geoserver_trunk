@@ -3,11 +3,14 @@ package org.geoserver.data.versioning;
 import static org.geotools.data.Transaction.AUTO_COMMIT;
 
 import java.io.IOException;
+import java.util.ArrayList;
 import java.util.HashSet;
+import java.util.Iterator;
 import java.util.List;
 import java.util.Set;
 
 import org.geogit.api.GeoGIT;
+import org.geogit.api.ObjectId;
 import org.geogit.api.Ref;
 import org.geogit.repository.Repository;
 import org.geotools.data.FeatureReader;
@@ -39,11 +42,31 @@ public class VersioningFeatureStore<T extends FeatureType, F extends Feature> ex
         super(unversioned, repo);
     }
 
+    /**
+     * @return the object id of the current HEAD's commit if we're not inside a transaction, or
+     *         {@code null} if we're inside a transaction
+     * @see VersioningFeatureSource#getCurrentVersion()
+     */
+    @Override
+    public ObjectId getCurrentVersion() {
+        final Transaction transaction = getTransaction();
+        if (null != transaction && !Transaction.AUTO_COMMIT.equals(transaction)) {
+            return null;
+        }
+        return super.getCurrentVersion();
+    }
+
+    /**
+     * @see org.geotools.data.FeatureStore#getTransaction()
+     */
     @Override
     public Transaction getTransaction() {
         return ((FeatureStore) unversioned).getTransaction();
     }
 
+    /**
+     * @see org.geotools.data.FeatureStore#setTransaction(org.geotools.data.Transaction)
+     */
     @Override
     public void setTransaction(final Transaction transaction) {
         ((FeatureStore) unversioned).setTransaction(transaction);
@@ -58,28 +81,43 @@ public class VersioningFeatureStore<T extends FeatureType, F extends Feature> ex
         return ((FeatureStore<T, F>) unversioned);
     }
 
+    /**
+     * @see org.geotools.data.FeatureStore#addFeatures(org.geotools.feature.FeatureCollection)
+     */
     @Override
     public List<FeatureId> addFeatures(FeatureCollection<T, F> collection) throws IOException {
         final FeatureStore<T, F> unversioned = getUnversionedStore();
-        List<FeatureId> featureIds = unversioned.addFeatures(collection);
-
+        List<FeatureId> unversionedIds = unversioned.addFeatures(collection);
+        
         if (isVersioned()) {
+            List<FeatureId> versionedIds = new ArrayList<FeatureId>(unversionedIds.size());
             checkTransaction();
             try {
-                Name typeName = getSchema().getName();
+                final Name typeName = getSchema().getName();
                 VersioningTransactionState versioningState = getVersioningState();
+                
                 FilterFactory2 ff = CommonFactoryFinder.getFilterFactory2(null);
-                Id id = ff.id(new HashSet<Identifier>(featureIds));
+                
+                Id id = ff.id(new HashSet<Identifier>(unversionedIds));
                 FeatureCollection<T, F> inserted = unversioned.getFeatures(id);
-                int size = inserted.size();
                 versioningState.stageInsert(typeName, inserted);
+                
+                for(Iterator<FeatureId> fids = unversionedIds.iterator(); fids.hasNext(); ){
+                    FeatureId fid = fids.next();
+                    String featureVersion = getFeatureVersion(typeName, fid.getID(), null);
+                    versionedIds.add(ff.resourceId(fid.getID(), featureVersion));
+                }
             } catch (Exception e) {
                 Throwables.propagate(e);
             }
+            return versionedIds;
         }
-        return featureIds;
+        return unversionedIds;
     }
 
+    /**
+     * @see org.geotools.data.FeatureStore#removeFeatures(org.opengis.filter.Filter)
+     */
     @Override
     public void removeFeatures(Filter filter) throws IOException {
         final FeatureStore<T, F> unversioned = getUnversionedStore();
@@ -97,6 +135,10 @@ public class VersioningFeatureStore<T extends FeatureType, F extends Feature> ex
         unversioned.removeFeatures(filter);
     }
 
+    /**
+     * @see org.geotools.data.FeatureStore#modifyFeatures(org.opengis.feature.type.Name[],
+     *      java.lang.Object[], org.opengis.filter.Filter)
+     */
     @Override
     public void modifyFeatures(final Name[] attributeNames, final Object[] attributeValues,
             final Filter filter) throws IOException {
