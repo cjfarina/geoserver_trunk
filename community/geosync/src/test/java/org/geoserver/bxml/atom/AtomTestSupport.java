@@ -6,7 +6,7 @@ import org.geoserver.gss.internal.atom.GeneratorImpl;
 import org.geoserver.gss.internal.atom.LinkImpl;
 import org.geoserver.gss.internal.atom.PersonImpl;
 
-public class AtomTestSupport extends BxmlTestSupport {
+public abstract class AtomTestSupport extends BxmlTestSupport {
 
     protected void testPerson(String name, String email, String uri, PersonImpl person) {
         assertEquals(name, person.getName());

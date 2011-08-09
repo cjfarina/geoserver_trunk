@@ -149,7 +149,7 @@ public abstract class GSSFunctionalTestSupport extends GSSTestSupport {
         FeatureTypeInfo typeInfo = getCatalog().getFeatureTypeByName(typeName);
         SimpleFeatureStore store = (SimpleFeatureStore) typeInfo.getFeatureSource(null, null);
         assertTrue(store instanceof VersioningFeatureStore);
-        
+
         Transaction tx = new DefaultTransaction();
         store.setTransaction(tx);
         tx.putProperty(GeoToolsCommitStateResolver.GEOGIT_COMMIT_MESSAGE, commitMessage);

@@ -38,7 +38,7 @@ public class BXMLDecoderUtil {
             r.next();
         }
     }
-    
+
     public static Object readValue(BxmlStreamReader r) throws IOException, Exception {
         EventType event = r.next();
         Object value = null;
@@ -48,7 +48,7 @@ public class BXMLDecoderUtil {
         } else if (EventType.VALUE_BOOL == event) {
             value = Boolean.valueOf(r.getBooleanValue());
             event = r.getEventType();
-        } else if (EventType.VALUE_BYTE== event) {
+        } else if (EventType.VALUE_BYTE == event) {
             value = r.getByteValue();
             event = r.getEventType();
         } else if (EventType.VALUE_DOUBLE == event) {
@@ -63,8 +63,8 @@ public class BXMLDecoderUtil {
         } else if (EventType.VALUE_LONG == event) {
             value = r.getLongValue();
             event = r.getEventType();
-        } 
-        
+        }
+
         if (EventType.START_ELEMENT == event) {
             value = new GeometryDecoder().decode(r);
             r.nextTag();

@@ -17,7 +17,8 @@ public class LinearRingDecoderTest extends BxmlTestSupport {
         Object userData = line.getUserData();
         assertEquals(CRS.decode("urn:ogc:def:crs:EPSG::900913"), userData);
         assertNotNull(line);
-        testLineString(new double[][] { { 5, 7 }, { 9, 10 }, { 11, 15 }, { 13, 17 }, { 5, 7 } }, line);
+        testLineString(new double[][] { { 5, 7 }, { 9, 10 }, { 11, 15 }, { 13, 17 }, { 5, 7 } },
+                line);
         reader.close();
     }
 
@@ -30,7 +31,8 @@ public class LinearRingDecoderTest extends BxmlTestSupport {
         Object userData = line.getUserData();
         assertEquals(CRS.decode("urn:ogc:def:crs:EPSG::900913"), userData);
         assertNotNull(line);
-        testLineString(new double[][] { { 15, 16 }, { 17, 18 }, { 19, 20 }, { 21, 22 }, { 15, 16 } }, line);
+        testLineString(
+                new double[][] { { 15, 16 }, { 17, 18 }, { 19, 20 }, { 21, 22 }, { 15, 16 } }, line);
         reader.close();
     }
 

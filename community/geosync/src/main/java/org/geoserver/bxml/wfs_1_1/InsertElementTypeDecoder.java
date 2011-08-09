@@ -11,8 +11,6 @@ import net.opengis.wfs.WfsFactory;
 import net.opengis.wfs.impl.WfsFactoryImpl;
 
 import org.eclipse.emf.ecore.EObject;
-import org.geoserver.bxml.SequenceDecoder;
-import org.geoserver.bxml.SetterDecoder;
 import org.geoserver.bxml.base.SimpleDecoder;
 import org.geoserver.catalog.Catalog;
 import org.gvsig.bxml.stream.BxmlStreamReader;

@@ -5,7 +5,6 @@ import java.io.ByteArrayInputStream;
 import org.geoserver.bxml.BxmlTestSupport;
 import org.geotools.referencing.CRS;
 import org.gvsig.bxml.stream.BxmlStreamReader;
-import org.opengis.filter.Filter;
 
 import com.vividsolutions.jts.geom.Geometry;
 

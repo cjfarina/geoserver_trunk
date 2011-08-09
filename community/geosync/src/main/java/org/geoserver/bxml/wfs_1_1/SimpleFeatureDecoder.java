@@ -9,7 +9,6 @@ import java.util.Set;
 import javax.xml.namespace.QName;
 
 import org.geoserver.bxml.Decoder;
-import org.geoserver.bxml.SequenceDecoder;
 import org.geoserver.bxml.SetterDecoder;
 import org.geoserver.catalog.Catalog;
 import org.geoserver.catalog.FeatureTypeInfo;

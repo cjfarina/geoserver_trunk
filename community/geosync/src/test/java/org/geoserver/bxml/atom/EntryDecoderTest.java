@@ -13,7 +13,6 @@ import org.geotools.filter.text.ecql.ECQL;
 import org.gvsig.bxml.stream.BxmlStreamReader;
 import org.opengis.filter.Filter;
 
-import com.vividsolutions.jts.geom.LineString;
 import com.vividsolutions.jts.geom.Polygon;
 
 public class EntryDecoderTest extends AtomTestSupport {

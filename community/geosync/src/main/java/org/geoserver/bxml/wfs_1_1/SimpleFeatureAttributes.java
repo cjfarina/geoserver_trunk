@@ -15,5 +15,4 @@ public class SimpleFeatureAttributes {
         this.attributes = attributes;
     }
 
-
 }

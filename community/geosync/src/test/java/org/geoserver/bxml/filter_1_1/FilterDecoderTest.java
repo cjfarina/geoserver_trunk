@@ -130,14 +130,15 @@ public class FilterDecoderTest extends BxmlTestSupport {
         testFilterFromFile("[ geometry5 overlaps POLYGON ((10 10, 20 20, 30 30, 40 40, 10 10)) ]",
                 "overlaps");
     }
-    
+
     public void testCrosses() throws Exception {
         testFilterFromFile("[ geometry6 crosses POLYGON ((10 10, 20 20, 30 30, 40 40, 10 10)) ]",
                 "crosses");
     }
-    
+
     public void testIntersects() throws Exception {
-        testFilterFromFile("[ geometry7 intersects POLYGON ((10 10, 20 20, 30 30, 40 40, 10 10)) ]",
+        testFilterFromFile(
+                "[ geometry7 intersects POLYGON ((10 10, 20 20, 30 30, 40 40, 10 10)) ]",
                 "intersects");
     }
 
@@ -145,22 +146,25 @@ public class FilterDecoderTest extends BxmlTestSupport {
         testFilterFromFile("[ geometry8 contains POLYGON ((10 10, 20 20, 30 30, 40 40, 10 10)) ]",
                 "contains");
     }
-    
+
     public void testDWithin() throws Exception {
-        testFilterFromFile("[ geometry9 dwithin POLYGON ((10 10, 20 20, 30 30, 40 40, 10 10)), distance: 101.25 ]",
+        testFilterFromFile(
+                "[ geometry9 dwithin POLYGON ((10 10, 20 20, 30 30, 40 40, 10 10)), distance: 101.25 ]",
                 "dwithin");
     }
 
     public void testBeyond() throws Exception {
-        testFilterFromFile("[ geometry10 beyond POLYGON ((10 10, 20 20, 30 30, 40 40, 10 10)), distance: 142.23 ]",
+        testFilterFromFile(
+                "[ geometry10 beyond POLYGON ((10 10, 20 20, 30 30, 40 40, 10 10)), distance: 142.23 ]",
                 "beyond");
     }
-    
+
     public void testBBox() throws Exception {
-        testFilterFromFile("[ geometry11 bbox POLYGON ((13.0983 31.5899, 13.0983 42.8143, 35.5472 42.8143, 35.5472 31.5899, 13.0983 31.5899)) ]",
+        testFilterFromFile(
+                "[ geometry11 bbox POLYGON ((13.0983 31.5899, 13.0983 42.8143, 35.5472 42.8143, 35.5472 31.5899, 13.0983 31.5899)) ]",
                 "bbox");
     }
-    
+
     private BxmlStreamReader getXmlReader(final Filter expected) throws Exception {
         ByteArrayOutputStream out = new ByteArrayOutputStream();
 
