@@ -32,8 +32,10 @@ public abstract class LongTask<V> implements Callable<V> {
     }
 
     public void cancel() {
-        this.status = Status.CANCELLING;
-        progressListener.setCanceled(true);
+        if (!isDone()) {
+            this.status = Status.CANCELLING;
+            progressListener.setCanceled(true);
+        }
     }
 
     public void addProgressListener(final ProgressListener listener) {
@@ -46,6 +48,10 @@ public abstract class LongTask<V> implements Callable<V> {
 
     public String getProgressMessage() {
         return progressListener.getDescription();
+    }
+
+    protected void setProgressMessage(String message) {
+        progressListener.setDescription(message);
     }
 
     /**

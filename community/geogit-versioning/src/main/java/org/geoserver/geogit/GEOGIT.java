@@ -28,7 +28,6 @@ import org.geoserver.platform.GeoServerExtensions;
 import org.geoserver.task.LongTaskMonitor;
 import org.geotools.data.FeatureSource;
 import org.geotools.data.FeatureStore;
-import org.geotools.util.NullProgressListener;
 import org.geotools.util.logging.Logging;
 import org.opengis.feature.type.Name;
 import org.springframework.beans.factory.DisposableBean;
@@ -43,8 +42,6 @@ import com.sleepycat.je.Environment;
  * 
  */
 public class GEOGIT implements DisposableBean {
-
-    private static final NullProgressListener NULL_PROGRESS_LISTENER = new NullProgressListener();
 
     private static final Logger LOGGER = Logging.getLogger(GEOGIT.class);
 

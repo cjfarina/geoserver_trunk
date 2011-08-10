@@ -13,6 +13,13 @@ public class ProgressBar extends Panel {
 
     public ProgressBar(final String id, final IModel<Number> limitModel,
             final IModel<Number> progressModel, final IModel<String> progressMessageModel) {
+        this(id, limitModel, progressModel, progressMessageModel, null);
+    }
+
+    public ProgressBar(final String id, final IModel<Number> limitModel,
+            final IModel<Number> progressModel, final IModel<String> progressMessageModel,
+            final IModel<String> tooltipModel) {
+
         super(id);
         setOutputMarkupId(true);
 
@@ -44,7 +51,10 @@ public class ProgressBar extends Panel {
 
         add(usageBar);
         add(excessBar);
-        add(new Label("progressLabel", progressMessageModel));
+        Label progressMessage = new Label("progressLabel", progressMessageModel);
+        add(progressMessage);
+        if (tooltipModel != null) {
+            progressMessage.add(new AttributeModifier("title", true, tooltipModel));
+        }
     }
-
 }

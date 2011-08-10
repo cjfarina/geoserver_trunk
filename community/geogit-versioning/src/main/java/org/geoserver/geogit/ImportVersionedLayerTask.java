@@ -2,12 +2,14 @@ package org.geoserver.geogit;
 
 import java.util.logging.Logger;
 
+import org.geogit.api.AbstractGeoGitOp;
 import org.geogit.api.GeoGIT;
 import org.geogit.api.RevCommit;
 import org.geogit.repository.WorkingTree;
 import org.geoserver.task.LongTask;
 import org.geotools.data.FeatureSource;
 import org.geotools.feature.FeatureCollection;
+import org.geotools.util.SubProgressListener;
 import org.geotools.util.logging.Logging;
 import org.opengis.feature.type.FeatureType;
 import org.opengis.feature.type.Name;
@@ -33,14 +35,20 @@ class ImportVersionedLayerTask extends LongTask<RevCommit> {
         this.featureTypeName = featureSource.getName();
 
         final String title = "Import " + featureTypeName.getLocalPart() + " as Versioned";
-        final String description = "GeoSynchronizationService is creating the initial import of this FeatureType";
+        final String description = "GeoGit is creating the initial import of this FeatureType";
         setTitle(title);
         setDescription(description);
+        setProgressMessage("Waiting for operation to start");
     }
 
     @SuppressWarnings("rawtypes")
     @Override
     protected RevCommit callInternal(final ProgressListener listener) throws Exception {
+
+        listener.started();
+        final float insertProgressAmount = 33f;
+        final float addProgressAmount = 33f;
+        final float commitProgressAmount = 34f;
 
         final FeatureType schema = featureSource.getSchema();
         final FeatureCollection features = featureSource.getFeatures();
@@ -48,29 +56,46 @@ class ImportVersionedLayerTask extends LongTask<RevCommit> {
         final String commitMessage = "Initial import of FeatureType " + featureTypeName.getURI();
 
         // geoGit.checkout();TODO: check out master branch
+        setProgressMessage("Copying features to working tree");
         WorkingTree workingTree = geoGit.getRepository().getWorkingTree();
         workingTree.init(schema);
         try {
-            workingTree.insert(features, listener);
+            workingTree.insert(features, new SubProgressListener(listener, insertProgressAmount));
+            if (listener.isCanceled()) {
+                return null;
+            }
         } catch (Exception e) {
-            e.printStackTrace();
+            setProgressMessage("Exception ocuurred, cleaning up working tree...");
             workingTree.delete(featureTypeName);
+            setProgressMessage("Error: " + e.getMessage());
             throw e;
         }
 
-        RevCommit revCommit = null;
+        final RevCommit revCommit;
         if (listener.isCanceled()) {
-            LOGGER.warning("Import process for " + featureTypeName.getLocalPart() + " cancelled.");
+            String msg = "Import process for " + featureTypeName.getLocalPart() + " cancelled.";
+            LOGGER.warning(msg);
+            setProgressMessage(msg);
+            revCommit = null;
         } else {
-            final Name name = schema.getName();
-            final String nsUri = name.getNamespaceURI();
-            final String typeName = name.getLocalPart();
             // add only the features of this type, other imports may be running in parallel and we
             // don't want to commit them all
             // geoGit.add().addPattern(pattern).call();
-            geoGit.add().call();
-            revCommit = geoGit.commit().setMessage(commitMessage).call();
-            LOGGER.info("Initial commit of " + featureTypeName + ": " + revCommit.getId());
+            setProgressMessage("Staging changes...");
+            geoGit.add().setProgressListener(new SubProgressListener(listener, addProgressAmount))
+                    .call();
+            if (listener.isCanceled()) {
+                return null;
+            }
+            setProgressMessage("Committing....");
+            AbstractGeoGitOp<RevCommit> commitOp = geoGit.commit().setMessage(commitMessage)
+                    .setProgressListener(new SubProgressListener(listener, commitProgressAmount));
+            revCommit = commitOp.call();
+            if (!listener.isCanceled()) {
+                setProgressMessage("Committed.");
+                listener.complete();
+                LOGGER.info("Initial commit of " + featureTypeName + ": " + revCommit.getId());
+            }
         }
         return revCommit;
     }

@@ -95,7 +95,7 @@ public class LongTasksPanel extends Panel {
         longTasksTablePanel.setVisible(visible);
 
         // refresh the table every 1 second
-        add(new AbstractAjaxTimerBehavior(Duration.seconds(1)) {
+        add(new AbstractAjaxTimerBehavior(Duration.seconds(2)) {
             private static final long serialVersionUID = 1L;
 
             @Override
@@ -248,7 +248,11 @@ public class LongTasksPanel extends Panel {
                 IModel<String> progressMessageModel = new Model<String>(PROGRESS_FORMAT.format(task
                         .getProgress() / 100));
 
-                return new ProgressBar(id, limitModel, progressModel, progressMessageModel);
+                String progressMessage = task.getProgressMessage();
+                IModel<String> tooltipModel = new Model<String>(progressMessage);
+
+                return new ProgressBar(id, limitModel, progressModel, progressMessageModel,
+                        tooltipModel);
 
             } else if (GeoServerLongTaskDataProvider.ACTION.equals(property)) {
                 return actionLink(id, itemModel);
