@@ -4,7 +4,6 @@
  */
 package org.geoserver.geogit.web;
 
-import java.io.IOException;
 import java.text.SimpleDateFormat;
 import java.util.Arrays;
 import java.util.Comparator;
@@ -14,6 +13,7 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 
+import org.apache.wicket.AttributeModifier;
 import org.apache.wicket.Component;
 import org.apache.wicket.ResourceReference;
 import org.apache.wicket.ajax.AjaxRequestTarget;
@@ -28,10 +28,11 @@ import org.apache.wicket.markup.html.link.BookmarkablePageLink;
 import org.apache.wicket.markup.html.panel.Fragment;
 import org.apache.wicket.model.AbstractReadOnlyModel;
 import org.apache.wicket.model.IModel;
+import org.apache.wicket.model.Model;
 import org.apache.wicket.util.template.TextTemplateHeaderContributor;
 import org.geogit.api.RevCommit;
-import org.geoserver.catalog.Catalog;
 import org.geoserver.catalog.FeatureTypeInfo;
+import org.geoserver.catalog.NamespaceInfo;
 import org.geoserver.geogit.GEOGIT;
 import org.geoserver.task.LongTask;
 import org.geoserver.task.web.LongTasksPanel;
@@ -41,8 +42,6 @@ import org.geoserver.web.wicket.GeoServerDataProvider;
 import org.geoserver.web.wicket.GeoServerDataProvider.Property;
 import org.geoserver.web.wicket.GeoServerDialog;
 import org.geoserver.web.wicket.GeoServerTablePanel;
-import org.opengis.feature.type.FeatureType;
-import org.opengis.feature.type.GeometryDescriptor;
 import org.opengis.feature.type.Name;
 
 import com.vividsolutions.jts.geom.Geometry;
@@ -153,11 +152,28 @@ public class VersionedLayersPage extends GeoServerSecuredPage implements IHeader
         return null;
     }
 
-    private Component cachedLayerLink(String id, IModel<VersionedLayerInfo> itemModel) {
-        IModel<Name> nameModel = VersionedLayerProvider.NAME.getModel(itemModel);
-        Name layerName = nameModel.getObject();
+    private Component cachedLayerLink(String id, VersionedLayerInfo layerInfo) {
+        Name layerName = layerInfo.getName();
+        String prefixedName;
         FeatureTypeInfo featureType = getCatalog().getFeatureTypeByName(layerName);
-        Label link = new Label(id, featureType.getPrefixedName());
+        if (featureType == null) {
+            NamespaceInfo namespace = getCatalog().getNamespaceByURI(layerName.getNamespaceURI());
+            if (namespace == null) {
+                prefixedName = layerName.toString();
+            } else {
+                prefixedName = namespace.getPrefix() + ":" + layerName.getLocalPart();
+            }
+        } else {
+            prefixedName = featureType.getPrefixedName();
+        }
+        Label link = new Label(id, prefixedName);
+        if (null != layerInfo.getErrorMessage()) {
+            link.add(new AttributeModifier("title", true, new Model<String>(layerInfo
+                    .getErrorMessage())));
+            link.add(new AttributeModifier("style", true, new Model<String>(
+                    "font-style: italic; text-decoration: line-through;")));
+        }
+
         return link;
     }
 
@@ -201,25 +217,22 @@ public class VersionedLayersPage extends GeoServerSecuredPage implements IHeader
             if (property == VersionedLayerProvider.TYPE) {
                 final CatalogIconFactory icons = CatalogIconFactory.get();
                 Fragment f = new Fragment(id, "iconFragment", VersionedLayersPage.this);
-                VersionedLayerInfo layerInfo = (VersionedLayerInfo) itemModel.getObject();
-                Name typeName = layerInfo.getName();
-                String ns = typeName.getNamespaceURI();
-                String name = typeName.getLocalPart();
-                Catalog catalog = getGeoServer().getCatalog();
-                FeatureTypeInfo info = catalog.getResourceByName(ns, name, FeatureTypeInfo.class);
+                final VersionedLayerInfo layerInfo = (VersionedLayerInfo) itemModel.getObject();
+
                 ResourceReference layerIcon;
-                try {
-                    FeatureType featureType;
-                    featureType = info.getFeatureType();
-                    GeometryDescriptor gd = featureType.getGeometryDescriptor();
-                    layerIcon = icons.getVectoryIcon(gd);
-                } catch (IOException e) {
+
+                Class<? extends Geometry> geometryType = layerInfo.getGeometryType();
+                if (geometryType == null) {
                     layerIcon = CatalogIconFactory.UNKNOWN_ICON;
+                } else {
+                    layerIcon = icons.getVectorIcon(geometryType);
                 }
+
                 f.add(new Image("layerIcon", layerIcon));
                 return f;
             } else if (property == VersionedLayerProvider.NAME) {
-                return cachedLayerLink(id, itemModel);
+                final VersionedLayerInfo layerInfo = (VersionedLayerInfo) itemModel.getObject();
+                return cachedLayerLink(id, layerInfo);
             }
             throw new IllegalArgumentException("Don't know a property named " + property.getName());
         }

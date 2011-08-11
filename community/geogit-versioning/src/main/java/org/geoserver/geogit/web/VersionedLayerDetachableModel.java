@@ -27,8 +27,7 @@ public class VersionedLayerDetachableModel extends LoadableDetachableModel<Versi
     @Override
     protected VersionedLayerInfo load() {
         Catalog catalog = GeoServerApplication.get().getCatalog();
-        FeatureTypeInfo featureType = catalog.getFeatureTypeByName(typeName);
-        return load(featureType);
+        return load(catalog, typeName);
     }
 
     private static VersionedLayerInfo load(FeatureTypeInfo featureType) {
@@ -54,11 +53,21 @@ public class VersionedLayerDetachableModel extends LoadableDetachableModel<Versi
         Catalog catalog = GeoServerApplication.get().getCatalog();
         List<VersionedLayerInfo> types = new ArrayList<VersionedLayerInfo>();
         for (Name typeName : typeNames) {
-            FeatureTypeInfo featureType = catalog.getFeatureTypeByName(typeName);
-            VersionedLayerInfo versionedLayerInfo = load(featureType);
+            VersionedLayerInfo versionedLayerInfo = load(catalog, typeName);
             types.add(versionedLayerInfo);
         }
         return types;
+    }
+
+    private static VersionedLayerInfo load(final Catalog catalog, final Name typeName) {
+        FeatureTypeInfo featureType = catalog.getFeatureTypeByName(typeName);
+        VersionedLayerInfo versionedLayerInfo;
+        if (null == featureType) {
+            versionedLayerInfo = new VersionedLayerInfo(typeName);
+        } else {
+            versionedLayerInfo = load(featureType);
+        }
+        return versionedLayerInfo;
     }
 
 }

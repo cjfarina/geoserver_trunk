@@ -34,13 +34,23 @@ public class VersionedLayerInfo implements Comparable<VersionedLayerInfo>, Seria
 
     private String errorMessage;
 
+    public VersionedLayerInfo(final Name typeName) {
+        this.ns = typeName.getNamespaceURI();
+        this.name = typeName.getLocalPart();
+        this.geometryType = null;
+        this.enabled = false;
+        this.errorMessage = "Feature type does not exist in Catalog";
+    }
+
     @SuppressWarnings({ "rawtypes", "unchecked" })
     public VersionedLayerInfo(final FeatureTypeInfo featureType) {
         final Name qualifiedName = featureType.getQualifiedName();
         this.ns = qualifiedName.getNamespaceURI();
         this.name = qualifiedName.getLocalPart();
         this.enabled = featureType.enabled();
-
+        if (!this.enabled) {
+            errorMessage = "FeatureType is disabled in Catalog";
+        }
         GeometryDescriptor geometryDescriptor;
         if (enabled) {
             try {
