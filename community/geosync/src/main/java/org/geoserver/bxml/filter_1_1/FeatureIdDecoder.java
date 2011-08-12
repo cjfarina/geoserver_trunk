@@ -28,7 +28,7 @@ public class FeatureIdDecoder implements Decoder<FeatureId> {
     public FeatureId decode(final BxmlStreamReader r) throws Exception {
         r.require(EventType.START_ELEMENT, OGC.FeatureId.getNamespaceURI(),
                 OGC.FeatureId.getLocalPart());
-        final String id = r.getAttributeValue(fid.getNamespaceURI(), fid.getLocalPart());
+        final String id = r.getAttributeValue(null, fid.getLocalPart());
 
         r.nextTag();
         r.require(EventType.END_ELEMENT, OGC.FeatureId.getNamespaceURI(),

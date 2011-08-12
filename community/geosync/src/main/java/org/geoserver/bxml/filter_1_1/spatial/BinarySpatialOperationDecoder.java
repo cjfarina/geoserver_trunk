@@ -11,8 +11,10 @@ import static org.geotools.filter.v1_1.OGC.Within;
 
 import javax.xml.namespace.QName;
 
+import org.geoserver.bxml.ChoiceDecoder;
 import org.geoserver.bxml.filter_1_1.AbstractTypeDecoder;
 import org.geoserver.bxml.filter_1_1.expression.ExpressionDecoder;
+import org.geoserver.bxml.gml_3_1.EnvelopeDecoder;
 import org.geoserver.bxml.gml_3_1.GeometryDecoder;
 import org.geotools.factory.CommonFactoryFinder;
 import org.geotools.factory.GeoTools;
@@ -25,11 +27,19 @@ import com.vividsolutions.jts.geom.Geometry;
 
 public class BinarySpatialOperationDecoder extends AbstractTypeDecoder<Filter> {
 
+    
     protected static FilterFactory2 ff = CommonFactoryFinder.getFilterFactory2(GeoTools
             .getDefaultHints());
 
+    @SuppressWarnings("rawtypes")
+    private ChoiceDecoder choice;
+
+    @SuppressWarnings("unchecked")
     public BinarySpatialOperationDecoder() {
         super(Equals, Disjoint, Touches, Within, Overlaps, Intersects, Crosses, Contains);
+        choice = new ChoiceDecoder<Object>();
+        choice.addOption(new GeometryDecoder());
+        choice.addOption(new EnvelopeDecoder());
     }
 
     @Override
@@ -38,7 +48,7 @@ public class BinarySpatialOperationDecoder extends AbstractTypeDecoder<Filter> {
         r.nextTag();
         Expression expression = new ExpressionDecoder().decode(r);
         r.nextTag();
-        Geometry geometry = new GeometryDecoder().decode(r);
+        Object geometry = choice.decode(r);
         r.nextTag();
 
         Filter f;

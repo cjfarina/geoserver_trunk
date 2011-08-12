@@ -65,7 +65,9 @@ public class SetterDecoder<T> implements Decoder<T> {
         if (isCollection) {
             @SuppressWarnings("unchecked")
             Collection<T> c = (Collection<T>) this.setter.invoke(target, null);
-            c.add(propertyValue);
+            if(propertyValue != null){
+                c.add(propertyValue);
+            }
         } else {
             BeanUtils.setProperty(target, propertyName, propertyValue);
         }

@@ -4,8 +4,8 @@ import java.io.InputStream;
 
 import javax.xml.stream.XMLInputFactory;
 
-import junit.framework.TestCase;
-
+import org.geoserver.gss.GSSTestSupport;
+import org.geoserver.gss.functional.v_1_0_0.GSSFunctionalTestSupport;
 import org.geotools.filter.AttributeExpressionImpl;
 import org.geotools.filter.LiteralExpressionImpl;
 import org.gvsig.bxml.adapt.stax.XmlStreamReaderAdapter;
@@ -20,10 +20,10 @@ import com.vividsolutions.jts.geom.MultiPoint;
 import com.vividsolutions.jts.geom.Point;
 import com.vividsolutions.jts.geom.Polygon;
 
-public abstract class BxmlTestSupport extends TestCase {
+public abstract class BxmlTestSupport extends GSSFunctionalTestSupport {
 
     Boolean isBinary = false;
-
+    
     protected BxmlStreamReader getReader(final String resource) throws Exception {
         String isBinaryString = System.getProperty("isBinaryXML");
         if (isBinaryString != null) {

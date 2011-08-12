@@ -21,7 +21,9 @@ public class FilterDecoderTest extends BxmlTestSupport {
 
     FilterDecoder decoder;
 
-    public void setUp() {
+    @Override
+    protected void setUpInternal() throws Exception {
+        super.setUpInternal();
         decoder = new FilterDecoder();
     }
 

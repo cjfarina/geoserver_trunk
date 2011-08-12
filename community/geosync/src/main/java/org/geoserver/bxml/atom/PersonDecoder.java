@@ -36,6 +36,11 @@ public class PersonDecoder extends SimpleDecoder<PersonImpl> {
         seq.add(choice, 0, Integer.MAX_VALUE);
 
         r.nextTag();
+        
+        //if empty element
+        if(r.getElementName().equals(elemName) && r.getEventType() == EventType.END_ELEMENT){
+            return null;
+        }
         Iterator<Object> iterator = seq.decode(r);
         Iterators.toArray(iterator, Object.class);
 

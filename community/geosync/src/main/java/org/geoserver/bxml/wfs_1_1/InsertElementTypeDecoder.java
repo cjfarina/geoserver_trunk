@@ -13,6 +13,7 @@ import net.opengis.wfs.impl.WfsFactoryImpl;
 import org.eclipse.emf.ecore.EObject;
 import org.geoserver.bxml.base.SimpleDecoder;
 import org.geoserver.catalog.Catalog;
+import org.geoserver.platform.GeoServerExtensions;
 import org.gvsig.bxml.stream.BxmlStreamReader;
 import org.gvsig.bxml.stream.EventType;
 import org.opengis.feature.simple.SimpleFeature;
@@ -27,7 +28,7 @@ public class InsertElementTypeDecoder extends SimpleDecoder<EObject> {
     public InsertElementTypeDecoder() {
         super(INSERT);
         factory = WfsFactoryImpl.eINSTANCE;
-        this.catalog = null;
+        this.catalog = (Catalog) GeoServerExtensions.bean("catalog");
     }
 
     public InsertElementTypeDecoder(Catalog catalog) {

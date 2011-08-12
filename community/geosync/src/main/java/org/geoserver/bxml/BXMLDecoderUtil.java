@@ -7,6 +7,7 @@ import javax.xml.namespace.QName;
 
 import org.geoserver.bxml.atom.AbstractAtomEncoder;
 import org.geoserver.bxml.base.StringDecoder;
+import org.geoserver.bxml.gml_3_1.EnvelopeDecoder;
 import org.geoserver.bxml.gml_3_1.GeometryDecoder;
 import org.geotools.util.logging.Logging;
 import org.gvsig.bxml.stream.BxmlStreamReader;
@@ -39,6 +40,7 @@ public class BXMLDecoderUtil {
         }
     }
 
+    @SuppressWarnings("unchecked")
     public static Object readValue(BxmlStreamReader r) throws IOException, Exception {
         EventType event = r.next();
         Object value = null;
@@ -65,8 +67,13 @@ public class BXMLDecoderUtil {
             event = r.getEventType();
         }
 
+        @SuppressWarnings("rawtypes")
+        ChoiceDecoder choice = new ChoiceDecoder<Object>();
+        choice.addOption(new GeometryDecoder());
+        choice.addOption(new EnvelopeDecoder());
+        
         if (EventType.START_ELEMENT == event) {
-            value = new GeometryDecoder().decode(r);
+            value = choice.decode(r);
             r.nextTag();
         }
         return value;

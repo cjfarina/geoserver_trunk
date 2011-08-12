@@ -114,7 +114,7 @@ public abstract class GSSFunctionalTestSupport extends GSSTestSupport {
 
     }
 
-    private void recordDeleteCommit(final GSS gss, final Name typeName, final Filter filter,
+    protected void recordDeleteCommit(final GSS gss, final Name typeName, final Filter filter,
             final String commitMessage) throws Exception {
 
         FeatureTypeInfo typeInfo = getCatalog().getFeatureTypeByName(typeName);
@@ -142,7 +142,7 @@ public abstract class GSSFunctionalTestSupport extends GSSTestSupport {
         }
     }
 
-    private void recordUpdateCommit(final GSS gss, final Name typeName, final Filter filter,
+    protected void recordUpdateCommit(final GSS gss, final Name typeName, final Filter filter,
             final List<String> properties, final List<Object> newValues, final String commitMessage)
             throws Exception {
 
@@ -173,7 +173,7 @@ public abstract class GSSFunctionalTestSupport extends GSSTestSupport {
         }
     }
 
-    private Object makeVersioned(final GSS gss, final Name featureTypeName) throws Exception {
+    protected Object makeVersioned(final GSS gss, final Name featureTypeName) throws Exception {
         LOGGER.info("Importing FeatureType as versioned: " + featureTypeName);
         Future<?> future = gss.initialize(featureTypeName);
         future.get();// lock until imported
