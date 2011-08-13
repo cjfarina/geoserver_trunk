@@ -92,7 +92,6 @@ class DiffToEntry implements Function<DiffEntry, EntryImpl> {
 
         final String atomEntryId = UUIDUtil.buildReplicationEntryUUID(diffEnty);
 
-
         atomEntry.setId(atomEntryId);
         atomEntry.setTitle(title(diffEnty));
         atomEntry.setSummary(newCommit.getMessage());

@@ -5,7 +5,9 @@ import static org.custommonkey.xmlunit.XMLAssert.assertXpathExists;
 
 import java.util.Arrays;
 import java.util.Collections;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
 
 import junit.framework.Test;
 
@@ -145,8 +147,8 @@ public class Query_OGC_KVP_Test extends GSSFunctionalTestSupport {
         String nodeName = root.getLocalName();
         assertEquals(Atom.NAMESPACE, root.getNamespaceURI());
         assertEquals("feed", nodeName);
-        //assertXpathExists("atom:feed/atom:id", dom);
-        //assertXpathExists("atom:feed/atom:updated", dom);
+        // assertXpathExists("atom:feed/atom:id", dom);
+        // assertXpathExists("atom:feed/atom:updated", dom);
 
         final int expectedEntries = 6;
         // as per GSSFunctionalTestSupport's oneTimeSetUp
@@ -273,6 +275,7 @@ public class Query_OGC_KVP_Test extends GSSFunctionalTestSupport {
             final Document dom = super.getAsDOM(queryById);
             // print(dom);
             assertXpathEvaluatesTo("1", "count(atom:feed/atom:entry)", dom);
+            assertXpathEvaluatesTo(insertId, "atom:feed/atom:entry[1]/atom:id", dom);
             assertXpathExists("atom:feed/atom:entry[1]/atom:content/wfs:Insert", dom);
         }
         {
@@ -280,6 +283,7 @@ public class Query_OGC_KVP_Test extends GSSFunctionalTestSupport {
             final Document dom = super.getAsDOM(queryById);
             // print(dom);
             assertXpathEvaluatesTo("1", "count(atom:feed/atom:entry)", dom);
+            assertXpathEvaluatesTo(updateId, "atom:feed/atom:entry[1]/atom:id", dom);
             assertXpathExists("atom:feed/atom:entry[1]/atom:content/wfs:Update", dom);
         }
         {
@@ -289,7 +293,25 @@ public class Query_OGC_KVP_Test extends GSSFunctionalTestSupport {
             // REVISIT: this assertion fails becuase we don't map geogit ids to gss ids yet, hence
             // the same geogit id for the feature insert and then the delete is being used twice
             assertXpathEvaluatesTo("1", "count(atom:feed/atom:entry)", dom);
+            assertXpathEvaluatesTo(deleteId, "atom:feed/atom:entry[1]/atom:id", dom);
             assertXpathExists("atom:feed/atom:entry[1]/atom:content/wfs:Delete", dom);
+        }
+
+        {
+            final String queryById = REPLICATION_FEED_BASE + "&ENTRYID=" + insertId + ","
+                    + updateId + "," + deleteId;
+            final Document dom = super.getAsDOM(queryById);
+            // print(dom);
+            // REVISIT: this assertion fails becuase we don't map geogit ids to gss ids yet, hence
+            // the same geogit id for the feature insert and then the delete is being used twice
+            assertXpathEvaluatesTo("3", "count(atom:feed/atom:entry)", dom);
+            Set<String> result = new HashSet<String>();
+            result.add(xpath.evaluate("atom:feed/atom:entry[1]/atom:id", dom));
+            result.add(xpath.evaluate("atom:feed/atom:entry[2]/atom:id", dom));
+            result.add(xpath.evaluate("atom:feed/atom:entry[3]/atom:id", dom));
+            assertTrue(result.contains(insertId));
+            assertTrue(result.contains(updateId));
+            assertTrue(result.contains(deleteId));
         }
     }
 

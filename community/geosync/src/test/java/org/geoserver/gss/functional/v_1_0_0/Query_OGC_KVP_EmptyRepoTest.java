@@ -1,12 +1,9 @@
 package org.geoserver.gss.functional.v_1_0_0;
 
-import static org.custommonkey.xmlunit.XMLAssert.assertXpathEvaluatesTo;
-import static org.custommonkey.xmlunit.XMLAssert.assertXpathExists;
 import junit.framework.Test;
 
 import org.geoserver.gss.GSSTestSupport;
 import org.geoserver.gss.internal.atom.Atom;
-import org.geoserver.gss.internal.atom.FeedImpl;
 import org.w3c.dom.Document;
 import org.w3c.dom.Element;
 
@@ -42,7 +39,7 @@ public class Query_OGC_KVP_EmptyRepoTest extends GSSTestSupport {
         String nodeName = root.getLocalName();
         assertEquals(Atom.NAMESPACE, root.getNamespaceURI());
         assertEquals("feed", nodeName);
-        //assertXpathEvaluatesTo(FeedImpl.NULL_ID, "atom:feed/atom:id", dom);
-        //assertXpathExists("atom:feed/atom:updated", dom);
+        // assertXpathEvaluatesTo(FeedImpl.NULL_ID, "atom:feed/atom:id", dom);
+        // assertXpathExists("atom:feed/atom:updated", dom);
     }
 }

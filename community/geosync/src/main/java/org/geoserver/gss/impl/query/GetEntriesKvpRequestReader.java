@@ -1,13 +1,15 @@
 package org.geoserver.gss.impl.query;
 
 import java.util.Arrays;
-import java.util.Collections;
 import java.util.Date;
+import java.util.LinkedHashSet;
+import java.util.List;
 import java.util.Map;
 
 import org.geoserver.gss.internal.atom.Atom;
 import org.geoserver.gss.service.FeedType;
 import org.geoserver.gss.service.GetEntries;
+import org.geoserver.ows.FlatKvpParser;
 import org.geoserver.ows.KvpRequestReader;
 import org.geoserver.platform.ServiceException;
 import org.geotools.factory.CommonFactoryFinder;
@@ -21,6 +23,7 @@ import org.opengis.filter.FilterFactory2;
 import org.opengis.filter.Id;
 import org.opengis.filter.expression.Expression;
 import org.opengis.filter.expression.PropertyName;
+import org.opengis.filter.identity.FeatureId;
 import org.opengis.referencing.crs.CoordinateReferenceSystem;
 import org.xml.sax.helpers.NamespaceSupport;
 
@@ -99,14 +102,33 @@ public class GetEntriesKvpRequestReader extends KvpRequestReader {
         return request;
     }
 
-    @SuppressWarnings("rawtypes")
-    private Filter parseEntryId(Map kvp, Map rawKvp) {
+    @SuppressWarnings({ "rawtypes", "unchecked" })
+    private Filter parseEntryId(Map kvp, Map rawKvp) throws Exception {
         final String entryId = (String) kvp.get("ENTRYID");
         if (entryId == null) {
             return Filter.INCLUDE;
         }
-        Id entryIdFilter = ff.id(Collections.singleton(ff.featureId(entryId)));
-        return entryIdFilter;
+        List<FeatureId> ids = (List<FeatureId>) new EntryIdKvpParser(ff).parse(entryId);
+        if (ids.size() > 0) {
+            Id entryIdFilter = ff.id(new LinkedHashSet<FeatureId>(ids));
+            return entryIdFilter;
+        }
+        return Filter.INCLUDE;
+    }
+
+    private static class EntryIdKvpParser extends FlatKvpParser {
+
+        private final FilterFactory2 ff;
+
+        public EntryIdKvpParser(FilterFactory2 ff) {
+            super("entryid", FeatureId.class);
+            this.ff = ff;
+        }
+
+        @Override
+        protected Object parseToken(final String token) throws Exception {
+            return ff.featureId(token);
+        }
     }
 
     /**
