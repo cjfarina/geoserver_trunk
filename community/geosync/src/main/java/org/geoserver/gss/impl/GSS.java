@@ -13,10 +13,7 @@ import java.util.Set;
 import java.util.concurrent.Future;
 import java.util.logging.Logger;
 
-import org.geogit.api.DiffEntry;
-import org.geogit.api.DiffEntry.ChangeType;
 import org.geogit.api.GeoGIT;
-import org.geogit.api.ObjectId;
 import org.geogit.storage.bdbje.EntityStoreConfig;
 import org.geogit.storage.bdbje.EnvironmentBuilder;
 import org.geoserver.catalog.Catalog;
@@ -210,35 +207,6 @@ public class GSS implements DisposableBean {
         }
 
         return supportedFormats;
-    }
-
-    /**
-     * Returns a UUID for a GSS atom entry for the replication feed, creating it if needed.
-     * 
-     * @param diffEnty
-     * @return
-     * @see #getEntryByUUID
-     */
-    public String getGssEntryId(final DiffEntry diffEnty) {
-        // NOTE: this is not really what the atom:entry should be, as if someone requested an entry
-        // by it this wouldn't indicate whether it's a feature insert,update,or delete. But this is
-        // a concept of GSS exclusively, as we can't use the commit id to refer to a single feature
-        // change neither, so the mapping from entry id to DiffEntry should be in the GSS database,
-        // and a new atom:entry id should be automatically generated as stated in the spec
-        ObjectId objectId = diffEnty.getType() == ChangeType.DELETE ? diffEnty.getOldObjectId()
-                : diffEnty.getNewObjectId();
-
-        // return gssDb.getOrCreateEntryUUID();
-        return objectId.toString();
-    }
-
-    /**
-     * @param uuid
-     * @return
-     * @see #getGssEntryId
-     */
-    public DiffEntry getEntryByUUID(final String uuid) {
-        return null;
     }
 
 }

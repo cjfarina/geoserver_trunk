@@ -90,7 +90,8 @@ class DiffToEntry implements Function<DiffEntry, EntryImpl> {
 
         EntryImpl atomEntry = new EntryImpl();
 
-        final String atomEntryId = gss.getGssEntryId(diffEnty);
+        final String atomEntryId = UUIDUtil.buildReplicationEntryUUID(diffEnty);
+
 
         atomEntry.setId(atomEntryId);
         atomEntry.setTitle(title(diffEnty));
