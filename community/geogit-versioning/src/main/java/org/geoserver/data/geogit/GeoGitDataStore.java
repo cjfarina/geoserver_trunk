@@ -171,7 +171,7 @@ public class GeoGitDataStore implements DataStore {
         {
             // GeoServer calls createSchema with this namespace but then asks for the one passed in
             // as the DataStore's namespace parameter
-            final String ignoreNamespace = "http://schemas.opengis.org/gml";
+            final String ignoreNamespace = "http://www.opengis.net/gml";
             Name name = createType.getName();
             if ((ignoreNamespace.equals(name.getNamespaceURI()) || null == name.getNamespaceURI())
                     && null != defaultNamespace) {
