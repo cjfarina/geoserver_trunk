@@ -88,21 +88,21 @@ public class VersioningFeatureStore<T extends FeatureType, F extends Feature> ex
     public List<FeatureId> addFeatures(FeatureCollection<T, F> collection) throws IOException {
         final FeatureStore<T, F> unversioned = getUnversionedStore();
         List<FeatureId> unversionedIds = unversioned.addFeatures(collection);
-        
+
         if (isVersioned()) {
             List<FeatureId> versionedIds = new ArrayList<FeatureId>(unversionedIds.size());
             checkTransaction();
             try {
                 final Name typeName = getSchema().getName();
                 VersioningTransactionState versioningState = getVersioningState();
-                
+
                 FilterFactory2 ff = CommonFactoryFinder.getFilterFactory2(null);
-                
+
                 Id id = ff.id(new HashSet<Identifier>(unversionedIds));
                 FeatureCollection<T, F> inserted = unversioned.getFeatures(id);
                 versioningState.stageInsert(typeName, inserted);
-                
-                for(Iterator<FeatureId> fids = unversionedIds.iterator(); fids.hasNext(); ){
+
+                for (Iterator<FeatureId> fids = unversionedIds.iterator(); fids.hasNext();) {
                     FeatureId fid = fids.next();
                     String featureVersion = getFeatureVersion(typeName, fid.getID(), null);
                     versionedIds.add(ff.resourceId(fid.getID(), featureVersion));

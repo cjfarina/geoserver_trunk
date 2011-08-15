@@ -255,7 +255,7 @@ public class VersioningFeatureSource<T extends FeatureType, F extends Feature> i
             tree = repository.getTree(commit.getTreeId());
             queryDb = repository.getObjectDatabase();
         }
-        
+
         final List<String> path = path(typeName, featureId);
         Ref featureObjectRef = queryDb.getTreeChild(tree, path);
         return featureObjectRef == null ? null : featureObjectRef.getObjectId().toString();

@@ -47,30 +47,30 @@ public class VersioningFeatureSourceTest extends VersioningTestSupport {
     protected void setUpInternal() throws Exception {
         super.setUpInternal();
 
-//        // creates the schema and initializes the repo with an empty tree for the feature type
-//        versioningStore.createSchema(pointsType);
-//
-//        FeatureSource source = versioningStore.getFeatureSource(pointsType.getName());
-//        assertTrue(source instanceof VersioningFeatureStore);
-//        FeatureStore store = (FeatureStore) source;
-//
-//        type1InitialFeatures = DataUtilities.collection(Arrays.asList((SimpleFeature) points1,
-//                (SimpleFeature) points2, (SimpleFeature) points3));
-//
-//        type2InitialFeatures = DataUtilities.collection(Arrays.asList((SimpleFeature) lines1,
-//                (SimpleFeature) lines2, (SimpleFeature) lines3));
-//
-//        Transaction tx = new DefaultTransaction();
-//        store.setTransaction(tx);
-//        store.addFeatures(type1InitialFeatures);
-//        tx.commit();
-//
-//        CollectIdsVisitor visitor = new CollectIdsVisitor();
-//        repo.getHeadTree().accept(visitor);
-//
-//        initialFeatureVersions = new HashMap<String, String>(visitor.fidToVersionHash);
-//        assertEquals(3, initialFeatureVersions.size());
-//        visitor.fidToVersionHash.clear();
+        // // creates the schema and initializes the repo with an empty tree for the feature type
+        // versioningStore.createSchema(pointsType);
+        //
+        // FeatureSource source = versioningStore.getFeatureSource(pointsType.getName());
+        // assertTrue(source instanceof VersioningFeatureStore);
+        // FeatureStore store = (FeatureStore) source;
+        //
+        // type1InitialFeatures = DataUtilities.collection(Arrays.asList((SimpleFeature) points1,
+        // (SimpleFeature) points2, (SimpleFeature) points3));
+        //
+        // type2InitialFeatures = DataUtilities.collection(Arrays.asList((SimpleFeature) lines1,
+        // (SimpleFeature) lines2, (SimpleFeature) lines3));
+        //
+        // Transaction tx = new DefaultTransaction();
+        // store.setTransaction(tx);
+        // store.addFeatures(type1InitialFeatures);
+        // tx.commit();
+        //
+        // CollectIdsVisitor visitor = new CollectIdsVisitor();
+        // repo.getHeadTree().accept(visitor);
+        //
+        // initialFeatureVersions = new HashMap<String, String>(visitor.fidToVersionHash);
+        // assertEquals(3, initialFeatureVersions.size());
+        // visitor.fidToVersionHash.clear();
 
     }
 

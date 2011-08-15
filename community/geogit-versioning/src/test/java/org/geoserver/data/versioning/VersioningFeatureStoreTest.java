@@ -30,18 +30,18 @@ public class VersioningFeatureStoreTest extends VersioningTestSupport {
     protected void setUpInternal() throws Exception {
         super.setUpInternal();
 
-//        // creates the schema and initializes the repo with an empty tree for the feature type
-//        versioningStore.createSchema(pointsType);
-//
-//        FeatureSource source = versioningStore.getFeatureSource(pointsType.getName());
-//        assertTrue(source instanceof VersioningFeatureStore);
-//        store1 = (FeatureStore) source;
-//
-//        type1InitialFeatures = DataUtilities.collection(Arrays.asList((SimpleFeature) points1,
-//                (SimpleFeature) points2, (SimpleFeature) points3));
-//
-//        type2InitialFeatures = DataUtilities.collection(Arrays.asList((SimpleFeature) lines1,
-//                (SimpleFeature) lines2, (SimpleFeature) lines3));
+        // // creates the schema and initializes the repo with an empty tree for the feature type
+        // versioningStore.createSchema(pointsType);
+        //
+        // FeatureSource source = versioningStore.getFeatureSource(pointsType.getName());
+        // assertTrue(source instanceof VersioningFeatureStore);
+        // store1 = (FeatureStore) source;
+        //
+        // type1InitialFeatures = DataUtilities.collection(Arrays.asList((SimpleFeature) points1,
+        // (SimpleFeature) points2, (SimpleFeature) points3));
+        //
+        // type2InitialFeatures = DataUtilities.collection(Arrays.asList((SimpleFeature) lines1,
+        // (SimpleFeature) lines2, (SimpleFeature) lines3));
     }
 
     public void test1() throws IOException {

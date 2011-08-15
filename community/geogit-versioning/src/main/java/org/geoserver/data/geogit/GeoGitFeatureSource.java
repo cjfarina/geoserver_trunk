@@ -5,6 +5,7 @@ import java.io.IOException;
 import java.util.Collections;
 import java.util.Set;
 
+import org.geotools.data.DataSourceException;
 import org.geotools.data.DefaultResourceInfo;
 import org.geotools.data.FeatureListener;
 import org.geotools.data.Query;
@@ -13,11 +14,17 @@ import org.geotools.data.ResourceInfo;
 import org.geotools.data.simple.SimpleFeatureCollection;
 import org.geotools.data.simple.SimpleFeatureSource;
 import org.geotools.data.store.EmptyFeatureCollection;
+import org.geotools.factory.CommonFactoryFinder;
+import org.geotools.filter.spatial.DefaultCRSFilterVisitor;
+import org.geotools.filter.spatial.ReprojectingFilterVisitor;
 import org.geotools.geometry.jts.ReferencedEnvelope;
 import org.opengis.feature.simple.SimpleFeatureType;
+import org.opengis.feature.type.GeometryDescriptor;
 import org.opengis.feature.type.Name;
 import org.opengis.filter.Filter;
+import org.opengis.filter.FilterFactory2;
 import org.opengis.filter.sort.SortBy;
+import org.opengis.referencing.crs.CoordinateReferenceSystem;
 
 import com.google.common.base.Throwables;
 
@@ -175,7 +182,47 @@ public class GeoGitFeatureSource implements SimpleFeatureSource {
         if (Filter.EXCLUDE.equals(filter)) {
             return new EmptyFeatureCollection(type);
         }
+
+        Query query2 = reprojectFilter(query);
+        filter = query2.getFilter();
+
         return new GeoGitSimpleFeatureCollection(type, filter, dataStore.getRepository());
+    }
+
+    private Query reprojectFilter(Query query) throws IOException {
+        Filter filter = query.getFilter() != null ? query.getFilter() : Filter.INCLUDE;
+        if (Filter.INCLUDE.equals(filter)) {
+            return query;
+        }
+
+        final SimpleFeatureType nativeFeatureType = getSchema();
+        final GeometryDescriptor geom = nativeFeatureType.getGeometryDescriptor();
+        // if no geometry involved, no reprojection needed
+        if (geom == null) {
+            return query;
+        }
+
+        final FilterFactory2 ff = CommonFactoryFinder.getFilterFactory2(null);
+
+        try {
+            CoordinateReferenceSystem nativeCRS = geom.getCoordinateReferenceSystem();
+
+            // now we apply a default to all geometries and bbox in the filter
+            DefaultCRSFilterVisitor defaultCRSVisitor = new DefaultCRSFilterVisitor(ff, nativeCRS);
+            Filter defaultedFilter = (Filter) filter.accept(defaultCRSVisitor, null);
+
+            // and then we reproject all geometries so that the datastore receives
+            // them in the native projection system (or the forced one, in case of force)
+            ReprojectingFilterVisitor reprojectingVisitor = new ReprojectingFilterVisitor(ff,
+                    nativeFeatureType);
+            Filter reprojectedFilter = (Filter) defaultedFilter.accept(reprojectingVisitor, null);
+
+            Query reprojectedQuery = new Query(query);
+            reprojectedQuery.setFilter(reprojectedFilter);
+            return reprojectedQuery;
+        } catch (Exception e) {
+            throw new DataSourceException("Had troubles handling filter reprojection...", e);
+        }
     }
 
 }

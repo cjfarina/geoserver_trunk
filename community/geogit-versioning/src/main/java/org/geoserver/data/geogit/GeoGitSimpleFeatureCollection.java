@@ -7,8 +7,6 @@ import java.util.Collection;
 import java.util.Iterator;
 import java.util.List;
 import java.util.NoSuchElementException;
-import java.util.Set;
-import java.util.concurrent.CopyOnWriteArraySet;
 
 import org.geogit.api.ObjectId;
 import org.geogit.api.Ref;
@@ -49,14 +47,11 @@ public class GeoGitSimpleFeatureCollection implements SimpleFeatureCollection {
 
     private final Repository repo;
 
-    private Set<SimpleFeatureIterator> openIterators;
-
     public GeoGitSimpleFeatureCollection(final SimpleFeatureType type, final Filter filter,
             final Repository repo) {
         this.type = type;
         this.filter = filter;
         this.repo = repo;
-        this.openIterators = new CopyOnWriteArraySet<SimpleFeatureIterator>();
     }
 
     /**
@@ -80,11 +75,6 @@ public class GeoGitSimpleFeatureCollection implements SimpleFeatureCollection {
      */
     @Override
     public void purge() {
-        for (Iterator<SimpleFeatureIterator> it = openIterators.iterator(); it.hasNext();) {
-            SimpleFeatureIterator next = it.next();
-            it.remove();
-            next.close();
-        }
     }
 
     /**

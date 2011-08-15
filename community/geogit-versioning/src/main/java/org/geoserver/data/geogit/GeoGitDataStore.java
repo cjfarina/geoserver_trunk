@@ -26,7 +26,6 @@ import org.geotools.data.Query;
 import org.geotools.data.SchemaNotFoundException;
 import org.geotools.data.ServiceInfo;
 import org.geotools.data.Transaction;
-import org.geotools.data.simple.SimpleFeatureSource;
 import org.geotools.feature.NameImpl;
 import org.geotools.util.logging.Logging;
 import org.opengis.feature.simple.SimpleFeature;
@@ -241,7 +240,7 @@ public class GeoGitDataStore implements DataStore {
      * @see #getFeatureSource(Name)
      */
     @Override
-    public SimpleFeatureSource getFeatureSource(final String typeName) throws IOException {
+    public GeoGitFeatureSource getFeatureSource(final String typeName) throws IOException {
         final List<Name> names = getNames();
         for (Name name : names) {
             if (name.getLocalPart().equals(typeName)) {
@@ -255,7 +254,7 @@ public class GeoGitDataStore implements DataStore {
      * @see org.geotools.data.DataStore#getFeatureSource(org.opengis.feature.type.Name)
      */
     @Override
-    public SimpleFeatureSource getFeatureSource(final Name typeName) throws IOException {
+    public GeoGitFeatureSource getFeatureSource(final Name typeName) throws IOException {
         final SimpleFeatureType featureType = getSchema(typeName);
 
         return new GeoGitFeatureSource(featureType, this);

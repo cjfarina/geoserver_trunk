@@ -38,7 +38,7 @@ public class VersionFilters {
                         } else {
                             featureIds.add(id);
                         }
-                    }else{
+                    } else {
                         featureIds.add(id);
                     }
                 }
