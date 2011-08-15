@@ -27,6 +27,7 @@ import org.geotools.data.SchemaNotFoundException;
 import org.geotools.data.ServiceInfo;
 import org.geotools.data.Transaction;
 import org.geotools.feature.NameImpl;
+import org.geotools.feature.simple.SimpleFeatureTypeBuilder;
 import org.geotools.util.logging.Logging;
 import org.opengis.feature.simple.SimpleFeature;
 import org.opengis.feature.simple.SimpleFeatureType;
@@ -46,12 +47,19 @@ public class GeoGitDataStore implements DataStore {
 
     private Repository repo;
 
-    public GeoGitDataStore(final Repository repo) throws Exception {
+    private final String defaultNamespace;
+
+    public GeoGitDataStore(final Repository repo) throws IOException {
+        this(repo, null);
+    }
+
+    public GeoGitDataStore(final Repository repo, final String defaultNamespace) throws IOException {
         this.repo = repo;
+        this.defaultNamespace = defaultNamespace;
         init();
     }
 
-    private void init() throws Exception {
+    private void init() throws IOException {
         final RefDatabase refDatabase = repo.getRefDatabase();
         final ObjectDatabase objectDatabase = repo.getObjectDatabase();
 
@@ -59,7 +67,12 @@ public class GeoGitDataStore implements DataStore {
         if (null == typesTreeRef) {
             LOGGER.info("Initializing type name references. Types tree does not exist");
             final RevTree typesTree = objectDatabase.newTree();
-            ObjectId typesTreeId = objectDatabase.put(new RevTreeWriter(typesTree));
+            ObjectId typesTreeId;
+            try {
+                typesTreeId = objectDatabase.put(new RevTreeWriter(typesTree));
+            } catch (Exception e) {
+                throw new IOException(e);
+            }
             typesTreeRef = new Ref(TYPE_NAMES_REF_TREE, typesTreeId, TYPE.TREE);
             refDatabase.put(typesTreeRef);
             LOGGER.info("Type names tree reference initialized");
@@ -147,11 +160,33 @@ public class GeoGitDataStore implements DataStore {
     public void createSchema(final SimpleFeatureType featureType) throws IOException {
         Preconditions.checkNotNull(featureType);
 
-        final Name typeName = featureType.getName();
-        if (getNames().contains(typeName)) {
-            throw new IOException(typeName + " already exists");
+        SimpleFeatureType createType = featureType;
+
+        LOGGER.info("Creating FeatureType " + createType.getName());
+
+        if (getNames().contains(createType.getName())) {
+            throw new IOException(createType.getName() + " already exists");
         }
 
+        {
+            // GeoServer calls createSchema with this namespace but then asks for the one passed in
+            // as the DataStore's namespace parameter
+            final String ignoreNamespace = "http://schemas.opengis.org/gml";
+            Name name = createType.getName();
+            if ((ignoreNamespace.equals(name.getNamespaceURI()) || null == name.getNamespaceURI())
+                    && null != defaultNamespace) {
+                LOGGER.info("FeatureType to be created has no namespace, assigning DataStore's default: '"
+                        + defaultNamespace + "'");
+
+                SimpleFeatureTypeBuilder builder = new SimpleFeatureTypeBuilder();
+                builder.setName(createType.getName().getLocalPart());
+                builder.setNamespaceURI(defaultNamespace);
+                builder.addAll(createType.getAttributeDescriptors());
+                createType = builder.buildFeatureType();
+            }
+
+        }
+        final Name typeName = createType.getName();
         final RefDatabase refDatabase = repo.getRefDatabase();
         final ObjectDatabase objectDatabase = repo.getObjectDatabase();
 
@@ -167,7 +202,7 @@ public class GeoGitDataStore implements DataStore {
 
         try {
             final ObjectId featureTypeBlobId;
-            featureTypeBlobId = objectDatabase.put(new SimpleFeatureTypeWriter(featureType));
+            featureTypeBlobId = objectDatabase.put(new SimpleFeatureTypeWriter(createType));
 
             final List<String> namespaceTreePath = Collections.singletonList(namespace);
             MutableTree namespaceTree = objectDatabase.getOrCreateSubTree(namespacesRootTree,
