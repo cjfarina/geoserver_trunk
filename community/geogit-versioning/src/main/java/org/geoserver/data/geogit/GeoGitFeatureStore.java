@@ -136,7 +136,7 @@ public class GeoGitFeatureStore extends GeoGitFeatureSource implements SimpleFea
 
         VersioningTransactionState versioningState = getVersioningState();
         try {
-            versioningState.stageUpdate(newValues);
+            versioningState.stageUpdate(type.getName(), newValues);
         } catch (Exception e) {
             throw new IOException(e);
         }
@@ -217,13 +217,14 @@ public class GeoGitFeatureStore extends GeoGitFeatureSource implements SimpleFea
             return VersioningTransactionState.VOID;
         }
 
-        final Object key = dataStore;
+        final Object key = GeoGitDataStore.class;
         VersioningTransactionState state = (VersioningTransactionState) transaction.getState(key);
         if (state == null) {
             Repository repository = dataStore.getRepository();
             state = new VersioningTransactionState(new GeoGIT(repository));
             transaction.putState(key, state);
         }
+
         return state;
     }
 

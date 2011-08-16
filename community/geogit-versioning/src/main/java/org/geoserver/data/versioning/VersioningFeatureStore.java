@@ -179,7 +179,7 @@ public class VersioningFeatureStore<T extends FeatureType, F extends Feature> ex
                 && affectedFeaturesFitler.getIdentifiers().size() > 0) {
             try {
                 FeatureCollection newValues = unversioned.getFeatures(affectedFeaturesFitler);
-                getVersioningState().stageUpdate(newValues);
+                getVersioningState().stageUpdate(getSchema().getName(), newValues);
             } catch (Exception e) {
                 Throwables.propagate(e);
             }

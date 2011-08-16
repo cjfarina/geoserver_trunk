@@ -1,9 +1,12 @@
 package org.geoserver.data.versioning;
 
 import java.io.IOException;
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
 import java.util.UUID;
 import java.util.logging.Logger;
 
@@ -36,7 +39,8 @@ public class VersioningTransactionState implements Transaction.State {
         }
 
         @Override
-        public void stageUpdate(final FeatureCollection affectedFeatures) throws Exception {
+        public void stageUpdate(final Name typeName, final FeatureCollection affectedFeatures)
+                throws Exception {
         }
 
         @Override
@@ -68,9 +72,12 @@ public class VersioningTransactionState implements Transaction.State {
 
     private String id;
 
+    private Set<Name> changedTypes;
+
     public VersioningTransactionState(final GeoGIT geoGit) {
         this.geoGit = geoGit;
         this.id = UUID.randomUUID().toString();
+        this.changedTypes = Collections.synchronizedSet(new HashSet<Name>());
     }
 
     @Override
@@ -132,16 +139,19 @@ public class VersioningTransactionState implements Transaction.State {
     public List<FeatureId> stageInsert(final Name typeName, FeatureCollection affectedFeatures)
             throws Exception {
 
-        // geoGit.checkout().setName(id).call();
+        changedTypes.add(typeName);
+
         WorkingTree workingTree = geoGit.getRepository().getWorkingTree();
         List<FeatureId> inserted = workingTree.insert(affectedFeatures, NULL_PROGRESS_LISTENER);
         geoGit.add().call();
         return inserted;
     }
 
-    public void stageUpdate(final FeatureCollection newValues) throws Exception {
+    public void stageUpdate(final Name typeName, final FeatureCollection newValues)
+            throws Exception {
 
-        // geoGit.checkout().setName(id).call();
+        changedTypes.add(typeName);
+
         WorkingTree workingTree = geoGit.getRepository().getWorkingTree();
         workingTree.update(newValues, NULL_PROGRESS_LISTENER);
         geoGit.add().call();
@@ -150,10 +160,13 @@ public class VersioningTransactionState implements Transaction.State {
     public void stageDelete(final Name typeName, final Filter filter,
             final FeatureCollection affectedFeatures) throws Exception {
 
-        // geoGit.checkout().setName(id).call();
+        changedTypes.add(typeName);
+
         WorkingTree workingTree = geoGit.getRepository().getWorkingTree();
         workingTree.delete(typeName, filter, affectedFeatures);
+
         geoGit.add().call();
+
     }
 
     public void stageRename(final Name typeName, final String oldFid, final String newFid) {
@@ -169,4 +182,12 @@ public class VersioningTransactionState implements Transaction.State {
         index.renamed(from, to);
     }
 
+    private List<String> path(final Name typeName) {
+        List<String> path = new ArrayList<String>(2);
+        if (typeName.getNamespaceURI() != null) {
+            path.add(typeName.getNamespaceURI());
+        }
+        path.add(typeName.getLocalPart());
+        return path;
+    }
 }
