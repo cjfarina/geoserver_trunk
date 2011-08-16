@@ -2,6 +2,7 @@ package org.geoserver.data.versioning;
 
 import java.io.IOException;
 import java.util.Arrays;
+import java.util.Collections;
 import java.util.List;
 import java.util.UUID;
 import java.util.logging.Logger;
@@ -18,6 +19,7 @@ import org.geotools.util.NullProgressListener;
 import org.geotools.util.logging.Logging;
 import org.opengis.feature.type.Name;
 import org.opengis.filter.Filter;
+import org.opengis.filter.identity.FeatureId;
 import org.opengis.util.ProgressListener;
 
 import com.google.common.base.Throwables;
@@ -28,9 +30,9 @@ public class VersioningTransactionState implements Transaction.State {
     public static final VersioningTransactionState VOID = new VersioningTransactionState(null) {
 
         @Override
-        public void stageInsert(final Name typeName, FeatureCollection affectedFeatures)
+        public List<FeatureId> stageInsert(final Name typeName, FeatureCollection affectedFeatures)
                 throws Exception {
-
+            return Collections.emptyList();
         }
 
         @Override
@@ -127,13 +129,14 @@ public class VersioningTransactionState implements Transaction.State {
      * @return the list of feature ids of the inserted features, in the order they were added
      * @throws Exception
      */
-    public void stageInsert(final Name typeName, FeatureCollection affectedFeatures)
+    public List<FeatureId> stageInsert(final Name typeName, FeatureCollection affectedFeatures)
             throws Exception {
 
         // geoGit.checkout().setName(id).call();
         WorkingTree workingTree = geoGit.getRepository().getWorkingTree();
-        workingTree.insert(affectedFeatures, NULL_PROGRESS_LISTENER);
+        List<FeatureId> inserted = workingTree.insert(affectedFeatures, NULL_PROGRESS_LISTENER);
         geoGit.add().call();
+        return inserted;
     }
 
     public void stageUpdate(final FeatureCollection newValues) throws Exception {

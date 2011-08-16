@@ -2,23 +2,33 @@ package org.geoserver.data.geogit;
 
 import java.io.IOException;
 import java.util.Arrays;
+import java.util.Collection;
 import java.util.Collections;
+import java.util.HashMap;
 import java.util.HashSet;
+import java.util.List;
+import java.util.Map;
 import java.util.Set;
 
 import org.geogit.api.GeoGIT;
+import org.geogit.api.Ref;
+import org.geogit.api.RevTree;
 import org.geogit.test.RepositoryTestCase;
 import org.geotools.data.Query;
 import org.geotools.data.simple.SimpleFeatureCollection;
+import org.geotools.data.simple.SimpleFeatureIterator;
 import org.geotools.factory.CommonFactoryFinder;
 import org.geotools.filter.text.ecql.ECQL;
 import org.geotools.geometry.jts.JTS;
 import org.geotools.geometry.jts.ReferencedEnvelope;
 import org.geotools.referencing.CRS;
 import org.opengis.feature.Feature;
+import org.opengis.feature.Property;
 import org.opengis.feature.simple.SimpleFeature;
 import org.opengis.filter.Filter;
 import org.opengis.filter.FilterFactory2;
+import org.opengis.filter.identity.FeatureId;
+import org.opengis.filter.identity.ResourceId;
 import org.opengis.filter.sort.SortBy;
 import org.opengis.referencing.crs.CoordinateReferenceSystem;
 
@@ -171,44 +181,56 @@ public class GeoGitFeatureSourceTest extends RepositoryTestCase {
         assertEquals(2, linesSource.getCount(new Query(linesName, filter)));
     }
 
-    @SuppressWarnings("deprecation")
+    @SuppressWarnings({ "deprecation", "unchecked" })
     public void testGetFeatures() throws Exception {
         SimpleFeatureCollection collection;
-        Set<SimpleFeature> features;
-        Set<Feature> expected;
+        Set<Collection<Property>> actual;
+        Set<Collection<Property>> expected;
 
         collection = pointsSource.getFeatures();
         assertEquals(pointsType, collection.getSchema());
         assertEquals(boundsOf(points1, points2, points3), collection.getBounds());
 
-        features = new HashSet<SimpleFeature>(toList(collection.iterator()));
-        expected = new HashSet<Feature>(Arrays.asList(points1, points2, points3));
+        actual = new HashSet<Collection<Property>>();
+        for (Feature f : toList(collection.iterator())) {
+            actual.add(f.getProperties());
+        }
+        expected = new HashSet<Collection<Property>>(Arrays.asList(points1.getProperties(),
+                points2.getProperties(), points3.getProperties()));
 
-        assertEquals(expected, features);
+        assertEquals(expected, actual);
 
         collection = linesSource.getFeatures();
         assertEquals(linesType, collection.getSchema());
         assertEquals(boundsOf(lines1, lines2, lines3), collection.getBounds());
 
-        features = new HashSet<SimpleFeature>(toList(collection.iterator()));
-        expected = new HashSet<Feature>(Arrays.asList(lines1, lines2, lines3));
+        actual = new HashSet<Collection<Property>>();
+        for (Feature f : toList(collection.iterator())) {
+            actual.add(f.getProperties());
+        }
+        expected = new HashSet<Collection<Property>>(Arrays.asList(lines1.getProperties(),
+                lines2.getProperties(), lines3.getProperties()));
 
-        assertEquals(expected, features);
+        assertEquals(expected, actual);
     }
 
+    @SuppressWarnings({ "deprecation", "unchecked" })
     public void testGetFeaturesFilter() throws Exception {
         SimpleFeatureCollection collection;
-        Set<SimpleFeature> features;
-        Set<Feature> expected;
+        Set<Collection<Property>> actual;
+        Set<Collection<Property>> expected;
 
         Filter filter;
 
         filter = ff.id(Collections.singleton(ff.featureId(RepositoryTestCase.idP2)));
         collection = pointsSource.getFeatures(new Query(pointsName, filter));
-        features = new HashSet<SimpleFeature>(toList(collection.iterator()));
-        expected = new HashSet<Feature>(Arrays.asList(points2));
+        actual = new HashSet<Collection<Property>>();
+        for (Feature f : toList(collection.iterator())) {
+            actual.add(f.getProperties());
+        }
+        expected = Collections.singleton(points2.getProperties());
 
-        assertEquals(expected, features);
+        assertEquals(expected, actual);
 
         ReferencedEnvelope queryBounds = boundsOf(points1, points2);
         Polygon geometry = JTS.toGeometry(queryBounds);
@@ -216,10 +238,14 @@ public class GeoGitFeatureSourceTest extends RepositoryTestCase {
                 ff.literal(geometry));
 
         collection = pointsSource.getFeatures(new Query(pointsName, filter));
-        features = new HashSet<SimpleFeature>(toList(collection.iterator()));
-        expected = new HashSet<Feature>(Arrays.asList(points1, points2));
+        actual = new HashSet<Collection<Property>>();
+        for (Feature f : toList(collection.iterator())) {
+            actual.add(f.getProperties());
+        }
+        expected = new HashSet<Collection<Property>>(Arrays.asList(points1.getProperties(),
+                points2.getProperties()));
 
-        assertEquals(expected, features);
+        assertEquals(expected, actual);
 
         ReferencedEnvelope transformedQueryBounds;
         CoordinateReferenceSystem queryCrs = CRS.decode("EPSG:900913");
@@ -232,18 +258,58 @@ public class GeoGitFeatureSourceTest extends RepositoryTestCase {
                 ff.literal(geometry));
 
         collection = pointsSource.getFeatures(new Query(pointsName, filter));
-        features = new HashSet<SimpleFeature>(toList(collection.iterator()));
-        expected = new HashSet<Feature>(Arrays.asList(points1, points2));
+        actual = new HashSet<Collection<Property>>();
+        for (Feature f : toList(collection.iterator())) {
+            actual.add(f.getProperties());
+        }
+        expected = new HashSet<Collection<Property>>(Arrays.asList(points1.getProperties(),
+                points2.getProperties()));
 
-        assertEquals(expected, features);
+        assertEquals(expected, actual);
 
         filter = ECQL.toFilter("sp = 'StringProp2_3' OR ip = 2000");
         collection = linesSource.getFeatures(new Query(linesName, filter));
-        features = new HashSet<SimpleFeature>(toList(collection.iterator()));
-        expected = new HashSet<Feature>(Arrays.asList(lines2, lines3));
+        actual = new HashSet<Collection<Property>>();
+        for (Feature f : toList(collection.iterator())) {
+            actual.add(f.getProperties());
+        }
+        expected = new HashSet<Collection<Property>>(Arrays.asList(lines2.getProperties(),
+                lines3.getProperties()));
 
-        assertEquals(expected, features);
+        assertEquals(expected, actual);
 
     }
 
+    public void testFeatureIdsAreVersioned() throws IOException {
+        SimpleFeatureCollection collection = pointsSource.getFeatures(Query.ALL);
+        SimpleFeatureIterator features = collection.features();
+
+        Set<FeatureId> ids = new HashSet<FeatureId>();
+        while (features.hasNext()) {
+            SimpleFeature next = features.next();
+            FeatureId identifier = next.getIdentifier();
+            ids.add(identifier);
+        }
+
+        Ref typeTreeRef = repo.getRootTreeChild(pointsNs, pointsName);
+        RevTree tree = repo.getTree(typeTreeRef.getObjectId());
+
+        List<Ref> refs = toList(tree.iterator(null));
+        assertEquals(3, refs.size());
+
+        Map<String, Ref> expected = new HashMap<String, Ref>();
+        for (Ref ref : refs) {
+            expected.put(ref.getName(), ref);
+        }
+
+        for (FeatureId id : ids) {
+            assertTrue(id + " is not a ResourceId", id instanceof ResourceId);
+            ResourceId rid = (ResourceId) id;
+            assertNotNull(rid.getID());
+            assertNotNull(id + " has no featureVersion set", rid.getFeatureVersion());
+            Ref ref = expected.get(rid.getID());
+            assertNotNull(ref);
+            assertEquals(ref.getObjectId().toString(), rid.getFeatureVersion());
+        }
+    }
 }

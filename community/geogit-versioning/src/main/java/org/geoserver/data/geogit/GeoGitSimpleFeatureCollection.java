@@ -12,7 +12,8 @@ import org.geogit.api.ObjectId;
 import org.geogit.api.Ref;
 import org.geogit.api.RevTree;
 import org.geogit.api.SpatialRef;
-import org.geogit.repository.Repository;
+import org.geogit.storage.FeatureReader;
+import org.geogit.storage.ObjectDatabase;
 import org.geotools.data.simple.SimpleFeatureCollection;
 import org.geotools.data.simple.SimpleFeatureIterator;
 import org.geotools.feature.CollectionListener;
@@ -45,13 +46,16 @@ public class GeoGitSimpleFeatureCollection implements SimpleFeatureCollection {
 
     private final Filter filter;
 
-    private final Repository repo;
+    private final ObjectDatabase odb;
+
+    private final ObjectId rootTreeId;
 
     public GeoGitSimpleFeatureCollection(final SimpleFeatureType type, final Filter filter,
-            final Repository repo) {
+            final ObjectDatabase odb, final ObjectId rootTreeId) {
         this.type = type;
         this.filter = filter;
-        this.repo = repo;
+        this.odb = odb;
+        this.rootTreeId = rootTreeId;
     }
 
     /**
@@ -78,25 +82,36 @@ public class GeoGitSimpleFeatureCollection implements SimpleFeatureCollection {
     }
 
     /**
+     * @return the tree that's the root of this feature type features, or an empty tree if such tree
+     *         does not exist as child of the root one given in this class' constructor.
+     */
+    private RevTree getTypeTree() {
+        RevTree root = odb.getTree(rootTreeId);
+        Name typeName = type.getName();
+        Ref typeTreeRef = odb.getTreeChild(root, getTypePath(typeName));
+        RevTree typeTree;
+        if (null == typeTreeRef) {
+            typeTree = odb.newTree();
+        } else {
+            typeTree = odb.getTree(typeTreeRef.getObjectId());
+        }
+        return typeTree;
+    }
+
+    /**
      * @see org.geotools.feature.FeatureCollection#getBounds()
      */
     @Override
     public ReferencedEnvelope getBounds() {
-        final Name typeName = type.getName();
-        final Ref thisTypeTreeRootRef = repo.getRootTreeChild(getTypePath(typeName));
-
+        final RevTree typeTree = getTypeTree();
         final CoordinateReferenceSystem crs = type.getCoordinateReferenceSystem();
-
         ReferencedEnvelope bounds = new ReferencedEnvelope(crs);
 
-        if (null == thisTypeTreeRootRef) {
+        if (BigInteger.ZERO.equals(typeTree.size())) {
             return bounds;
         }
 
-        final RevTree typeTree = repo.getTree(thisTypeTreeRootRef.getObjectId());
-        Preconditions.checkState(typeTree != null);
-
-        final FeatureRefIterator refs = new FeatureRefIterator(typeName, filter, repo);
+        final FeatureRefIterator refs = new FeatureRefIterator(typeTree, filter);
 
         BoundingBox featureBounds;
         if (refs.isFullySupported()) {
@@ -109,7 +124,7 @@ public class GeoGitSimpleFeatureCollection implements SimpleFeatureCollection {
                 }
             }
         } else {
-            Iterator<SimpleFeature> features = new GeoGitFeatureIterator(refs, type, filter, repo);
+            Iterator<SimpleFeature> features = new GeoGitFeatureIterator(refs, type, filter, odb);
             while (features.hasNext()) {
                 featureBounds = features.next().getBounds();
                 expandToInclude(bounds, featureBounds);
@@ -137,25 +152,19 @@ public class GeoGitSimpleFeatureCollection implements SimpleFeatureCollection {
      */
     @Override
     public int size() {
-        final Name typeName = type.getName();
-        final Ref thisTypeTreeRootRef = repo.getRootTreeChild(getTypePath(typeName));
-        if (null == thisTypeTreeRootRef) {
-            return 0;
-        }
-        final RevTree typeTree = repo.getTree(thisTypeTreeRootRef.getObjectId());
-        Preconditions.checkState(typeTree != null);
+        final RevTree typeTree = getTypeTree();
 
         if (Filter.INCLUDE.equals(filter)) {
             final BigInteger size = typeTree.size();
             return size.intValue();
         }
 
-        final FeatureRefIterator refs = new FeatureRefIterator(typeName, filter, repo);
+        final FeatureRefIterator refs = new FeatureRefIterator(typeTree, filter);
         int size;
         if (refs.isFullySupported()) {
             size = Iterators.size(refs);
         } else {
-            Iterator<SimpleFeature> features = new GeoGitFeatureIterator(refs, type, filter, repo);
+            Iterator<SimpleFeature> features = new GeoGitFeatureIterator(refs, type, filter, odb);
             size = Iterators.size(features);
         }
 
@@ -177,16 +186,10 @@ public class GeoGitSimpleFeatureCollection implements SimpleFeatureCollection {
      */
     @Override
     public Iterator<SimpleFeature> iterator() {
-        final Name typeName = type.getName();
-        final Ref thisTypeTreeRootRef = repo.getRootTreeChild(getTypePath(typeName));
-        if (null == thisTypeTreeRootRef) {
-            return Iterators.emptyIterator();
-        }
-        final RevTree typeTree = repo.getTree(thisTypeTreeRootRef.getObjectId());
-        Preconditions.checkState(typeTree != null);
+        final RevTree typeTree = getTypeTree();
 
-        final FeatureRefIterator refs = new FeatureRefIterator(typeName, filter, repo);
-        Iterator<SimpleFeature> features = new GeoGitFeatureIterator(refs, type, filter, repo);
+        final FeatureRefIterator refs = new FeatureRefIterator(typeTree, filter);
+        Iterator<SimpleFeature> features = new GeoGitFeatureIterator(refs, type, filter, odb);
         return features;
     }
 
@@ -250,17 +253,8 @@ public class GeoGitSimpleFeatureCollection implements SimpleFeatureCollection {
 
         private final Filter filter;
 
-        public FeatureRefIterator(final Name typeName, final Filter filter, final Repository repo) {
+        public FeatureRefIterator(final RevTree typeTree, final Filter filter) {
             this.filter = filter;
-
-            final Ref thisTypeTreeRootRef = repo.getRootTreeChild(getTypePath(typeName));
-            if (null == thisTypeTreeRootRef) {
-                refs = Iterators.emptyIterator();
-                return;
-            }
-
-            final RevTree typeTree = repo.getTree(thisTypeTreeRootRef.getObjectId());
-            Preconditions.checkState(typeTree != null);
 
             if (Filter.INCLUDE.equals(filter)) {
                 refs = typeTree.iterator(null);
@@ -295,29 +289,33 @@ public class GeoGitSimpleFeatureCollection implements SimpleFeatureCollection {
 
         private final SimpleFeatureType type;
 
-        private final Repository repo;
-
         private final Filter filter;
 
+        private final ObjectDatabase odb;
+
         public GeoGitFeatureIterator(final Iterator<Ref> featureRefs, final SimpleFeatureType type,
-                final Filter filter, final Repository repo) {
+                final Filter filter, final ObjectDatabase odb) {
             this.featureRefs = featureRefs;
             this.type = type;
             this.filter = filter;
-            this.repo = repo;
-
+            this.odb = odb;
         }
 
         @Override
         protected SimpleFeature computeNext() {
-            while (featureRefs.hasNext()) {
-                Ref featureRef = featureRefs.next();
-                String featureId = featureRef.getName();
-                ObjectId contentId = featureRef.getObjectId();
-                Feature feature = repo.getFeature(type, featureId, contentId);
-                if (filter.evaluate(feature)) {
-                    return (SimpleFeature) feature;
+            try {
+                while (featureRefs.hasNext()) {
+                    Ref featureRef = featureRefs.next();
+                    String featureId = featureRef.getName();
+                    ObjectId contentId = featureRef.getObjectId();
+                    Feature feature;
+                    feature = odb.get(contentId, new FeatureReader(type, featureId));
+                    if (filter.evaluate(feature)) {
+                        return (SimpleFeature) feature;
+                    }
                 }
+            } catch (IOException e) {
+                throw new RuntimeException(e);
             }
             return endOfData();
         }

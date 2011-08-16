@@ -292,7 +292,7 @@ public class GeoGitDataStore implements DataStore {
     public GeoGitFeatureSource getFeatureSource(final Name typeName) throws IOException {
         final SimpleFeatureType featureType = getSchema(typeName);
 
-        return new GeoGitFeatureSource(featureType, this);
+        return new GeoGitFeatureStore(featureType, this);
     }
 
     @Override

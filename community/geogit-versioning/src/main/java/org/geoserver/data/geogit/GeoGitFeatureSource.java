@@ -3,14 +3,22 @@ package org.geoserver.data.geogit;
 import java.awt.RenderingHints.Key;
 import java.io.IOException;
 import java.util.Collections;
+import java.util.Iterator;
 import java.util.Set;
 
+import org.geogit.api.GeoGIT;
+import org.geogit.api.ObjectId;
+import org.geogit.api.Ref;
+import org.geogit.api.RevCommit;
+import org.geogit.repository.Repository;
+import org.geogit.storage.ObjectDatabase;
 import org.geotools.data.DataSourceException;
 import org.geotools.data.DefaultResourceInfo;
 import org.geotools.data.FeatureListener;
 import org.geotools.data.Query;
 import org.geotools.data.QueryCapabilities;
 import org.geotools.data.ResourceInfo;
+import org.geotools.data.Transaction;
 import org.geotools.data.simple.SimpleFeatureCollection;
 import org.geotools.data.simple.SimpleFeatureSource;
 import org.geotools.data.store.EmptyFeatureCollection;
@@ -30,13 +38,30 @@ import com.google.common.base.Throwables;
 
 public class GeoGitFeatureSource implements SimpleFeatureSource {
 
-    private SimpleFeatureType type;
+    protected final SimpleFeatureType type;
 
-    private final GeoGitDataStore dataStore;
+    protected final GeoGitDataStore dataStore;
 
     public GeoGitFeatureSource(final SimpleFeatureType type, final GeoGitDataStore dataStore) {
         this.type = type;
         this.dataStore = dataStore;
+    }
+
+    /**
+     * @return the object id of the current HEAD's commit
+     */
+    public ObjectId getCurrentVersion() {
+        // assume HEAD is at MASTER
+        try {
+            Repository repository = dataStore.getRepository();
+            Iterator<RevCommit> lastCommit = new GeoGIT(repository).log().setLimit(1).call();
+            if (lastCommit.hasNext()) {
+                return lastCommit.next().getId();
+            }
+        } catch (Exception e) {
+            throw new RuntimeException(e);
+        }
+        return null;
     }
 
     /**
@@ -186,7 +211,20 @@ public class GeoGitFeatureSource implements SimpleFeatureSource {
         Query query2 = reprojectFilter(query);
         filter = query2.getFilter();
 
-        return new GeoGitSimpleFeatureCollection(type, filter, dataStore.getRepository());
+        final ObjectDatabase objectDatabase = dataStore.getRepository().getIndex().getDatabase();
+        final ObjectId rootTreeId = getRootTreeId();
+        return new GeoGitSimpleFeatureCollection(type, filter, objectDatabase, rootTreeId);
+    }
+
+    /**
+     * @return the id of the root tree. Defaults to the repository's root, but
+     *         {@link GeoGitFeatureStore} shall override to account for whether there's a
+     *         transaction in progress
+     */
+    protected ObjectId getRootTreeId() {
+        Repository repository = dataStore.getRepository();
+        ObjectId rootTreeId = repository.getRootTreeId();
+        return rootTreeId;
     }
 
     private Query reprojectFilter(Query query) throws IOException {
