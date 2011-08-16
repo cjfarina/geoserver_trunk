@@ -42,7 +42,7 @@ public class SimpleFeatureDecoder implements Decoder<SimpleFeature> {
                 typeName.getLocalPart());
         FeatureType featureType = featureTypeInfo.getFeatureType();
         SimpleFeatureBuilder builder = new SimpleFeatureBuilder((SimpleFeatureType) featureType);
-        String featureId = r.getAttributeValue(id.getNamespaceURI(), id.getLocalPart());
+        String featureId = r.getAttributeValue(null, id.getLocalPart());
 
         SimpleFeatureSequenceDecoder<Object> seq = new SimpleFeatureSequenceDecoder<Object>(
                 namespace, 1, 1);

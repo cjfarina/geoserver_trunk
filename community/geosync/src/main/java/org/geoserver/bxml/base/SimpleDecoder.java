@@ -6,6 +6,8 @@ import java.util.Set;
 import javax.xml.namespace.QName;
 
 import org.geoserver.bxml.Decoder;
+import org.gvsig.bxml.stream.BxmlStreamReader;
+import org.gvsig.bxml.stream.EventType;
 
 public abstract class SimpleDecoder<T> implements Decoder<T> {
 
@@ -23,6 +25,10 @@ public abstract class SimpleDecoder<T> implements Decoder<T> {
     @Override
     public Set<QName> getTargets() {
         return Collections.singleton(elemName);
+    }
+    
+    protected boolean isEndElement(BxmlStreamReader r) {
+        return r.getEventType() == EventType.END_ELEMENT && r.getElementName().equals(elemName);
     }
 
 }

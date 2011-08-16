@@ -29,7 +29,7 @@ public class GmlObjectIdDecoder implements Decoder<GmlObjectId> {
         r.require(EventType.START_ELEMENT, GmlObjectId.getNamespaceURI(),
                 GmlObjectId.getLocalPart());
 
-        String id = r.getAttributeValue(GML.id.getNamespaceURI(), GML.id.getLocalPart());
+        String id = r.getAttributeValue(null, GML.id.getLocalPart());
 
         GmlObjectId gmlId = ff.gmlObjectId(id);
 

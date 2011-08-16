@@ -26,7 +26,7 @@ public class CategoryDecoder extends SimpleDecoder<CategoryImpl> {
         final String term = r.getAttributeValue(null, Atom.term.getLocalPart());
 
         r.nextTag();
-
+        
         category.setScheme(scheme);
         category.setTerm(term);
 

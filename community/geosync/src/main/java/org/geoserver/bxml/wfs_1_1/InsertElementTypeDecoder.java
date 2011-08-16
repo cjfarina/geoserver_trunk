@@ -33,6 +33,7 @@ public class InsertElementTypeDecoder extends SimpleDecoder<EObject> {
 
     public InsertElementTypeDecoder(Catalog catalog) {
         super(INSERT);
+        Assert.notNull(catalog);
         factory = WfsFactoryImpl.eINSTANCE;
         this.catalog = catalog;
     }

@@ -42,9 +42,6 @@ public class ReplicationReceiverTest extends BxmlTestSupport {
 
         gss = GeoServerExtensions.bean(GSS.class, applicationContext);
 
-        // insert the single bridge in cite:Bridges
-        // assertTrue(makeVersioned(gss, CITE_BRIDGES) instanceof RevCommit);
-
         List<String> properties = Arrays.asList("NAME", "the_geom");
         List<Object> newValues = Arrays.asList("Cam Bridge",
                 (Object) gf.createPoint(new Coordinate(4, 5)));
@@ -92,6 +89,7 @@ public class ReplicationReceiverTest extends BxmlTestSupport {
 
         feature = getFeature(CITE_BRIDGES, "Bridges.1107531599613");
         assertNull(feature);
+
     }
 
     public void testInsert() throws Exception {
@@ -102,35 +100,61 @@ public class ReplicationReceiverTest extends BxmlTestSupport {
         reader.nextTag();
         FeedImpl feed = decoder.decode(reader);
 
-        Feature feature = getFeature(CITE_BRIDGES, "Bridges.1234568745412");
-        if(feature != null){
-            Filter filter = ff.id(Collections.singleton(ff.featureId("Bridges.1234568745412")));
-            recordDeleteCommit(gss, CITE_BRIDGES, filter, "Deleted bridge");
-            
-        }
+        assertNull(getFeature(CITE_BRIDGES, "Bridges.555"));
 
         ReplicationReceiver replicationReceiver = new ReplicationReceiver();
         replicationReceiver.receive(feed, getCatalog());
 
-        feature = getFeature(CITE_BRIDGES, "Bridges.1234568745412");
-        assertNotNull(feature);
+        List<String> properties = Arrays.asList("the_geom", "FID", "NAME");
+        List<Object> values = Arrays.asList((Object) gf.createPoint(new Coordinate(9, 10)), "230",
+                "Cam Bridge 25");
 
+        assertFeature(CITE_BRIDGES, "Bridges.555", properties, values);
     }
+    
+    public void testInsert2() throws Exception {
+        BxmlStreamReader reader = super.getReader("replicationReceiverInsert2");
+
+        FeedDecoder decoder = new FeedDecoder();
+
+        reader.nextTag();
+        FeedImpl feed = decoder.decode(reader);
+
+        assertNull(getFeature(CITE_BRIDGES, "Bridges.556"));
+        assertNull(getFeature(CITE_BRIDGES, "Bridges.557"));
+        assertNull(getFeature(CITE_BRIDGES, "Bridges.558"));
+
+        ReplicationReceiver replicationReceiver = new ReplicationReceiver();
+        replicationReceiver.receive(feed, getCatalog());
+
+        List<String> properties = Arrays.asList("the_geom", "FID", "NAME");
+        
+        List<Object> values = Arrays.asList((Object) gf.createPoint(new Coordinate(11, 12)), "10",
+                "Bridge 01");
+        assertFeature(CITE_BRIDGES, "Bridges.556", properties, values);
+        
+        values = Arrays.asList((Object) gf.createPoint(new Coordinate(13, 14)), "11",
+        "Bridge 02");
+        assertFeature(CITE_BRIDGES, "Bridges.557", properties, values);
+        
+        values = Arrays.asList((Object) gf.createPoint(new Coordinate(15, 16)), "12",
+        "Bridge 03");
+        assertFeature(CITE_BRIDGES, "Bridges.558", properties, values);
+    }
+
 
     private void assertFeature(Name featureName, String featureId, List<String> properties,
             List<Object> values) throws IOException {
         Feature feature = getFeature(featureName, featureId);
-
+        assertNotNull(feature);
         for (int i = 0; i < properties.size(); i++) {
             Property propertyName = feature.getProperty(new NameImpl(properties.get(i)));
             assertEquals(values.get(i), propertyName.getValue());
-
         }
-
     }
 
     protected Feature getFeature(Name featureName, String featureId) throws IOException {
-        
+
         FeatureSource<? extends FeatureType, ? extends Feature> featureSource = getCatalog()
                 .getFeatureTypeByName(featureName).getFeatureSource(null, null);
 

@@ -32,7 +32,7 @@ public class GeneratorDecoder extends SimpleDecoder<GeneratorImpl> {
 
         EventType event = r.next();
 
-        if (EventType.VALUE_STRING == event) {
+        if (!isEndElement(r) && EventType.VALUE_STRING == event) {
             generator.setValue(StringDecoder.readStringValue(r));
         }
 

@@ -20,14 +20,14 @@
 		<content>
 			<wfs:Insert typeName="f:">
 				<f:Bridges gml:id="Bridges.555">
-					<f:NAME>Cam Bridge 25</f:NAME>
-					<f:FID>230</f:FID>
 					<f:the_geom>
 						<gml:Point>
 							<gml:pos gml:srsName="urn:x-ogc:def:crs:EPSG:4326">9 10
 							</gml:pos>
 						</gml:Point>
 					</f:the_geom>
+					<f:FID>230</f:FID>
+					<f:NAME>Cam Bridge 25</f:NAME>
 				</f:Bridges>
 			</wfs:Insert>
 		</content>

@@ -31,6 +31,7 @@ public class WhereDecoder extends SimpleDecoder<Object> {
                 elementName.getLocalPart());
 
         r.nextTag();
+        
         Object value = choice.decode(r);
         r.nextTag();
 

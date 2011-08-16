@@ -26,6 +26,7 @@ import org.geotools.data.DefaultTransaction;
 import org.geotools.data.FeatureStore;
 import org.geotools.data.Transaction;
 import org.geotools.data.simple.SimpleFeatureCollection;
+import org.geotools.factory.Hints;
 import org.geotools.feature.NameImpl;
 import org.opengis.feature.Feature;
 import org.opengis.feature.simple.SimpleFeature;
@@ -33,6 +34,8 @@ import org.opengis.feature.type.FeatureType;
 import org.opengis.feature.type.Name;
 import org.opengis.filter.Filter;
 import org.springframework.util.Assert;
+
+import com.google.common.base.Preconditions;
 
 @SuppressWarnings("rawtypes")
 public class ReplicationReceiver {
@@ -131,9 +134,22 @@ public class ReplicationReceiver {
         }
     }
 
+    @SuppressWarnings("unchecked")
     private void insert(FeatureStore store, InsertElementType insertElement) throws IOException {
-        SimpleFeature feature = (SimpleFeature) insertElement.getFeature().get(0);
-        SimpleFeatureCollection fc = DataUtilities.collection(feature);
+        if (!store.getQueryCapabilities().isUseProvidedFIDSupported()) {
+            throw new UnsupportedOperationException(
+                    "The underlying data store '"
+                            + store.getSchema().getName().getLocalPart()
+                            + "' does not support the USE_PROVIDED_FID Hint and inserts won't preserve Feature IDs");
+        }
+        List<SimpleFeature> features = insertElement.getFeature();
+        for (SimpleFeature f : features) {
+            f.getUserData().put(Hints.USE_PROVIDED_FID, Boolean.TRUE);
+        }
+        SimpleFeatureCollection fc = DataUtilities.collection(features);
+        List addedFeatures = store.addFeatures(fc);
+        int size = fc.size();
+        Preconditions.checkState(size == addedFeatures.size());
         store.addFeatures(fc);
     }
 

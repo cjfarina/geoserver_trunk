@@ -21,6 +21,11 @@ public class DateDecoder extends SimpleDecoder<Date> {
     public Date decode(BxmlStreamReader r) throws Exception {
         r.require(EventType.START_ELEMENT, null, elemName.getLocalPart());
         r.next();
+
+        // if empty element
+        if (isEndElement(r)) {
+            return null;
+        }
         Date value = readDateValue(r);
 
         r.require(EventType.END_ELEMENT, null, elemName.getLocalPart());

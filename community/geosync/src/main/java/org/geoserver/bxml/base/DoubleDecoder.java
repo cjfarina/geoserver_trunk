@@ -22,6 +22,7 @@ public class DoubleDecoder implements Decoder<Double> {
     public Double decode(BxmlStreamReader r) throws Exception {
         r.require(EventType.START_ELEMENT, null, name.getLocalPart());
         final EventType event = r.next();
+        
         Double d;
         switch (event) {
         case VALUE_DOUBLE:
