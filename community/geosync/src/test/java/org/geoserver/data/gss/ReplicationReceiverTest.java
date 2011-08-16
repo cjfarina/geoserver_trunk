@@ -111,7 +111,7 @@ public class ReplicationReceiverTest extends BxmlTestSupport {
 
         assertFeature(CITE_BRIDGES, "Bridges.555", properties, values);
     }
-    
+
     public void testInsert2() throws Exception {
         BxmlStreamReader reader = super.getReader("replicationReceiverInsert2");
 
@@ -128,20 +128,17 @@ public class ReplicationReceiverTest extends BxmlTestSupport {
         replicationReceiver.receive(feed, getCatalog());
 
         List<String> properties = Arrays.asList("the_geom", "FID", "NAME");
-        
+
         List<Object> values = Arrays.asList((Object) gf.createPoint(new Coordinate(11, 12)), "10",
                 "Bridge 01");
         assertFeature(CITE_BRIDGES, "Bridges.556", properties, values);
-        
-        values = Arrays.asList((Object) gf.createPoint(new Coordinate(13, 14)), "11",
-        "Bridge 02");
+
+        values = Arrays.asList((Object) gf.createPoint(new Coordinate(13, 14)), "11", "Bridge 02");
         assertFeature(CITE_BRIDGES, "Bridges.557", properties, values);
-        
-        values = Arrays.asList((Object) gf.createPoint(new Coordinate(15, 16)), "12",
-        "Bridge 03");
+
+        values = Arrays.asList((Object) gf.createPoint(new Coordinate(15, 16)), "12", "Bridge 03");
         assertFeature(CITE_BRIDGES, "Bridges.558", properties, values);
     }
-
 
     private void assertFeature(Name featureName, String featureId, List<String> properties,
             List<Object> values) throws IOException {
