@@ -81,9 +81,13 @@ public class GeoGitFeatureSourceTest extends RepositoryTestCase {
 
     public void testGetQueryCapabilities() {
         assertNotNull(pointsSource.getQueryCapabilities());
+
         assertFalse(pointsSource.getQueryCapabilities().isJoiningSupported());
+
         assertFalse(pointsSource.getQueryCapabilities().isOffsetSupported());
+
         assertTrue(pointsSource.getQueryCapabilities().isReliableFIDSupported());
+
         assertTrue(pointsSource.getQueryCapabilities().isUseProvidedFIDSupported());
 
         SortBy[] sortAttributes = { SortBy.NATURAL_ORDER };

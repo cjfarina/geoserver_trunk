@@ -1,21 +1,21 @@
 package org.geoserver.data.geogit;
 
-import java.io.IOException;
 import java.util.Arrays;
 import java.util.Collections;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
 
 import org.geogit.api.GeoGIT;
 import org.geogit.test.RepositoryTestCase;
 import org.geotools.data.DataUtilities;
 import org.geotools.data.DefaultTransaction;
 import org.geotools.data.Transaction;
-import org.geotools.data.simple.SimpleFeatureCollection;
 import org.geotools.factory.CommonFactoryFinder;
+import org.geotools.factory.Hints;
 import org.geotools.feature.FeatureCollection;
 import org.opengis.feature.simple.SimpleFeature;
 import org.opengis.feature.simple.SimpleFeatureType;
-import org.opengis.filter.Filter;
 import org.opengis.filter.FilterFactory2;
 import org.opengis.filter.Id;
 import org.opengis.filter.identity.FeatureId;
@@ -54,6 +54,8 @@ public class GeoGitFeatureStoreTest extends RepositoryTestCase {
             assertTrue(e.getMessage().contains("AUTO_COMMIT"));
         }
 
+        final Set<String> insertedFids = new HashSet<String>(Arrays.asList(idP1, idP2, idP3));
+
         Transaction tx = new DefaultTransaction();
         points.setTransaction(tx);
         assertSame(tx, points.getTransaction());
@@ -62,9 +64,6 @@ public class GeoGitFeatureStoreTest extends RepositoryTestCase {
             assertNotNull(addedFeatures);
             assertEquals(3, addedFeatures.size());
 
-            assertEquals(idP1, addedFeatures.get(0).getID());
-            assertEquals(idP2, addedFeatures.get(1).getID());
-            assertEquals(idP3, addedFeatures.get(2).getID());
             for (FeatureId id : addedFeatures) {
                 assertTrue(id instanceof ResourceId);
                 assertNotNull(((ResourceId) id).getFeatureVersion());
@@ -78,6 +77,66 @@ public class GeoGitFeatureStoreTest extends RepositoryTestCase {
             tx.commit();
 
             assertEquals(3, dataStore.getFeatureSource(pointsTypeName).getFeatures().size());
+        } catch (Exception e) {
+            tx.rollback();
+            throw e;
+        } finally {
+            tx.close();
+        }
+    }
+
+    public void testUseProvidedFIDSupported() throws Exception {
+
+        assertTrue(points.getQueryCapabilities().isUseProvidedFIDSupported());
+
+        FeatureCollection<SimpleFeatureType, SimpleFeature> collection;
+        collection = DataUtilities.collection(Arrays.asList((SimpleFeature) points1,
+                (SimpleFeature) points2, (SimpleFeature) points3));
+
+        Transaction tx = new DefaultTransaction();
+        points.setTransaction(tx);
+        try {
+            List<FeatureId> newFeatures = points.addFeatures(collection);
+            assertNotNull(newFeatures);
+            assertEquals(3, newFeatures.size());
+
+            FeatureId fid1 = newFeatures.get(0);
+            FeatureId fid2 = newFeatures.get(1);
+            FeatureId fid3 = newFeatures.get(2);
+
+            // new ids should have been generated...
+            assertFalse(idP1.equals(fid1.getID()));
+            assertFalse(idP1.equals(fid1.getID()));
+            assertFalse(idP1.equals(fid1.getID()));
+
+            // now force the use of provided feature ids
+            points1.getUserData().put(Hints.USE_PROVIDED_FID, Boolean.TRUE);
+            points2.getUserData().put(Hints.USE_PROVIDED_FID, Boolean.TRUE);
+            points3.getUserData().put(Hints.USE_PROVIDED_FID, Boolean.TRUE);
+
+            List<FeatureId> providedFids = points.addFeatures(collection);
+            assertNotNull(providedFids);
+            assertEquals(3, providedFids.size());
+
+            FeatureId fid11 = newFeatures.get(0);
+            FeatureId fid21 = newFeatures.get(1);
+            FeatureId fid31 = newFeatures.get(2);
+
+            // ids should match provided
+            assertEquals(idP1, fid11.getID());
+            assertEquals(idP2, fid21.getID());
+            assertEquals(idP3, fid31.getID());
+
+            tx.commit();
+
+            assertEquals(1, points.getFeatures(ff.id(Collections.singleton(fid1))).size());
+            assertEquals(1, points.getFeatures(ff.id(Collections.singleton(fid2))).size());
+            assertEquals(1, points.getFeatures(ff.id(Collections.singleton(fid3))).size());
+
+            assertEquals(1, points.getFeatures(ff.id(Collections.singleton(fid11))).size());
+            assertEquals(1, points.getFeatures(ff.id(Collections.singleton(fid21))).size());
+            assertEquals(1, points.getFeatures(ff.id(Collections.singleton(fid31))).size());
+
         } catch (Exception e) {
             tx.rollback();
             throw e;
