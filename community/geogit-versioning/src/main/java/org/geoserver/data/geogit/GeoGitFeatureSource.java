@@ -8,7 +8,6 @@ import java.util.Set;
 
 import org.geogit.api.GeoGIT;
 import org.geogit.api.ObjectId;
-import org.geogit.api.Ref;
 import org.geogit.api.RevCommit;
 import org.geogit.repository.Repository;
 import org.geogit.storage.ObjectDatabase;
@@ -18,7 +17,6 @@ import org.geotools.data.FeatureListener;
 import org.geotools.data.Query;
 import org.geotools.data.QueryCapabilities;
 import org.geotools.data.ResourceInfo;
-import org.geotools.data.Transaction;
 import org.geotools.data.simple.SimpleFeatureCollection;
 import org.geotools.data.simple.SimpleFeatureSource;
 import org.geotools.data.store.EmptyFeatureCollection;

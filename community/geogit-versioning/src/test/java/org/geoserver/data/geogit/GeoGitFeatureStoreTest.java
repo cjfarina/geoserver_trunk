@@ -96,13 +96,13 @@ public class GeoGitFeatureStoreTest extends RepositoryTestCase {
         Transaction tx = new DefaultTransaction();
         points.setTransaction(tx);
         try {
-            List<FeatureId> newFeatures = points.addFeatures(collection);
-            assertNotNull(newFeatures);
-            assertEquals(3, newFeatures.size());
+            List<FeatureId> newFids = points.addFeatures(collection);
+            assertNotNull(newFids);
+            assertEquals(3, newFids.size());
 
-            FeatureId fid1 = newFeatures.get(0);
-            FeatureId fid2 = newFeatures.get(1);
-            FeatureId fid3 = newFeatures.get(2);
+            FeatureId fid1 = newFids.get(0);
+            FeatureId fid2 = newFids.get(1);
+            FeatureId fid3 = newFids.get(2);
 
             // new ids should have been generated...
             assertFalse(idP1.equals(fid1.getID()));
@@ -118,9 +118,9 @@ public class GeoGitFeatureStoreTest extends RepositoryTestCase {
             assertNotNull(providedFids);
             assertEquals(3, providedFids.size());
 
-            FeatureId fid11 = newFeatures.get(0);
-            FeatureId fid21 = newFeatures.get(1);
-            FeatureId fid31 = newFeatures.get(2);
+            FeatureId fid11 = providedFids.get(0);
+            FeatureId fid21 = providedFids.get(1);
+            FeatureId fid31 = providedFids.get(2);
 
             // ids should match provided
             assertEquals(idP1, fid11.getID());
