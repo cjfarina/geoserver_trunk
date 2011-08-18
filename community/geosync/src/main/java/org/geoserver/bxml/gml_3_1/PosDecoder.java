@@ -10,8 +10,10 @@ import java.util.Set;
 
 import javax.xml.namespace.QName;
 
+import org.apache.commons.lang.ArrayUtils;
 import org.geoserver.bxml.Decoder;
 import org.geoserver.bxml.SequenceDecoder;
+import org.geoserver.bxml.base.PrimitiveListDecoder;
 import org.gvsig.bxml.stream.BxmlStreamReader;
 import org.gvsig.bxml.stream.EventType;
 
@@ -28,13 +30,13 @@ public class PosDecoder implements Decoder<CoordinateSequence> {
         final String dimensionAtt = r.getAttributeValue(null, "dimension");
 
         SequenceDecoder seq = new SequenceDecoder<Double[]>(1, Integer.MAX_VALUE);
-        seq.add(new DoubleListDecoder(pos), 1, Integer.MAX_VALUE);
+        seq.add(new PrimitiveListDecoder<Double>(pos, Double.class), 1, Integer.MAX_VALUE);
 
-        final Iterator<double[]> iterator = seq.decode(r);
+        final Iterator<Double[]> iterator = seq.decode(r);
         List<Double> coords = new ArrayList<Double>();
         int dimension = 2;
         while (iterator.hasNext()) {
-            double[] coord = iterator.next();
+            Double[] coord = iterator.next();
             dimension = coord.length;
             for (int i = 0; i < coord.length; i++) {
                 coords.add(coord[i]);
@@ -42,13 +44,13 @@ public class PosDecoder implements Decoder<CoordinateSequence> {
             }
         }
 
-        double[] arrayCoord = new double[coords.size()];
+        Double[] arrayCoord = new Double[coords.size()];
         for (int i = 0; i < arrayCoord.length; i++) {
             arrayCoord[i] = coords.get(i);
         }
 
         dimension = dimensionAtt == null ? dimension : Integer.parseInt(dimensionAtt);
-        return new PackedCoordinateSequence.Double(arrayCoord, dimension);
+        return new PackedCoordinateSequence.Double(ArrayUtils.toPrimitive(arrayCoord), dimension);
     }
 
     @Override

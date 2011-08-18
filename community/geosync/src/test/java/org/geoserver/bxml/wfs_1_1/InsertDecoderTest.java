@@ -21,6 +21,7 @@ import com.vividsolutions.jts.geom.Point;
 
 public class InsertDecoderTest extends BxmlTestSupport {
 
+    @SuppressWarnings({ "unchecked", "rawtypes" })
     protected Catalog buildCatalog(Class[] columnTypes) throws Exception {
         Name typeName = new NameImpl("http://opengeo.org/osm", "planet_osm_point");
         int featureCount = columnTypes.length;
@@ -29,7 +30,6 @@ public class InsertDecoderTest extends BxmlTestSupport {
         for (int i = 0; i < featureCount; i++) {
             AttributeDescriptor mockAttributeDescriptor = mock(AttributeDescriptor.class);
 
-            Class<?> binding = String.class;
             AttributeType mockAttributeType = mock(AttributeType.class);
 
             when(mockAttributeType.getBinding()).thenReturn((Class) columnTypes[i]);
@@ -47,6 +47,7 @@ public class InsertDecoderTest extends BxmlTestSupport {
         return mockCatalog;
     }
 
+    @SuppressWarnings({ "rawtypes" })
     public void testInsertPoint() throws Exception {
 
         BxmlStreamReader reader = super.getReader("insert_point");

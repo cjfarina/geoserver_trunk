@@ -1,0 +1,48 @@
+package org.geoserver.bxml.base;
+
+import java.util.Collections;
+import java.util.Set;
+
+import javax.xml.namespace.QName;
+
+import org.geoserver.bxml.BXMLDecoderUtil;
+import org.geoserver.bxml.Decoder;
+import org.gvsig.bxml.stream.BxmlStreamReader;
+import org.gvsig.bxml.stream.EventType;
+
+public class PrimitiveListDecoder<T> implements Decoder<T[]> {
+
+    private final QName name;
+    private final Class<T> type;
+
+    public PrimitiveListDecoder(final QName name, Class<T> type) {
+        this.name = name;
+        this.type = type;
+    }
+
+    @Override
+    public T[] decode(BxmlStreamReader r) throws Exception {
+        r.require(EventType.START_ELEMENT, null, name.getLocalPart());
+        EventType eventType = r.next();
+
+        T[] values = null;
+        if(eventType.isValue()){
+            values = new PrimitiveListValueDecoder<T>(type).decode(r);
+        }
+
+        BXMLDecoderUtil.goToEnd(r, name);
+        r.require(EventType.END_ELEMENT, null, name.getLocalPart());
+        return values;
+    }
+
+    @Override
+    public boolean canHandle(QName name) {
+        return this.name.equals(name);
+    }
+
+    @Override
+    public Set<QName> getTargets() {
+        return Collections.singleton(name);
+    }
+
+}

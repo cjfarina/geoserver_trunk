@@ -7,6 +7,7 @@ import javax.xml.namespace.QName;
 
 import org.geoserver.bxml.BXMLDecoderUtil;
 import org.geoserver.bxml.Decoder;
+import org.geoserver.bxml.base.GenericValueDecoder;
 import org.gvsig.bxml.stream.BxmlStreamReader;
 import org.gvsig.bxml.stream.EventType;
 
@@ -21,8 +22,7 @@ public class SimpleFeatureAttributeDecoder implements Decoder<Object> {
     @Override
     public Object decode(BxmlStreamReader r) throws Exception {
         r.require(EventType.START_ELEMENT, null, null);
-        // r.nextTag();
-        Object value = BXMLDecoderUtil.readValue(r);
+        Object value = new GenericValueDecoder().decode(r);
         r.require(EventType.END_ELEMENT, null, null);
         return value;
     }

@@ -9,6 +9,7 @@ import javax.xml.namespace.QName;
 import org.geoserver.bxml.ChoiceDecoder;
 import org.geoserver.bxml.SequenceDecoder;
 import org.geoserver.bxml.SetterDecoder;
+import org.geoserver.bxml.base.PrimitiveListDecoder;
 import org.geoserver.bxml.filter_1_1.AbstractTypeDecoder;
 import org.geotools.geometry.jts.ReferencedEnvelope;
 import org.geotools.gml3.GML;
@@ -32,9 +33,9 @@ public class EnvelopeDecoder extends AbstractTypeDecoder<ReferencedEnvelope> {
         ChoiceDecoder<Object> choice = new ChoiceDecoder<Object>();
 
         EnvelopeParams params = new EnvelopeParams();
-        choice.addOption(new SetterDecoder<Object>(new DoubleListDecoder(lowerCorner), params,
+        choice.addOption(new SetterDecoder<Object>(new PrimitiveListDecoder<Double>(lowerCorner, Double.class), params,
                 "lowerCornerValues"));
-        choice.addOption(new SetterDecoder<Object>(new DoubleListDecoder(upperCorner), params,
+        choice.addOption(new SetterDecoder<Object>(new PrimitiveListDecoder<Double>(upperCorner, Double.class), params,
                 "uperCornerValues"));
 
         SequenceDecoder<Object> seq = new SequenceDecoder<Object>(1, 1);
@@ -55,23 +56,23 @@ public class EnvelopeDecoder extends AbstractTypeDecoder<ReferencedEnvelope> {
 
     public class EnvelopeParams {
 
-        private double[] lowerCornerValues;
+        private Double[] lowerCornerValues;
 
-        private double[] uperCornerValues;
+        private Double[] uperCornerValues;
 
-        public double[] getUperCornerValues() {
+        public Double[] getUperCornerValues() {
             return uperCornerValues;
         }
 
-        public void setUperCornerValues(double[] uperCornerValues) {
+        public void setUperCornerValues(Double[] uperCornerValues) {
             this.uperCornerValues = uperCornerValues;
         }
 
-        public double[] getLowerCornerValues() {
+        public Double[] getLowerCornerValues() {
             return lowerCornerValues;
         }
 
-        public void setLowerCornerValues(double[] lowerCornerValues) {
+        public void setLowerCornerValues(Double[] lowerCornerValues) {
             this.lowerCornerValues = lowerCornerValues;
         }
     }

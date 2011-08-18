@@ -7,6 +7,7 @@ import javax.xml.namespace.QName;
 
 import org.geoserver.bxml.atom.AbstractAtomEncoder;
 import org.geoserver.bxml.base.StringDecoder;
+import org.geoserver.bxml.base.StringValueDecoder;
 import org.geoserver.bxml.gml_3_1.EnvelopeDecoder;
 import org.geoserver.bxml.gml_3_1.GeometryDecoder;
 import org.geotools.util.logging.Logging;
@@ -35,48 +36,11 @@ public class BXMLDecoderUtil {
     }
 
     public static void goToEnd(final BxmlStreamReader r, final QName name) throws IOException {
-        while (!EventType.END_ELEMENT.equals(r.getEventType()) || !name.equals(r.getElementName())) {
-            r.next();
+        if(!EventType.END_DOCUMENT.equals(r.getEventType())){
+            while (!EventType.END_ELEMENT.equals(r.getEventType()) || !name.equals(r.getElementName())) {
+                r.next();
+            }
         }
-    }
-
-    @SuppressWarnings("unchecked")
-    public static Object readValue(BxmlStreamReader r) throws IOException, Exception {
-        EventType event = r.next();
-        Object value = null;
-        if (EventType.VALUE_STRING == event) {
-            value = StringDecoder.readStringValue(r);
-            event = r.getEventType();
-        } else if (EventType.VALUE_BOOL == event) {
-            value = Boolean.valueOf(r.getBooleanValue());
-            event = r.getEventType();
-        } else if (EventType.VALUE_BYTE == event) {
-            value = r.getByteValue();
-            event = r.getEventType();
-        } else if (EventType.VALUE_DOUBLE == event) {
-            value = r.getDoubleValue();
-            event = r.getEventType();
-        } else if (EventType.VALUE_FLOAT == event) {
-            value = r.getFloatValue();
-            event = r.getEventType();
-        } else if (EventType.VALUE_INT == event) {
-            value = r.getIntValue();
-            event = r.getEventType();
-        } else if (EventType.VALUE_LONG == event) {
-            value = r.getLongValue();
-            event = r.getEventType();
-        }
-
-        @SuppressWarnings("rawtypes")
-        ChoiceDecoder choice = new ChoiceDecoder<Object>();
-        choice.addOption(new GeometryDecoder());
-        choice.addOption(new EnvelopeDecoder());
-        
-        if (EventType.START_ELEMENT == event) {
-            value = choice.decode(r);
-            r.nextTag();
-        }
-        return value;
     }
 
 }

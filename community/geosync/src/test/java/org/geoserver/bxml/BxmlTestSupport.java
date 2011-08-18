@@ -4,7 +4,6 @@ import java.io.InputStream;
 
 import javax.xml.stream.XMLInputFactory;
 
-import org.geoserver.gss.GSSTestSupport;
 import org.geoserver.gss.functional.v_1_0_0.GSSFunctionalTestSupport;
 import org.geotools.filter.AttributeExpressionImpl;
 import org.geotools.filter.LiteralExpressionImpl;
@@ -34,13 +33,13 @@ public abstract class BxmlTestSupport extends GSSFunctionalTestSupport {
         final InputStream input = getClass().getResourceAsStream(resourceName);
         assertNotNull(resourceName + " not found by " + getClass().getName(), input);
         if (isBinary) {
-            return getBmlReader(input);
+            return getBxmlReader(input);
         } else {
             return getXmlReader(input);
         }
     }
 
-    protected BxmlStreamReader getBmlReader(final InputStream input) throws Exception {
+    protected BxmlStreamReader getBxmlReader(final InputStream input) throws Exception {
         BxmlInputFactory factory = BxmlFactoryFinder.newInputFactory();
 
         factory.setNamespaceAware(true);

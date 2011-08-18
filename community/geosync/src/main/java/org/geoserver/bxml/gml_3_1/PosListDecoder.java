@@ -7,7 +7,9 @@ import java.util.Set;
 
 import javax.xml.namespace.QName;
 
+import org.apache.commons.lang.ArrayUtils;
 import org.geoserver.bxml.Decoder;
+import org.geoserver.bxml.base.PrimitiveListDecoder;
 import org.gvsig.bxml.stream.BxmlStreamReader;
 import org.gvsig.bxml.stream.EventType;
 
@@ -22,11 +24,11 @@ public class PosListDecoder implements Decoder<CoordinateSequence> {
 
         final String dimensionAtt = r.getAttributeValue(null, "dimension");
 
-        final double[] coords = new DoubleListDecoder(posList).decode(r);
+        final Double[] coords = new PrimitiveListDecoder<Double>(posList, Double.class).decode(r);
 
         int dimension = dimensionAtt == null ? 2 : Integer.parseInt(dimensionAtt);
         r.require(EventType.END_ELEMENT, null, null);
-        return new PackedCoordinateSequence.Double(coords, dimension);
+        return new PackedCoordinateSequence.Double(ArrayUtils.toPrimitive(coords), dimension);
     }
 
     @Override

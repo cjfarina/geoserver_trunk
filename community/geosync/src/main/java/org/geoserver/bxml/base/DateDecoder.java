@@ -1,6 +1,5 @@
 package org.geoserver.bxml.base;
 
-import java.io.IOException;
 import java.util.Date;
 
 import javax.xml.namespace.QName;
@@ -32,13 +31,16 @@ public class DateDecoder extends SimpleDecoder<Date> {
         return value;
     }
 
-    public static Date readDateValue(BxmlStreamReader r) throws IOException {
-        String dateString = StringDecoder.readStringValue(r);
+    public static Date readDateValue(BxmlStreamReader r) throws Exception {
+        StringValueDecoder valueDecoder = new StringValueDecoder();
         Date date = null;
-        try {
-            date = DateUtil.deserializeDateTime(dateString);
-        } catch (IllegalArgumentException e) {
-            Throwables.propagate(e);
+        if (r.getEventType().isValue()) {
+            String dateString = valueDecoder.decode(r);
+            try {
+                date = DateUtil.deserializeDateTime(dateString);
+            } catch (IllegalArgumentException e) {
+                Throwables.propagate(e);
+            }
         }
         return date;
     }

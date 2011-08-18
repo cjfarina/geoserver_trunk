@@ -5,7 +5,7 @@ import static org.geotools.gml3.GML.coord;
 import javax.xml.namespace.QName;
 
 import org.geoserver.bxml.SequenceDecoder;
-import org.geoserver.bxml.base.DoubleDecoder;
+import org.geoserver.bxml.base.PrimitiveDecoder;
 import org.geotools.gml2.GML;
 import org.gvsig.bxml.stream.BxmlStreamReader;
 
@@ -26,9 +26,9 @@ public class CoordDecoder extends AbstractGeometryDecoder<CoordinateSequence> {
     public CoordDecoder() {
         super(coord);
         seq = new SequenceDecoder<Double>();
-        seq.add(new DoubleDecoder(X), 1, 1);
-        seq.add(new DoubleDecoder(Y), 1, 1);
-        seq.add(new DoubleDecoder(Z), 1, 1);
+        seq.add(new PrimitiveDecoder<Double>(X, Double.class), 1, 1);
+        seq.add(new PrimitiveDecoder<Double>(Y, Double.class), 1, 1);
+        seq.add(new PrimitiveDecoder<Double>(Z, Double.class), 1, 1);
     }
 
     @Override

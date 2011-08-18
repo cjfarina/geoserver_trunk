@@ -7,6 +7,7 @@ import javax.xml.namespace.QName;
 
 import org.geoserver.bxml.base.SimpleDecoder;
 import org.geoserver.bxml.base.StringDecoder;
+import org.geoserver.bxml.base.StringValueDecoder;
 import org.geoserver.gss.internal.atom.Atom;
 import org.geoserver.gss.internal.atom.GeneratorImpl;
 import org.gvsig.bxml.stream.BxmlStreamReader;
@@ -33,7 +34,7 @@ public class GeneratorDecoder extends SimpleDecoder<GeneratorImpl> {
         EventType event = r.next();
 
         if (!isEndElement(r) && EventType.VALUE_STRING == event) {
-            generator.setValue(StringDecoder.readStringValue(r));
+            generator.setValue(new StringValueDecoder().decode(r));
         }
 
         r.require(EventType.END_ELEMENT, elemName.getNamespaceURI(), elemName.getLocalPart());
