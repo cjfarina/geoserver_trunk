@@ -14,6 +14,7 @@ import org.geotools.data.Transaction;
 import org.geotools.factory.CommonFactoryFinder;
 import org.geotools.factory.Hints;
 import org.geotools.feature.FeatureCollection;
+import org.opengis.feature.Feature;
 import org.opengis.feature.simple.SimpleFeature;
 import org.opengis.feature.simple.SimpleFeatureType;
 import org.opengis.filter.FilterFactory2;
@@ -182,6 +183,12 @@ public class GeoGitFeatureStoreTest extends RepositoryTestCase {
         }
         SimpleFeature modified = points.getFeatures(filter).iterator().next();
         assertEquals("modified", modified.getAttribute("sp"));
+    }
+
+    private void setUseProvidedFidHint(boolean useProvidedFid, Feature... features) {
+        for (Feature f : features) {
+            f.getUserData().put(Hints.USE_PROVIDED_FID, Boolean.valueOf(useProvidedFid));
+        }
     }
 
     public void testRemoveFeatures() throws Exception {

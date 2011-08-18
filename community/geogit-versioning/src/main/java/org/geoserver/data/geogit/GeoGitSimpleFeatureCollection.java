@@ -27,6 +27,8 @@ import org.opengis.feature.simple.SimpleFeature;
 import org.opengis.feature.simple.SimpleFeatureType;
 import org.opengis.feature.type.Name;
 import org.opengis.filter.Filter;
+import org.opengis.filter.expression.Expression;
+import org.opengis.filter.expression.Literal;
 import org.opengis.filter.sort.SortBy;
 import org.opengis.filter.spatial.BBOX;
 import org.opengis.geometry.BoundingBox;
@@ -38,6 +40,7 @@ import com.google.common.base.Predicate;
 import com.google.common.base.Throwables;
 import com.google.common.collect.AbstractIterator;
 import com.google.common.collect.Iterators;
+import com.vividsolutions.jts.geom.Geometry;
 
 public class GeoGitSimpleFeatureCollection implements SimpleFeatureCollection {
 
@@ -224,10 +227,28 @@ public class GeoGitSimpleFeatureCollection implements SimpleFeatureCollection {
      */
     private static class BBOXPredicate implements Predicate<Ref> {
 
-        private final BBOX filter;
+        private BoundingBox filter;
 
         public BBOXPredicate(final BBOX filter) {
-            this.filter = filter;
+
+            Expression right = filter.getExpression2();
+            if (right instanceof Literal) {
+                Object literal = right.evaluate(null);
+                if (literal instanceof BoundingBox) {
+                    this.filter = (BoundingBox) literal;
+                } else if (literal instanceof Geometry) {
+                    Geometry geom = (Geometry) literal;
+                    CoordinateReferenceSystem crs = null;
+                    if (geom.getUserData() instanceof CoordinateReferenceSystem) {
+                        crs = (CoordinateReferenceSystem) geom.getUserData();
+                    }
+                    this.filter = new ReferencedEnvelope(geom.getEnvelopeInternal(), crs);
+                } else {
+                    throw new IllegalArgumentException(
+                            "Right operand of BBOX filter can't be resolved to a BoundingBox: "
+                                    + right);
+                }
+            }
         }
 
         @Override
@@ -236,8 +257,8 @@ public class GeoGitSimpleFeatureCollection implements SimpleFeatureCollection {
                 return false;
             }
             SpatialRef sr = (SpatialRef) featureRef;
-            BoundingBox bounds = sr.getBounds();
-            final boolean apply = filter.evaluate(bounds);
+            final BoundingBox bounds = sr.getBounds();
+            final boolean apply = filter.intersects(bounds);
             return apply;
         }
     }

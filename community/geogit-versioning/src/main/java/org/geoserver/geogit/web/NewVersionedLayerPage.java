@@ -42,6 +42,8 @@ import org.geoserver.web.wicket.GeoServerTablePanel;
 import org.geoserver.web.wicket.IconWithLabel;
 import org.opengis.feature.type.Name;
 
+import com.vividsolutions.jts.geom.Geometry;
+
 /**
  * A page listing the resources contained in a store, and whose links will bring the user to a new
  * resource configuration page
@@ -160,8 +162,13 @@ public class NewVersionedLayerPage extends GeoServerSecuredPage {
                 }
                 if (property == NewVersionedLayerPageProvider.GEOMTYPE) {
                     final CatalogIconFactory icons = CatalogIconFactory.get();
-                    final ResourceReference icon = icons.getVectorIcon(versionedType
-                            .getGeometryType());
+                    final Class<? extends Geometry> geometryType = versionedType.getGeometryType();
+                    final ResourceReference icon;
+                    if (geometryType == null) {
+                        icon = CatalogIconFactory.UNKNOWN_ICON;
+                    } else {
+                        icon = icons.getVectorIcon(geometryType);
+                    }
                     Fragment f = new Fragment(id, "iconFragment", NewVersionedLayerPage.this);
                     f.add(new Image("layerIcon", icon));
                     return f;
