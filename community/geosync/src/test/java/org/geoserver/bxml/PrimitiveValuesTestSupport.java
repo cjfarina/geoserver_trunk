@@ -11,7 +11,7 @@ import org.gvsig.bxml.stream.BxmlOutputFactory;
 import org.gvsig.bxml.stream.BxmlStreamReader;
 import org.gvsig.bxml.stream.BxmlStreamWriter;
 
-public class PrimitiveValuesTestSupport extends BxmlTestSupport {
+public abstract class PrimitiveValuesTestSupport extends BxmlTestSupport {
 
     public void assertEqualsArray(boolean[] expected, boolean[] actual) {
         for (int i = 0; i < expected.length; i++) {
@@ -87,7 +87,7 @@ public class PrimitiveValuesTestSupport extends BxmlTestSupport {
         // String string = new String(buf);
 
         ByteArrayInputStream in = new ByteArrayInputStream(buf);
-        BxmlStreamReader r = getBxmlReader(in);
+        BxmlStreamReader r = getReader(in);
         r.nextTag();
         Object decodedValue = decoder.decode(r);
         return decodedValue;

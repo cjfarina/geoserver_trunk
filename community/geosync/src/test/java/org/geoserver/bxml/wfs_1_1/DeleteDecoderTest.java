@@ -2,6 +2,8 @@ package org.geoserver.bxml.wfs_1_1;
 
 import javax.xml.namespace.QName;
 
+import junit.framework.Test;
+
 import net.opengis.wfs.DeleteElementType;
 
 import org.geoserver.bxml.BxmlTestSupport;
@@ -10,6 +12,13 @@ import org.gvsig.bxml.stream.BxmlStreamReader;
 import org.opengis.filter.Filter;
 
 public class DeleteDecoderTest extends BxmlTestSupport {
+
+    /**
+     * This is a READ ONLY TEST so we can use one time setup
+     */
+    public static Test suite() {
+        return new OneTimeTestSetup(new DeleteDecoderTest());
+    }
 
     public void testFeedDecodeDelete1() throws Exception {
 

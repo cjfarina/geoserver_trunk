@@ -3,6 +3,7 @@ package org.geoserver.bxml.wfs_1_1;
 import static org.mockito.Matchers.eq;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
+import junit.framework.Test;
 import net.opengis.wfs.InsertElementType;
 
 import org.geoserver.bxml.BxmlTestSupport;
@@ -20,6 +21,13 @@ import com.vividsolutions.jts.geom.Geometry;
 import com.vividsolutions.jts.geom.Point;
 
 public class InsertDecoderTest extends BxmlTestSupport {
+
+    /**
+     * This is a READ ONLY TEST so we can use one time setup
+     */
+    public static Test suite() {
+        return new OneTimeTestSetup(new InsertDecoderTest());
+    }
 
     @SuppressWarnings({ "unchecked", "rawtypes" })
     protected Catalog buildCatalog(Class[] columnTypes) throws Exception {

@@ -180,7 +180,7 @@ public class FilterDecoderTest extends BxmlTestSupport {
                 + string + "</Filter>";
 
         ByteArrayInputStream in = new ByteArrayInputStream(string.getBytes("UTF-8"));
-        return getXmlReader(in);
+        return getReader(in);
     }
 
     private void testFilterFromFile(final String expected, final String fileName) throws Exception,
@@ -194,9 +194,9 @@ public class FilterDecoderTest extends BxmlTestSupport {
         assertEquals(expected.toString(), f.toString());
     }
 
-    private void testFilter(final String expected) throws Exception, IOException {
+    private void testFilter(final String ecql) throws Exception, IOException {
 
-        Filter expectedFilter = ECQL.toFilter(expected);
+        Filter expectedFilter = ECQL.toFilter(ecql);
         BxmlStreamReader reader = getXmlReader(expectedFilter);
         reader.nextTag();
 

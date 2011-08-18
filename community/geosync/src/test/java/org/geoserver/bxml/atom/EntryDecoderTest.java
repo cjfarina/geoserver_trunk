@@ -4,6 +4,8 @@ import java.util.Date;
 
 import javax.xml.namespace.QName;
 
+import junit.framework.Test;
+
 import net.opengis.wfs.DeleteElementType;
 
 import org.geoserver.gss.internal.atom.ContentImpl;
@@ -16,6 +18,13 @@ import org.opengis.filter.Filter;
 import com.vividsolutions.jts.geom.Polygon;
 
 public class EntryDecoderTest extends AtomTestSupport {
+
+    /**
+     * This is a READ ONLY TEST so we can use one time setup
+     */
+    public static Test suite() {
+        return new OneTimeTestSetup(new EntryDecoderTest());
+    }
 
     public void testDecodeEntry1() throws Exception {
         BxmlStreamReader reader = super.getReader("entry1");

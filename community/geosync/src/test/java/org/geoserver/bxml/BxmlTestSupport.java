@@ -1,16 +1,21 @@
 package org.geoserver.bxml;
 
+import java.io.ByteArrayInputStream;
+import java.io.ByteArrayOutputStream;
 import java.io.InputStream;
 
 import javax.xml.stream.XMLInputFactory;
 
+import org.apache.commons.io.IOUtils;
 import org.geoserver.gss.functional.v_1_0_0.GSSFunctionalTestSupport;
 import org.geotools.filter.AttributeExpressionImpl;
 import org.geotools.filter.LiteralExpressionImpl;
+import org.gvsig.bxml.adapt.sax.XmlToBxmlSaxConverter;
 import org.gvsig.bxml.adapt.stax.XmlStreamReaderAdapter;
 import org.gvsig.bxml.stream.BxmlFactoryFinder;
 import org.gvsig.bxml.stream.BxmlInputFactory;
 import org.gvsig.bxml.stream.BxmlStreamReader;
+import org.gvsig.bxml.util.ProgressListener;
 import org.opengis.filter.spatial.BinarySpatialOperator;
 
 import com.vividsolutions.jts.geom.Coordinate;
@@ -21,25 +26,74 @@ import com.vividsolutions.jts.geom.Polygon;
 
 public abstract class BxmlTestSupport extends GSSFunctionalTestSupport {
 
-    Boolean isBinary = false;
-    
-    protected BxmlStreamReader getReader(final String resource) throws Exception {
-        String isBinaryString = System.getProperty("isBinaryXML");
-        if (isBinaryString != null) {
-            isBinary = Boolean.parseBoolean(isBinaryString);
+    private boolean isBinary;
 
-        }
-        String resourceName = isBinary ? resource + ".bxml" : resource + ".xml";
-        final InputStream input = getClass().getResourceAsStream(resourceName);
-        assertNotNull(resourceName + " not found by " + getClass().getName(), input);
-        if (isBinary) {
-            return getBxmlReader(input);
+    @Override
+    protected void runTest() throws Throwable {
+
+        final String isBinaryString = System.getProperty("isBinaryXML");
+        if (null != isBinaryString) {
+            LOGGER.fine("System property isBinaryXML explicitly set, avoiding double run...");
+            isBinary = Boolean.valueOf(isBinaryString);
+            super.runTest();
         } else {
-            return getXmlReader(input);
+            isBinary = false;
+            super.runTest();
+            isBinary = true;
+            super.runTest();
         }
     }
 
-    protected BxmlStreamReader getBxmlReader(final InputStream input) throws Exception {
+    protected BxmlStreamReader getReader(final String resource) throws Exception {
+
+        final String xmlResource = resource + ".xml";
+        final String bxmlResource = resource + ".bxml";
+
+        final InputStream input;
+        if (isBinary) {
+            if (null == getClass().getResourceAsStream(bxmlResource)) {
+                LOGGER.warning(" ----------- BXML resource " + bxmlResource + " not found by "
+                        + getClass().getName() + ", encoding XML resource...");
+                input = getClass().getResourceAsStream(xmlResource);
+            } else {
+                input = getClass().getResourceAsStream(bxmlResource);
+            }
+        } else {
+            input = getClass().getResourceAsStream(xmlResource);
+        }
+
+        return getReader(input);
+    }
+
+    protected BxmlStreamReader getReader(final InputStream in) throws Exception {
+        final ByteArrayOutputStream buff = new ByteArrayOutputStream();
+        IOUtils.copy(in, buff);
+
+        final boolean dataIsBinary;
+        if (1 == buff.toByteArray()[0]) {
+            dataIsBinary = true;
+        } else {
+            dataIsBinary = false;
+        }
+
+        BxmlStreamReader reader;
+
+        if (dataIsBinary) {
+            reader = getBxmlReader(new ByteArrayInputStream(buff.toByteArray()));
+        } else {
+            reader = getXmlReader(new ByteArrayInputStream(buff.toByteArray()));
+        }
+        if (isBinary && !dataIsBinary) {
+            ByteArrayOutputStream out = new ByteArrayOutputStream();
+            new XmlToBxmlSaxConverter().convert(new ByteArrayInputStream(buff.toByteArray()), out,
+                    ProgressListener.NULL, true);
+            reader = getBxmlReader(new ByteArrayInputStream(out.toByteArray()));
+        }
+
+        return reader;
+    }
+
+    private BxmlStreamReader getBxmlReader(final InputStream input) throws Exception {
         BxmlInputFactory factory = BxmlFactoryFinder.newInputFactory();
 
         factory.setNamespaceAware(true);
@@ -47,7 +101,7 @@ public abstract class BxmlTestSupport extends GSSFunctionalTestSupport {
         return reader;
     }
 
-    protected BxmlStreamReader getXmlReader(final InputStream input) throws Exception {
+    private BxmlStreamReader getXmlReader(final InputStream input) throws Exception {
         XMLInputFactory factory = XMLInputFactory.newInstance();
 
         factory.setProperty(XMLInputFactory.IS_NAMESPACE_AWARE, Boolean.TRUE);
