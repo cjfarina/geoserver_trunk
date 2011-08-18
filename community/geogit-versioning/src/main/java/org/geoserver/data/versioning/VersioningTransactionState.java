@@ -142,7 +142,9 @@ public class VersioningTransactionState implements Transaction.State {
         changedTypes.add(typeName);
 
         WorkingTree workingTree = geoGit.getRepository().getWorkingTree();
-        List<FeatureId> inserted = workingTree.insert(affectedFeatures, NULL_PROGRESS_LISTENER);
+        final boolean forceUseProvidedFIDs = false;
+        List<FeatureId> inserted = workingTree.insert(affectedFeatures, forceUseProvidedFIDs,
+                NULL_PROGRESS_LISTENER);
         geoGit.add().call();
         return inserted;
     }

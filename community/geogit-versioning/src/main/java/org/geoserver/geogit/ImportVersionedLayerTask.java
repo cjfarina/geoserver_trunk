@@ -60,7 +60,9 @@ class ImportVersionedLayerTask extends LongTask<RevCommit> {
         WorkingTree workingTree = geoGit.getRepository().getWorkingTree();
         workingTree.init(schema);
         try {
-            workingTree.insert(features, new SubProgressListener(listener, insertProgressAmount));
+            final boolean forceUseProvidedFIDs = true;
+            workingTree.insert(features, forceUseProvidedFIDs, new SubProgressListener(listener,
+                    insertProgressAmount));
             if (listener.isCanceled()) {
                 return null;
             }
