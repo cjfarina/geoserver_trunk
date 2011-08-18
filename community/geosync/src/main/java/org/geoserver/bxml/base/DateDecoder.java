@@ -20,7 +20,8 @@ public class DateDecoder extends SimpleDecoder<Date> {
     /**
      * Instantiates a new date decoder.
      * 
-     * @param elemName the elem name
+     * @param elemName
+     *            the elem name
      */
     public DateDecoder(QName elemName) {
         super(elemName);
@@ -29,9 +30,11 @@ public class DateDecoder extends SimpleDecoder<Date> {
     /**
      * Decode.
      * 
-     * @param r the r
+     * @param r
+     *            the r
      * @return the date
-     * @throws Exception the exception
+     * @throws Exception
+     *             the exception
      */
     @Override
     public Date decode(BxmlStreamReader r) throws Exception {
@@ -51,9 +54,11 @@ public class DateDecoder extends SimpleDecoder<Date> {
     /**
      * Read date value.
      * 
-     * @param r the r
+     * @param r
+     *            the r
      * @return the date
-     * @throws Exception the exception
+     * @throws Exception
+     *             the exception
      */
     public static Date readDateValue(BxmlStreamReader r) throws Exception {
         StringValueDecoder valueDecoder = new StringValueDecoder();

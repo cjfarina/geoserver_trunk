@@ -34,8 +34,10 @@ public class BxmlElementIterator extends AbstractIterator<BxmlStreamReader> {
     /**
      * Instantiates a new bxml element iterator.
      * 
-     * @param reader the reader
-     * @param elemName the elem name
+     * @param reader
+     *            the reader
+     * @param elemName
+     *            the elem name
      */
     public BxmlElementIterator(final BxmlStreamReader reader, final QName elemName) {
         this.reader = reader;
@@ -46,8 +48,10 @@ public class BxmlElementIterator extends AbstractIterator<BxmlStreamReader> {
     /**
      * Instantiates a new bxml element iterator.
      * 
-     * @param reader the reader
-     * @param siblingNames the sibling names
+     * @param reader
+     *            the reader
+     * @param siblingNames
+     *            the sibling names
      */
     public BxmlElementIterator(final BxmlStreamReader reader, final Set<QName> siblingNames) {
         this.reader = reader;
@@ -97,7 +101,8 @@ public class BxmlElementIterator extends AbstractIterator<BxmlStreamReader> {
     /**
      * Checks if is expected element.
      * 
-     * @param elementName the element name
+     * @param elementName
+     *            the element name
      * @return true, if is expected element
      */
     protected boolean isExpectedElement(QName elementName) {
@@ -107,7 +112,8 @@ public class BxmlElementIterator extends AbstractIterator<BxmlStreamReader> {
     /**
      * Finish.
      * 
-     * @param reader the reader
+     * @param reader
+     *            the reader
      * @return true, if successful
      */
     protected boolean finish(BxmlStreamReader reader) {

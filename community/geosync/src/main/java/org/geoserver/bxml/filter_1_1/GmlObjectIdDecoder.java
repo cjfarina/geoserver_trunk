@@ -36,9 +36,11 @@ public class GmlObjectIdDecoder implements Decoder<GmlObjectId> {
     /**
      * Decode.
      * 
-     * @param r the r
+     * @param r
+     *            the r
      * @return the gml object id
-     * @throws Exception the exception
+     * @throws Exception
+     *             the exception
      */
     @Override
     public GmlObjectId decode(BxmlStreamReader r) throws Exception {
@@ -57,7 +59,8 @@ public class GmlObjectIdDecoder implements Decoder<GmlObjectId> {
     /**
      * Can handle.
      * 
-     * @param name the name
+     * @param name
+     *            the name
      * @return true, if successful
      */
     @Override

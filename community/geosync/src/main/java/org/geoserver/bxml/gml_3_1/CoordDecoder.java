@@ -46,10 +46,13 @@ public class CoordDecoder extends AbstractGeometryDecoder<CoordinateSequence> {
     /**
      * Decode internal.
      * 
-     * @param r the r
-     * @param name the name
+     * @param r
+     *            the r
+     * @param name
+     *            the name
      * @return the coordinate sequence
-     * @throws Exception the exception
+     * @throws Exception
+     *             the exception
      */
     @Override
     public CoordinateSequence decodeInternal(final BxmlStreamReader r, QName name) throws Exception {

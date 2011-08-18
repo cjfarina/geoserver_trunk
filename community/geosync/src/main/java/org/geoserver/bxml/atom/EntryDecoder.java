@@ -40,9 +40,11 @@ public class EntryDecoder implements Decoder<EntryImpl> {
     /**
      * Decode.
      * 
-     * @param r the r
+     * @param r
+     *            the r
      * @return the entry impl
-     * @throws Exception the exception
+     * @throws Exception
+     *             the exception
      */
     @Override
     public EntryImpl decode(BxmlStreamReader r) throws Exception {
@@ -77,7 +79,8 @@ public class EntryDecoder implements Decoder<EntryImpl> {
     /**
      * Can handle.
      * 
-     * @param name the name
+     * @param name
+     *            the name
      * @return true, if successful
      */
     @Override

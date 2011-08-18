@@ -27,10 +27,13 @@ public class DistanceTypeDecoder extends AbstractTypeDecoder<Distance> {
     /**
      * Decode internal.
      * 
-     * @param r the r
-     * @param name the name
+     * @param r
+     *            the r
+     * @param name
+     *            the name
      * @return the distance
-     * @throws Exception the exception
+     * @throws Exception
+     *             the exception
      */
     @SuppressWarnings("unused")
     @Override

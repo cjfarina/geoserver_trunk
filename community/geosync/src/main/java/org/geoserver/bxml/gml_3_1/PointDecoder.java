@@ -37,10 +37,13 @@ public class PointDecoder extends AbstractGeometryDecoder<Geometry> {
     /**
      * Decode internal.
      * 
-     * @param r the r
-     * @param name the name
+     * @param r
+     *            the r
+     * @param name
+     *            the name
      * @return the geometry
-     * @throws Exception the exception
+     * @throws Exception
+     *             the exception
      */
     @Override
     protected Geometry decodeInternal(final BxmlStreamReader r, final QName name) throws Exception {

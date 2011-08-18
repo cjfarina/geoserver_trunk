@@ -28,9 +28,11 @@ public class CoordinatesDecoder implements Decoder<CoordinateSequence> {
     /**
      * Decode.
      * 
-     * @param r the r
+     * @param r
+     *            the r
      * @return the coordinate sequence
-     * @throws Exception the exception
+     * @throws Exception
+     *             the exception
      */
     @Override
     public CoordinateSequence decode(BxmlStreamReader r) throws Exception {
@@ -53,10 +55,14 @@ public class CoordinatesDecoder implements Decoder<CoordinateSequence> {
     /**
      * Parses the.
      * 
-     * @param string the string
-     * @param decimal the decimal
-     * @param cs the cs
-     * @param ts the ts
+     * @param string
+     *            the string
+     * @param decimal
+     *            the decimal
+     * @param cs
+     *            the cs
+     * @param ts
+     *            the ts
      * @return the coordinate[]
      */
     private Coordinate[] parse(String string, String decimal, char cs, char ts) {
@@ -105,8 +111,10 @@ public class CoordinatesDecoder implements Decoder<CoordinateSequence> {
     /**
      * Builds the coordinate.
      * 
-     * @param strings the strings
-     * @param decimal the decimal
+     * @param strings
+     *            the strings
+     * @param decimal
+     *            the decimal
      * @return the coordinate
      */
     private Coordinate buildCoordinate(List<String> strings, String decimal) {
@@ -122,7 +130,8 @@ public class CoordinatesDecoder implements Decoder<CoordinateSequence> {
     /**
      * Can handle.
      * 
-     * @param name the name
+     * @param name
+     *            the name
      * @return true, if successful
      */
     @Override

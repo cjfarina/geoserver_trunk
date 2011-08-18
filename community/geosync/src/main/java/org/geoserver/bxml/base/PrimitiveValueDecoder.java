@@ -9,11 +9,11 @@ import org.gvsig.bxml.stream.EventType;
 import org.springframework.util.Assert;
 
 /**
- * This class parses a primitive value when an
- * EventType.VALUE_ occurs, and return this value
- * in an instance of <T>.
+ * This class parses a primitive value when an EventType.VALUE_ occurs, and return this value in an
+ * instance of <T>.
  * 
- * @param <T> the generic type
+ * @param <T>
+ *            the generic type
  * 
  * @author cfarina
  */
@@ -30,7 +30,8 @@ public class PrimitiveValueDecoder<T> implements ValueDecoder<T> {
     /**
      * Instantiates a new primitive value decoder.
      * 
-     * @param type the type
+     * @param type
+     *            the type
      */
     public PrimitiveValueDecoder(Class<T> type) {
         this.type = type;
@@ -39,9 +40,11 @@ public class PrimitiveValueDecoder<T> implements ValueDecoder<T> {
     /**
      * Decode.
      * 
-     * @param r the r
+     * @param r
+     *            the r
      * @return the t
-     * @throws Exception the exception
+     * @throws Exception
+     *             the exception
      */
     @Override
     public T decode(BxmlStreamReader r) throws Exception {
@@ -59,7 +62,8 @@ public class PrimitiveValueDecoder<T> implements ValueDecoder<T> {
     /**
      * Can handle.
      * 
-     * @param type the type
+     * @param type
+     *            the type
      * @return true, if successful
      */
     @Override

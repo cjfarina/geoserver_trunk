@@ -32,10 +32,13 @@ public class MultiPolygonDecoder extends AbstractGeometryDecoder<Geometry> {
     /**
      * Decode internal.
      * 
-     * @param r the r
-     * @param name the name
+     * @param r
+     *            the r
+     * @param name
+     *            the name
      * @return the multi polygon
-     * @throws Exception the exception
+     * @throws Exception
+     *             the exception
      */
     @Override
     protected MultiPolygon decodeInternal(BxmlStreamReader r, QName name) throws Exception {

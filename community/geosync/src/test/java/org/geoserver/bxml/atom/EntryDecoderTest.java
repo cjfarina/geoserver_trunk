@@ -5,7 +5,6 @@ import java.util.Date;
 import javax.xml.namespace.QName;
 
 import junit.framework.Test;
-
 import net.opengis.wfs.DeleteElementType;
 
 import org.geoserver.gss.internal.atom.ContentImpl;

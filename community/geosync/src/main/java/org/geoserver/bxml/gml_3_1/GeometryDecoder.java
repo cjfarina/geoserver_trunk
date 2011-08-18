@@ -38,9 +38,11 @@ public class GeometryDecoder implements Decoder<Geometry> {
     /**
      * Decode.
      * 
-     * @param r the r
+     * @param r
+     *            the r
      * @return the geometry
-     * @throws Exception the exception
+     * @throws Exception
+     *             the exception
      */
     @Override
     public Geometry decode(BxmlStreamReader r) throws Exception {
@@ -55,7 +57,8 @@ public class GeometryDecoder implements Decoder<Geometry> {
     /**
      * Can handle.
      * 
-     * @param name the name
+     * @param name
+     *            the name
      * @return true, if successful
      */
     @Override

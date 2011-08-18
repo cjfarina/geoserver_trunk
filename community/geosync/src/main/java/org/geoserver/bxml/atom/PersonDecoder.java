@@ -26,7 +26,8 @@ public class PersonDecoder extends SimpleDecoder<PersonImpl> {
     /**
      * Instantiates a new person decoder.
      * 
-     * @param elemName the elem name
+     * @param elemName
+     *            the elem name
      */
     public PersonDecoder(QName elemName) {
         super(elemName);
@@ -35,9 +36,11 @@ public class PersonDecoder extends SimpleDecoder<PersonImpl> {
     /**
      * Decode.
      * 
-     * @param r the r
+     * @param r
+     *            the r
      * @return the person impl
-     * @throws Exception the exception
+     * @throws Exception
+     *             the exception
      */
     @Override
     public PersonImpl decode(BxmlStreamReader r) throws Exception {

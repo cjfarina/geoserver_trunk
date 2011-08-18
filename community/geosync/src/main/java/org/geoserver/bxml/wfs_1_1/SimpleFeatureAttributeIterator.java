@@ -22,8 +22,10 @@ public class SimpleFeatureAttributeIterator extends BxmlElementIterator {
     /**
      * Instantiates a new simple feature attribute iterator.
      * 
-     * @param reader the reader
-     * @param namespace the namespace
+     * @param reader
+     *            the reader
+     * @param namespace
+     *            the namespace
      */
     public SimpleFeatureAttributeIterator(final BxmlStreamReader reader, final String namespace) {
         super(reader, new HashSet<QName>());
@@ -33,7 +35,8 @@ public class SimpleFeatureAttributeIterator extends BxmlElementIterator {
     /**
      * Checks if is expected element.
      * 
-     * @param elementName the element name
+     * @param elementName
+     *            the element name
      * @return true, if is expected element
      */
     protected boolean isExpectedElement(QName elementName) {

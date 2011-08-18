@@ -38,9 +38,11 @@ public class ContentDecoder extends SimpleDecoder<ContentImpl> {
     /**
      * Decode.
      * 
-     * @param r the r
+     * @param r
+     *            the r
      * @return the content impl
-     * @throws Exception the exception
+     * @throws Exception
+     *             the exception
      */
     @Override
     public ContentImpl decode(BxmlStreamReader r) throws Exception {

@@ -38,10 +38,13 @@ public class ArithmeticOperatorDecoder extends AbstractTypeDecoder<Expression> {
     /**
      * Decode internal.
      * 
-     * @param r the r
-     * @param name the name
+     * @param r
+     *            the r
+     * @param name
+     *            the name
      * @return the expression
-     * @throws Exception the exception
+     * @throws Exception
+     *             the exception
      */
     @Override
     protected Expression decodeInternal(BxmlStreamReader r, QName name) throws Exception {

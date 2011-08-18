@@ -44,9 +44,11 @@ public class IdDecoder implements Decoder<Filter> {
     /**
      * Decode.
      * 
-     * @param r the r
+     * @param r
+     *            the r
      * @return the id
-     * @throws Exception the exception
+     * @throws Exception
+     *             the exception
      */
     @Override
     public Id decode(BxmlStreamReader r) throws Exception {
@@ -59,7 +61,8 @@ public class IdDecoder implements Decoder<Filter> {
     /**
      * Can handle.
      * 
-     * @param name the name
+     * @param name
+     *            the name
      * @return true, if successful
      */
     @Override

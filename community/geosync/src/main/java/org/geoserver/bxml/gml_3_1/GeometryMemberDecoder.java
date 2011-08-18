@@ -19,9 +19,11 @@ public class GeometryMemberDecoder extends AbstractGeometryDecoder<Geometry> {
 
     /**
      * Instantiates a new geometry member decoder.
-     *
-     * @param name the name
-     * @param memberDecoder the member decoder
+     * 
+     * @param name
+     *            the name
+     * @param memberDecoder
+     *            the member decoder
      */
     public GeometryMemberDecoder(QName name, Decoder<Geometry> memberDecoder) {
         super(name);
@@ -30,11 +32,14 @@ public class GeometryMemberDecoder extends AbstractGeometryDecoder<Geometry> {
 
     /**
      * Decode internal.
-     *
-     * @param r the r
-     * @param name the name
+     * 
+     * @param r
+     *            the r
+     * @param name
+     *            the name
      * @return the geometry
-     * @throws Exception the exception
+     * @throws Exception
+     *             the exception
      */
     @Override
     protected Geometry decodeInternal(BxmlStreamReader r, QName name) throws Exception {

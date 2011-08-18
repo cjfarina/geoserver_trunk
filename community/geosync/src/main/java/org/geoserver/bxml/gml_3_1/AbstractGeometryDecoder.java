@@ -16,11 +16,11 @@ import org.opengis.referencing.crs.CoordinateReferenceSystem;
 import org.springframework.util.Assert;
 
 /**
- * The Class AbstractGeometryDecoder is intend to be extended by Geometry decoders.
- * By default, this class parses de crs and dimension attribute of the
- * element to parse.
+ * The Class AbstractGeometryDecoder is intend to be extended by Geometry decoders. By default, this
+ * class parses de crs and dimension attribute of the element to parse.
  * 
- * @param <T> the generic type
+ * @param <T>
+ *            the generic type
  * 
  * @author cfarina
  */
@@ -38,7 +38,8 @@ public abstract class AbstractGeometryDecoder<T> extends AbstractTypeDecoder<T> 
     /**
      * Instantiates a new abstract geometry decoder.
      * 
-     * @param names the names
+     * @param names
+     *            the names
      */
     public AbstractGeometryDecoder(final QName... names) {
         super(names);
@@ -47,9 +48,12 @@ public abstract class AbstractGeometryDecoder<T> extends AbstractTypeDecoder<T> 
     /**
      * Instantiates a new abstract geometry decoder.
      * 
-     * @param crs the crs
-     * @param dimension the dimension
-     * @param names the names
+     * @param crs
+     *            the crs
+     * @param dimension
+     *            the dimension
+     * @param names
+     *            the names
      */
     public AbstractGeometryDecoder(final CoordinateReferenceSystem crs, final int dimension,
             final QName... names) {
@@ -61,9 +65,11 @@ public abstract class AbstractGeometryDecoder<T> extends AbstractTypeDecoder<T> 
     /**
      * Decode.
      * 
-     * @param r the r
+     * @param r
+     *            the r
      * @return the t
-     * @throws Exception the exception
+     * @throws Exception
+     *             the exception
      */
     @Override
     public final T decode(final BxmlStreamReader r) throws Exception {
@@ -89,10 +95,13 @@ public abstract class AbstractGeometryDecoder<T> extends AbstractTypeDecoder<T> 
     /**
      * Parses the crs.
      * 
-     * @param srsName the srs name
+     * @param srsName
+     *            the srs name
      * @return the coordinate reference system
-     * @throws NoSuchAuthorityCodeException the no such authority code exception
-     * @throws FactoryException the factory exception
+     * @throws NoSuchAuthorityCodeException
+     *             the no such authority code exception
+     * @throws FactoryException
+     *             the factory exception
      */
     protected CoordinateReferenceSystem parseCrs(String srsName)
             throws NoSuchAuthorityCodeException, FactoryException {
@@ -106,7 +115,8 @@ public abstract class AbstractGeometryDecoder<T> extends AbstractTypeDecoder<T> 
     /**
      * Parses the crs dimension.
      * 
-     * @param srsDimension the srs dimension
+     * @param srsDimension
+     *            the srs dimension
      * @return the int
      */
     protected int parseCrsDimension(String srsDimension) {
@@ -129,7 +139,8 @@ public abstract class AbstractGeometryDecoder<T> extends AbstractTypeDecoder<T> 
     /**
      * Sets the crs.
      * 
-     * @param crs the new crs
+     * @param crs
+     *            the new crs
      */
     public void setCrs(CoordinateReferenceSystem crs) {
         this.crs = crs;
@@ -147,7 +158,8 @@ public abstract class AbstractGeometryDecoder<T> extends AbstractTypeDecoder<T> 
     /**
      * Sets the dimension.
      * 
-     * @param dimension the new dimension
+     * @param dimension
+     *            the new dimension
      */
     public void setDimension(int dimension) {
         this.dimension = dimension;

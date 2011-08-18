@@ -16,8 +16,10 @@ public class Distance {
     /**
      * Instantiates a new distance.
      * 
-     * @param value the value
-     * @param units the units
+     * @param value
+     *            the value
+     * @param units
+     *            the units
      */
     public Distance(double value, String units) {
         super();
@@ -37,7 +39,8 @@ public class Distance {
     /**
      * Sets the value.
      * 
-     * @param value the new value
+     * @param value
+     *            the new value
      */
     public void setValue(double value) {
         this.value = value;
@@ -55,7 +58,8 @@ public class Distance {
     /**
      * Sets the units.
      * 
-     * @param units the new units
+     * @param units
+     *            the new units
      */
     public void setUnits(String units) {
         this.units = units;

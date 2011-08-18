@@ -17,8 +17,10 @@ public class FeatureTypeUtil {
     /**
      * Builds the feature type name.
      * 
-     * @param r the r
-     * @param elementName the element name
+     * @param r
+     *            the r
+     * @param elementName
+     *            the element name
      * @return the q name
      */
     public static QName buildFeatureTypeName(BxmlStreamReader r, QName elementName) {
@@ -43,8 +45,10 @@ public class FeatureTypeUtil {
     /**
      * Builds the feature name.
      * 
-     * @param nameString the name string
-     * @param namespaceURI the namespace uri
+     * @param nameString
+     *            the name string
+     * @param namespaceURI
+     *            the namespace uri
      * @return the q name
      */
     public static QName buildQName(String nameString, String namespaceURI) {

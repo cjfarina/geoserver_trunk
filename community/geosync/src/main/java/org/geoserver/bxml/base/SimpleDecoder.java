@@ -12,7 +12,8 @@ import org.gvsig.bxml.stream.EventType;
 /**
  * This class is intend to be extended by one simple element decoders.
  * 
- * @param <T> the generic type
+ * @param <T>
+ *            the generic type
  * 
  * @author cfarina
  */
@@ -24,7 +25,8 @@ public abstract class SimpleDecoder<T> implements Decoder<T> {
     /**
      * Instantiates a new simple decoder.
      * 
-     * @param elemName the elem name
+     * @param elemName
+     *            the elem name
      */
     public SimpleDecoder(final QName elemName) {
         this.elemName = elemName;
@@ -33,7 +35,8 @@ public abstract class SimpleDecoder<T> implements Decoder<T> {
     /**
      * Can handle.
      * 
-     * @param name the name
+     * @param name
+     *            the name
      * @return true, if successful
      */
     @Override
@@ -54,7 +57,8 @@ public abstract class SimpleDecoder<T> implements Decoder<T> {
     /**
      * Checks if is end element.
      * 
-     * @param r the r
+     * @param r
+     *            the r
      * @return true, if is end element
      */
     protected boolean isEndElement(BxmlStreamReader r) {

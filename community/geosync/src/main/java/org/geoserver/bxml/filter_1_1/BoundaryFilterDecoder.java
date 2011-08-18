@@ -46,9 +46,11 @@ public class BoundaryFilterDecoder implements Decoder<Expression> {
     /**
      * Decode.
      * 
-     * @param r the r
+     * @param r
+     *            the r
      * @return the expression
-     * @throws Exception the exception
+     * @throws Exception
+     *             the exception
      */
     @Override
     public Expression decode(BxmlStreamReader r) throws Exception {
@@ -68,7 +70,8 @@ public class BoundaryFilterDecoder implements Decoder<Expression> {
     /**
      * Can handle.
      * 
-     * @param name the name
+     * @param name
+     *            the name
      * @return true, if successful
      */
     @Override

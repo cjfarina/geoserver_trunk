@@ -15,7 +15,8 @@ import org.springframework.util.Assert;
 /**
  * Choice the appropriate decoder from options for a given element to decode.
  * 
- * @param <T> the generic type
+ * @param <T>
+ *            the generic type
  * 
  * @author cfarina
  */
@@ -34,7 +35,8 @@ public class ChoiceDecoder<T> implements Decoder<T> {
     /**
      * Instantiates a new choice decoder.
      * 
-     * @param options the options
+     * @param options
+     *            the options
      */
     public ChoiceDecoder(Decoder<T>... options) {
         this.options = new ArrayList<Decoder<T>>();
@@ -47,7 +49,8 @@ public class ChoiceDecoder<T> implements Decoder<T> {
     /**
      * Adds the option.
      * 
-     * @param option the option
+     * @param option
+     *            the option
      */
     public void addOption(Decoder<T> option) {
         this.options.add(option);
@@ -56,9 +59,11 @@ public class ChoiceDecoder<T> implements Decoder<T> {
     /**
      * Decode.
      * 
-     * @param r the r
+     * @param r
+     *            the r
      * @return the t
-     * @throws Exception the exception
+     * @throws Exception
+     *             the exception
      */
     @Override
     public T decode(final BxmlStreamReader r) throws Exception {
@@ -75,7 +80,8 @@ public class ChoiceDecoder<T> implements Decoder<T> {
     /**
      * Can handle.
      * 
-     * @param name the name
+     * @param name
+     *            the name
      * @return true, if successful
      */
     @Override

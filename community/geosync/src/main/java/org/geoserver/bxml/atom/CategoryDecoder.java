@@ -26,9 +26,11 @@ public class CategoryDecoder extends SimpleDecoder<CategoryImpl> {
     /**
      * Decode.
      * 
-     * @param r the r
+     * @param r
+     *            the r
      * @return the category impl
-     * @throws Exception the exception
+     * @throws Exception
+     *             the exception
      */
     @Override
     public CategoryImpl decode(BxmlStreamReader r) throws Exception {

@@ -37,8 +37,10 @@ public class SimpleFeatureDecoder implements Decoder<SimpleFeature> {
     /**
      * Instantiates a new simple feature decoder.
      * 
-     * @param catalog the catalog
-     * @param namespaceURI the namespace uri
+     * @param catalog
+     *            the catalog
+     * @param namespaceURI
+     *            the namespace uri
      */
     public SimpleFeatureDecoder(Catalog catalog, String namespaceURI) {
         this.namespace = namespaceURI;
@@ -48,9 +50,11 @@ public class SimpleFeatureDecoder implements Decoder<SimpleFeature> {
     /**
      * Decode.
      * 
-     * @param r the r
+     * @param r
+     *            the r
      * @return the simple feature
-     * @throws Exception the exception
+     * @throws Exception
+     *             the exception
      */
     @Override
     public SimpleFeature decode(BxmlStreamReader r) throws Exception {
@@ -86,7 +90,8 @@ public class SimpleFeatureDecoder implements Decoder<SimpleFeature> {
     /**
      * Can handle.
      * 
-     * @param name the name
+     * @param name
+     *            the name
      * @return true, if successful
      */
     @Override

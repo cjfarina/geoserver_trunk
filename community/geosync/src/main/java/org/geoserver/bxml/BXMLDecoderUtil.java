@@ -23,8 +23,10 @@ public class BXMLDecoderUtil {
     /**
      * Parses the long value.
      * 
-     * @param stringValue the string value
-     * @param name the name
+     * @param stringValue
+     *            the string value
+     * @param name
+     *            the name
      * @return the long
      */
     public static Long parseLongValue(String stringValue, String name) {
@@ -47,9 +49,12 @@ public class BXMLDecoderUtil {
     /**
      * Go to end.
      * 
-     * @param r the r
-     * @param name the name
-     * @throws IOException Signals that an I/O exception has occurred.
+     * @param r
+     *            the r
+     * @param name
+     *            the name
+     * @throws IOException
+     *             Signals that an I/O exception has occurred.
      */
     public static void goToEnd(final BxmlStreamReader r, final QName name) throws IOException {
         if (!EventType.END_DOCUMENT.equals(r.getEventType())) {

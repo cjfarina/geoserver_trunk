@@ -77,9 +77,11 @@ public class FeedDecoder extends SimpleDecoder<FeedImpl> {
     /**
      * Decode.
      * 
-     * @param r the r
+     * @param r
+     *            the r
      * @return the feed impl
-     * @throws Exception the exception
+     * @throws Exception
+     *             the exception
      */
     @Override
     public FeedImpl decode(BxmlStreamReader r) throws Exception {

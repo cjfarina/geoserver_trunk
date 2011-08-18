@@ -20,7 +20,8 @@ public class PropertyNameDecoder extends SimpleDecoder<QName> {
     /**
      * Instantiates a new property name decoder.
      * 
-     * @param typeName the type name
+     * @param typeName
+     *            the type name
      */
     public PropertyNameDecoder(QName typeName) {
         super(new QName("http://www.opengis.net/wfs", "Name"));
@@ -30,9 +31,11 @@ public class PropertyNameDecoder extends SimpleDecoder<QName> {
     /**
      * Decode.
      * 
-     * @param r the r
+     * @param r
+     *            the r
      * @return the q name
-     * @throws Exception the exception
+     * @throws Exception
+     *             the exception
      */
     @SuppressWarnings("unused")
     @Override

@@ -37,9 +37,11 @@ public class DeleteElementTypeDecoder extends SimpleDecoder<EObject> {
     /**
      * Decode.
      * 
-     * @param r the r
+     * @param r
+     *            the r
      * @return the e object
-     * @throws Exception the exception
+     * @throws Exception
+     *             the exception
      */
     @Override
     public EObject decode(BxmlStreamReader r) throws Exception {

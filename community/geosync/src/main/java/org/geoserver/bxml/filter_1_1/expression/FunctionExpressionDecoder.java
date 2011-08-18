@@ -39,10 +39,13 @@ public class FunctionExpressionDecoder extends AbstractTypeDecoder<Expression> {
     /**
      * Decode internal.
      * 
-     * @param r the r
-     * @param name the name
+     * @param r
+     *            the r
+     * @param name
+     *            the name
      * @return the expression
-     * @throws Exception the exception
+     * @throws Exception
+     *             the exception
      */
     @Override
     public Expression decodeInternal(final BxmlStreamReader r, final QName name) throws Exception {
@@ -61,7 +64,8 @@ public class FunctionExpressionDecoder extends AbstractTypeDecoder<Expression> {
     /**
      * Can handle.
      * 
-     * @param name the name
+     * @param name
+     *            the name
      * @return true, if successful
      */
     @Override

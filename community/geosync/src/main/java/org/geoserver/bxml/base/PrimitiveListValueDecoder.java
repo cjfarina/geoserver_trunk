@@ -14,7 +14,8 @@ import org.springframework.util.Assert;
  * This class parses an array of primitive values when an EventType.VALUE_ occurs, and return this
  * as an array of <T>.
  * 
- * @param <T> the generic type
+ * @param <T>
+ *            the generic type
  * 
  * @author cfarina
  */
@@ -31,7 +32,8 @@ public class PrimitiveListValueDecoder<T> implements ValueDecoder<T[]> {
     /**
      * Instantiates a new primitive list value decoder.
      * 
-     * @param type the type
+     * @param type
+     *            the type
      */
     public PrimitiveListValueDecoder(Class<T> type) {
         this.type = type;
@@ -40,9 +42,11 @@ public class PrimitiveListValueDecoder<T> implements ValueDecoder<T[]> {
     /**
      * Decode.
      * 
-     * @param r the r
+     * @param r
+     *            the r
      * @return the t[]
-     * @throws Exception the exception
+     * @throws Exception
+     *             the exception
      */
     @SuppressWarnings("unchecked")
     @Override
@@ -90,8 +94,10 @@ public class PrimitiveListValueDecoder<T> implements ValueDecoder<T[]> {
     /**
      * Append.
      * 
-     * @param values the values
-     * @param sb the sb
+     * @param values
+     *            the values
+     * @param sb
+     *            the sb
      * @return the t[]
      */
     private T[] append(T[] values, final StringBuilder sb) {
@@ -125,8 +131,10 @@ public class PrimitiveListValueDecoder<T> implements ValueDecoder<T[]> {
     /**
      * Expand.
      * 
-     * @param values the values
-     * @param valueCount the value count
+     * @param values
+     *            the values
+     * @param valueCount
+     *            the value count
      * @return the t[]
      */
     @SuppressWarnings("unchecked")
@@ -140,7 +148,8 @@ public class PrimitiveListValueDecoder<T> implements ValueDecoder<T[]> {
     /**
      * Can handle.
      * 
-     * @param type the type
+     * @param type
+     *            the type
      * @return true, if successful
      */
     @Override

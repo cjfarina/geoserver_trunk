@@ -8,7 +8,8 @@ import org.gvsig.bxml.stream.EventType;
 /**
  * The Class PrimitiveReader.
  * 
- * @param <T> the generic type
+ * @param <T>
+ *            the generic type
  * 
  * @author cfarina
  */
@@ -17,11 +18,15 @@ public class PrimitiveReader<T> {
     /**
      * Read.
      * 
-     * @param r the r
-     * @param toType the to type
-     * @param type the type
+     * @param r
+     *            the r
+     * @param toType
+     *            the to type
+     * @param type
+     *            the type
      * @return the t
-     * @throws Exception the exception
+     * @throws Exception
+     *             the exception
      */
     @SuppressWarnings("rawtypes")
     public T read(BxmlStreamReader r, Class toType, EventType type) throws Exception {
@@ -35,17 +40,19 @@ public class PrimitiveReader<T> {
     /**
      * Convert the given <code>value</code> to type given in <code>type</code> parameter.
      * 
-     * @param value the value
-     * @param type the type
+     * @param value
+     *            the value
+     * @param type
+     *            the type
      * @return the t
      */
     @SuppressWarnings({ "unchecked", "rawtypes" })
     public T convertToType(Object value, Class type) {
 
-        if(value == null){
+        if (value == null) {
             return null;
         }
-        
+
         if (type.equals(Object.class)) {
             return (T) value;
         }
@@ -84,11 +91,15 @@ public class PrimitiveReader<T> {
     /**
      * Return a value from r given an EventType.Value_...
      * 
-     * @param r the r
-     * @param type the type
+     * @param r
+     *            the r
+     * @param type
+     *            the type
      * @return the object
-     * @throws IOException Signals that an I/O exception has occurred.
-     * @throws Exception the exception
+     * @throws IOException
+     *             Signals that an I/O exception has occurred.
+     * @throws Exception
+     *             the exception
      */
     private Object readValue(BxmlStreamReader r, EventType type) throws IOException, Exception {
         Object value = null;

@@ -49,10 +49,10 @@ public class PrimitiveValuesDecoderTest extends PrimitiveValuesTestSupport {
 
     public void testReadFloat() throws Exception {
         QName testElement = new QName("test");
-        testDecodeValue(testElement, "32.21", new Float(32.21), new PrimitiveDecoder<Float>(testElement,
-                Float.class));
-        testDecodeValue(testElement, new Float(125.15), new PrimitiveDecoder<Float>(
+        testDecodeValue(testElement, "32.21", new Float(32.21), new PrimitiveDecoder<Float>(
                 testElement, Float.class));
+        testDecodeValue(testElement, new Float(125.15), new PrimitiveDecoder<Float>(testElement,
+                Float.class));
     }
 
     public QName testReadDouble() throws Exception {
@@ -77,49 +77,49 @@ public class PrimitiveValuesDecoderTest extends PrimitiveValuesTestSupport {
         Boolean[] actual = (Boolean[]) getDecodedValue(testElement, expected,
                 new PrimitiveListDecoder<Boolean>(testElement, Boolean.class));
         assertEqualsArray(expected, ArrayUtils.toPrimitive(actual));
-        
+
         String insert2 = "true false true";
         actual = (Boolean[]) getDecodedValue(testElement, insert2,
                 new PrimitiveListDecoder<Boolean>(testElement, Boolean.class));
         assertEqualsArray(expected, ArrayUtils.toPrimitive(actual));
     }
-    
+
     public void testReadListByte() throws Exception {
         QName testElement = new QName("test");
-        byte[] expected = new byte[] { 10, 25, 50};
+        byte[] expected = new byte[] { 10, 25, 50 };
         Byte[] actual = (Byte[]) getDecodedValue(testElement, expected,
                 new PrimitiveListDecoder<Byte>(testElement, Byte.class));
         assertEqualsArray(expected, ArrayUtils.toPrimitive(actual));
-        
+
         String insert2 = "10 25 50";
-        actual = (Byte[]) getDecodedValue(testElement, insert2,
-                new PrimitiveListDecoder<Byte>(testElement, Byte.class));
+        actual = (Byte[]) getDecodedValue(testElement, insert2, new PrimitiveListDecoder<Byte>(
+                testElement, Byte.class));
         assertEqualsArray(expected, ArrayUtils.toPrimitive(actual));
     }
-    
+
     public void testReadListInteger() throws Exception {
         QName testElement = new QName("test");
-        int[] expected = new int[] { 10, 25, 50};
+        int[] expected = new int[] { 10, 25, 50 };
         Integer[] actual = (Integer[]) getDecodedValue(testElement, expected,
                 new PrimitiveListDecoder<Integer>(testElement, Integer.class));
         assertEqualsArray(expected, ArrayUtils.toPrimitive(actual));
-        
+
         String insert2 = "10 25 50";
         actual = (Integer[]) getDecodedValue(testElement, insert2,
                 new PrimitiveListDecoder<Integer>(testElement, Integer.class));
         assertEqualsArray(expected, ArrayUtils.toPrimitive(actual));
     }
-    
+
     public void testReadListLong() throws Exception {
         QName testElement = new QName("test");
-        long[] expected = new long[] { 10l, 25l, 50l};
+        long[] expected = new long[] { 10l, 25l, 50l };
         Long[] actual = (Long[]) getDecodedValue(testElement, expected,
                 new PrimitiveListDecoder<Long>(testElement, Long.class));
         assertEqualsArray(expected, ArrayUtils.toPrimitive(actual));
-        
+
         String insert2 = "10 25 50";
-        actual = (Long[]) getDecodedValue(testElement, insert2,
-                new PrimitiveListDecoder<Long>(testElement, Long.class));
+        actual = (Long[]) getDecodedValue(testElement, insert2, new PrimitiveListDecoder<Long>(
+                testElement, Long.class));
         assertEqualsArray(expected, ArrayUtils.toPrimitive(actual));
     }
 
@@ -130,7 +130,7 @@ public class PrimitiveValuesDecoderTest extends PrimitiveValuesTestSupport {
                 new PrimitiveListDecoder<Float>(testElement, Float.class));
         assertEqualsArray(array, ArrayUtils.toPrimitive(array2));
     }
-    
+
     public void testReadListDouble() throws Exception {
         QName testElement = new QName("test");
         double[] array = new double[] { 1.1, 2.3, 6.4 };

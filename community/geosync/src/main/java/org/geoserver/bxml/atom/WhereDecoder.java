@@ -36,9 +36,11 @@ public class WhereDecoder extends SimpleDecoder<Object> {
     /**
      * Decode.
      * 
-     * @param r the r
+     * @param r
+     *            the r
      * @return the object
-     * @throws Exception the exception
+     * @throws Exception
+     *             the exception
      */
     @Override
     public Object decode(BxmlStreamReader r) throws Exception {

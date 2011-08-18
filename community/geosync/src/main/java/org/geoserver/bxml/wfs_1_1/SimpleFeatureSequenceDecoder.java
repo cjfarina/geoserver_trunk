@@ -12,7 +12,8 @@ import org.gvsig.bxml.stream.BxmlStreamReader;
  * The Class SimpleFeatureSequenceDecoder extends from SequenceDecoder in order to use an extension
  * of BXMLIterator, which is SimpleFeatureAttributeIterator.
  * 
- * @param <T> the generic type
+ * @param <T>
+ *            the generic type
  * 
  * @author cfarina
  */
@@ -24,9 +25,12 @@ public class SimpleFeatureSequenceDecoder<T> extends SequenceDecoder<T> {
     /**
      * Instantiates a new simple feature sequence decoder.
      * 
-     * @param namespace the namespace
-     * @param minOccurs the min occurs
-     * @param maxOccurs the max occurs
+     * @param namespace
+     *            the namespace
+     * @param minOccurs
+     *            the min occurs
+     * @param maxOccurs
+     *            the max occurs
      */
     public SimpleFeatureSequenceDecoder(final String namespace, final int minOccurs,
             final int maxOccurs) {
@@ -37,8 +41,10 @@ public class SimpleFeatureSequenceDecoder<T> extends SequenceDecoder<T> {
     /**
      * Builds the iterator.
      * 
-     * @param r the r
-     * @param sequenceNames the sequence names
+     * @param r
+     *            the r
+     * @param sequenceNames
+     *            the sequence names
      * @return the bxml element iterator
      */
     @Override

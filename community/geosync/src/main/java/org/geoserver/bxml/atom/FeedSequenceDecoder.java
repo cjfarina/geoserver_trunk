@@ -12,7 +12,8 @@ import org.gvsig.bxml.stream.BxmlStreamReader;
 /**
  * The Class FeedSequenceDecoder.
  * 
- * @param <T> the generic type
+ * @param <T>
+ *            the generic type
  * 
  * @author cfarina
  */
@@ -21,8 +22,10 @@ public class FeedSequenceDecoder<T> extends SequenceDecoder<T> {
     /**
      * Instantiates a new feed sequence decoder.
      * 
-     * @param minOccurs the min occurs
-     * @param maxOccurs the max occurs
+     * @param minOccurs
+     *            the min occurs
+     * @param maxOccurs
+     *            the max occurs
      */
     public FeedSequenceDecoder(final int minOccurs, final int maxOccurs) {
         super(minOccurs, maxOccurs);
@@ -31,8 +34,10 @@ public class FeedSequenceDecoder<T> extends SequenceDecoder<T> {
     /**
      * Builds the iterator.
      * 
-     * @param r the r
-     * @param sequenceNames the sequence names
+     * @param r
+     *            the r
+     * @param sequenceNames
+     *            the sequence names
      * @return the bxml element iterator
      */
     @Override

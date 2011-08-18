@@ -12,10 +12,11 @@ import org.gvsig.bxml.stream.BxmlStreamReader;
 import org.springframework.util.Assert;
 
 /**
- * The Class SetterDecoder execute the decoder given in <code>propertyDecoder</code> and sets the result
- * in property <code>propertyName</code> of <code>target</code>.
+ * The Class SetterDecoder execute the decoder given in <code>propertyDecoder</code> and sets the
+ * result in property <code>propertyName</code> of <code>target</code>.
  * 
- * @param <T> the generic type
+ * @param <T>
+ *            the generic type
  * 
  * @author groldan
  */
@@ -39,9 +40,12 @@ public class SetterDecoder<T> implements Decoder<T> {
     /**
      * Instantiates a new setter decoder.
      * 
-     * @param propertyDecoder the property decoder
-     * @param target the target
-     * @param propertyName the property name
+     * @param propertyDecoder
+     *            the property decoder
+     * @param target
+     *            the target
+     * @param propertyName
+     *            the property name
      */
     public SetterDecoder(final Decoder<? extends T> propertyDecoder, final Object target,
             final String propertyName) {
@@ -86,9 +90,11 @@ public class SetterDecoder<T> implements Decoder<T> {
     /**
      * Decode.
      * 
-     * @param r the r
+     * @param r
+     *            the r
      * @return the t
-     * @throws Exception the exception
+     * @throws Exception
+     *             the exception
      */
     @Override
     public T decode(BxmlStreamReader r) throws Exception {
@@ -109,7 +115,8 @@ public class SetterDecoder<T> implements Decoder<T> {
     /**
      * Can handle.
      * 
-     * @param name the name
+     * @param name
+     *            the name
      * @return true, if successful
      */
     @Override

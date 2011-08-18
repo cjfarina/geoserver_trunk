@@ -17,9 +17,11 @@ public class GenericValueDecoder implements ValueDecoder<Object> {
     /**
      * Decode.
      * 
-     * @param r the r
+     * @param r
+     *            the r
      * @return the object
-     * @throws Exception the exception
+     * @throws Exception
+     *             the exception
      */
     @Override
     public Object decode(BxmlStreamReader r) throws Exception {
@@ -44,7 +46,8 @@ public class GenericValueDecoder implements ValueDecoder<Object> {
     /**
      * Can handle.
      * 
-     * @param type the type
+     * @param type
+     *            the type
      * @return true, if successful
      */
     @Override

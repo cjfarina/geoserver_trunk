@@ -23,7 +23,8 @@ public class SimpleFeatureAttributeDecoder implements Decoder<Object> {
     /**
      * Instantiates a new simple feature attribute decoder.
      * 
-     * @param namespace the namespace
+     * @param namespace
+     *            the namespace
      */
     public SimpleFeatureAttributeDecoder(String namespace) {
         this.namespace = namespace;
@@ -32,9 +33,11 @@ public class SimpleFeatureAttributeDecoder implements Decoder<Object> {
     /**
      * Decode.
      * 
-     * @param r the r
+     * @param r
+     *            the r
      * @return the object
-     * @throws Exception the exception
+     * @throws Exception
+     *             the exception
      */
     @Override
     public Object decode(BxmlStreamReader r) throws Exception {
@@ -47,7 +50,8 @@ public class SimpleFeatureAttributeDecoder implements Decoder<Object> {
     /**
      * Can handle.
      * 
-     * @param name the name
+     * @param name
+     *            the name
      * @return true, if successful
      */
     @Override

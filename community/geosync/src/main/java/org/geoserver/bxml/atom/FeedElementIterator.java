@@ -19,8 +19,10 @@ public class FeedElementIterator extends BxmlElementIterator {
     /**
      * Instantiates a new feed element iterator.
      * 
-     * @param reader the reader
-     * @param elemName the elem name
+     * @param reader
+     *            the reader
+     * @param elemName
+     *            the elem name
      */
     public FeedElementIterator(BxmlStreamReader reader, QName elemName) {
         super(reader, elemName);
@@ -29,8 +31,10 @@ public class FeedElementIterator extends BxmlElementIterator {
     /**
      * Instantiates a new feed element iterator.
      * 
-     * @param reader the reader
-     * @param siblingNames the sibling names
+     * @param reader
+     *            the reader
+     * @param siblingNames
+     *            the sibling names
      */
     public FeedElementIterator(final BxmlStreamReader reader, final Set<QName> siblingNames) {
         super(reader, siblingNames);
@@ -39,7 +43,8 @@ public class FeedElementIterator extends BxmlElementIterator {
     /**
      * Finish.
      * 
-     * @param reader the reader
+     * @param reader
+     *            the reader
      * @return true, if successful
      */
     protected boolean finish(BxmlStreamReader reader) {

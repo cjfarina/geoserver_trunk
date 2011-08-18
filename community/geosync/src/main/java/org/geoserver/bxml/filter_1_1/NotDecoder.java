@@ -29,9 +29,11 @@ public class NotDecoder implements Decoder<Filter> {
     /**
      * Decode.
      * 
-     * @param r the r
+     * @param r
+     *            the r
      * @return the filter
-     * @throws Exception the exception
+     * @throws Exception
+     *             the exception
      */
     @Override
     public Filter decode(BxmlStreamReader r) throws Exception {
@@ -51,7 +53,8 @@ public class NotDecoder implements Decoder<Filter> {
     /**
      * Can handle.
      * 
-     * @param name the name
+     * @param name
+     *            the name
      * @return true, if successful
      */
     @Override

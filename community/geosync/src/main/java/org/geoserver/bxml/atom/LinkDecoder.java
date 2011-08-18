@@ -34,9 +34,11 @@ public class LinkDecoder extends SimpleDecoder<LinkImpl> {
     /**
      * Decode.
      * 
-     * @param r the r
+     * @param r
+     *            the r
      * @return the link impl
-     * @throws Exception the exception
+     * @throws Exception
+     *             the exception
      */
     @Override
     public LinkImpl decode(BxmlStreamReader r) throws Exception {

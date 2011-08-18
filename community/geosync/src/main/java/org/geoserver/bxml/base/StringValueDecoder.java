@@ -14,9 +14,11 @@ public class StringValueDecoder implements ValueDecoder<String> {
     /**
      * Decode.
      * 
-     * @param r the r
+     * @param r
+     *            the r
      * @return the string
-     * @throws Exception the exception
+     * @throws Exception
+     *             the exception
      */
     @Override
     public String decode(BxmlStreamReader r) throws Exception {
@@ -38,7 +40,8 @@ public class StringValueDecoder implements ValueDecoder<String> {
     /**
      * Can handle.
      * 
-     * @param type the type
+     * @param type
+     *            the type
      * @return true, if successful
      */
     @Override

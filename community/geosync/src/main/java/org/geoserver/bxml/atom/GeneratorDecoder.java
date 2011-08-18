@@ -30,9 +30,11 @@ public class GeneratorDecoder extends SimpleDecoder<GeneratorImpl> {
     /**
      * Decode.
      * 
-     * @param r the r
+     * @param r
+     *            the r
      * @return the generator impl
-     * @throws Exception the exception
+     * @throws Exception
+     *             the exception
      */
     @Override
     public GeneratorImpl decode(BxmlStreamReader r) throws Exception {

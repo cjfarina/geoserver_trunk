@@ -52,10 +52,13 @@ public class BinarySpatialOperationDecoder extends AbstractTypeDecoder<Filter> {
     /**
      * Decode internal.
      * 
-     * @param r the r
-     * @param name the name
+     * @param r
+     *            the r
+     * @param name
+     *            the name
      * @return the filter
-     * @throws Exception the exception
+     * @throws Exception
+     *             the exception
      */
     @Override
     protected Filter decodeInternal(final BxmlStreamReader r, final QName name) throws Exception {

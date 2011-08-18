@@ -36,7 +36,8 @@ public class PropertyDecoder extends SimpleDecoder<PropertyType> {
     /**
      * Instantiates a new property decoder.
      * 
-     * @param typeName the type name
+     * @param typeName
+     *            the type name
      */
     public PropertyDecoder(QName typeName) {
         super(PROPERTY);
@@ -46,9 +47,11 @@ public class PropertyDecoder extends SimpleDecoder<PropertyType> {
     /**
      * Decode.
      * 
-     * @param r the r
+     * @param r
+     *            the r
      * @return the property type
-     * @throws Exception the exception
+     * @throws Exception
+     *             the exception
      */
     @Override
     public PropertyType decode(BxmlStreamReader r) throws Exception {

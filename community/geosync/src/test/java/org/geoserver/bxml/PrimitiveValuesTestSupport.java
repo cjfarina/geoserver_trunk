@@ -18,37 +18,37 @@ public abstract class PrimitiveValuesTestSupport extends BxmlTestSupport {
             assertEquals(expected[i], actual[i]);
         }
     }
-    
+
     public void assertEqualsArray(byte[] expected, byte[] actual) {
         for (int i = 0; i < expected.length; i++) {
             assertEquals(expected[i], actual[i]);
         }
     }
-    
+
     public void assertEqualsArray(int[] expected, int[] actual) {
         for (int i = 0; i < expected.length; i++) {
             assertEquals(expected[i], actual[i]);
         }
     }
-    
+
     public void assertEqualsArray(long[] expected, long[] actual) {
         for (int i = 0; i < expected.length; i++) {
             assertEquals(expected[i], actual[i]);
         }
     }
-    
+
     public void assertEqualsArray(float[] expected, float[] actual) {
         for (int i = 0; i < expected.length; i++) {
             assertEquals(expected[i], actual[i]);
         }
     }
-    
+
     public void assertEqualsArray(double[] expected, double[] actual) {
         for (int i = 0; i < expected.length; i++) {
             assertEquals(expected[i], actual[i]);
         }
     }
-    
+
     public void assertEqualsArray(String[] expected, String[] actual) {
         for (int i = 0; i < expected.length; i++) {
             assertEquals(expected[i], actual[i]);

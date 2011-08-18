@@ -41,10 +41,13 @@ public class EnvelopeDecoder extends AbstractTypeDecoder<ReferencedEnvelope> {
     /**
      * Decode internal.
      * 
-     * @param r the r
-     * @param name the name
+     * @param r
+     *            the r
+     * @param name
+     *            the name
      * @return the referenced envelope
-     * @throws Exception the exception
+     * @throws Exception
+     *             the exception
      */
     @Override
     protected ReferencedEnvelope decodeInternal(BxmlStreamReader r, QName name) throws Exception {
@@ -95,7 +98,8 @@ public class EnvelopeDecoder extends AbstractTypeDecoder<ReferencedEnvelope> {
         /**
          * Sets the uper corner values.
          * 
-         * @param uperCornerValues the new uper corner values
+         * @param uperCornerValues
+         *            the new uper corner values
          */
         public void setUperCornerValues(Double[] uperCornerValues) {
             this.uperCornerValues = uperCornerValues;
@@ -113,7 +117,8 @@ public class EnvelopeDecoder extends AbstractTypeDecoder<ReferencedEnvelope> {
         /**
          * Sets the lower corner values.
          * 
-         * @param lowerCornerValues the new lower corner values
+         * @param lowerCornerValues
+         *            the new lower corner values
          */
         public void setLowerCornerValues(Double[] lowerCornerValues) {
             this.lowerCornerValues = lowerCornerValues;

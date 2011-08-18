@@ -40,10 +40,13 @@ public class BBOXFilterDecoder extends AbstractTypeDecoder<Filter> {
     /**
      * Decode internal.
      * 
-     * @param r the r
-     * @param name the name
+     * @param r
+     *            the r
+     * @param name
+     *            the name
      * @return the filter
-     * @throws Exception the exception
+     * @throws Exception
+     *             the exception
      */
     @Override
     protected Filter decodeInternal(BxmlStreamReader r, QName name) throws Exception {

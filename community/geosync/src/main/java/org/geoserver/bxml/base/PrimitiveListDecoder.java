@@ -14,7 +14,8 @@ import org.gvsig.bxml.stream.EventType;
  * This class parses an element with an array of primitive value and return this value as an in an
  * array of <T>.
  * 
- * @param <T> the generic type
+ * @param <T>
+ *            the generic type
  * 
  * @author cfarina
  */
@@ -29,8 +30,10 @@ public class PrimitiveListDecoder<T> implements Decoder<T[]> {
     /**
      * Instantiates a new primitive list decoder.
      * 
-     * @param name the name
-     * @param type the type
+     * @param name
+     *            the name
+     * @param type
+     *            the type
      */
     public PrimitiveListDecoder(final QName name, Class<T> type) {
         this.name = name;
@@ -40,9 +43,11 @@ public class PrimitiveListDecoder<T> implements Decoder<T[]> {
     /**
      * Decode.
      * 
-     * @param r the r
+     * @param r
+     *            the r
      * @return the t[]
-     * @throws Exception the exception
+     * @throws Exception
+     *             the exception
      */
     @Override
     public T[] decode(BxmlStreamReader r) throws Exception {
@@ -62,7 +67,8 @@ public class PrimitiveListDecoder<T> implements Decoder<T[]> {
     /**
      * Can handle.
      * 
-     * @param name the name
+     * @param name
+     *            the name
      * @return true, if successful
      */
     @Override
