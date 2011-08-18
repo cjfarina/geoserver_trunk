@@ -7,6 +7,8 @@ import java.io.IOException;
 import javax.xml.stream.XMLOutputFactory;
 import javax.xml.stream.XMLStreamWriter;
 
+import junit.framework.Test;
+
 import org.geoserver.bxml.BxmlTestSupport;
 import org.geotools.filter.text.ecql.ECQL;
 import org.geotools.filter.v1_1.OGCConfiguration;
@@ -20,6 +22,13 @@ import org.opengis.filter.Filter;
 public class FilterDecoderTest extends BxmlTestSupport {
 
     FilterDecoder decoder;
+
+    /**
+     * This is a READ ONLY TEST so we can use one time setup
+     */
+    public static Test suite() {
+        return new OneTimeTestSetup(new FilterDecoderTest());
+    }
 
     @Override
     protected void setUpInternal() throws Exception {

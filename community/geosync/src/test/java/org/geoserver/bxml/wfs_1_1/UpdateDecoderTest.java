@@ -4,6 +4,8 @@ import java.util.List;
 
 import javax.xml.namespace.QName;
 
+import junit.framework.Test;
+
 import net.opengis.wfs.PropertyType;
 import net.opengis.wfs.UpdateElementType;
 
@@ -16,6 +18,13 @@ import com.vividsolutions.jts.geom.LineString;
 import com.vividsolutions.jts.geom.Polygon;
 
 public class UpdateDecoderTest extends BxmlTestSupport {
+
+    /**
+     * This is a READ ONLY TEST so we can use one time setup
+     */
+    public static Test suite() {
+        return new OneTimeTestSetup(new UpdateDecoderTest());
+    }
 
     public void testFeedDecodeUpdate() throws Exception {
 

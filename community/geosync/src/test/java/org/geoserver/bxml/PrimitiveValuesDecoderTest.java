@@ -4,6 +4,8 @@ import java.util.Date;
 
 import javax.xml.namespace.QName;
 
+import junit.framework.Test;
+
 import org.apache.commons.lang.ArrayUtils;
 import org.geoserver.bxml.base.DateDecoder;
 import org.geoserver.bxml.base.PrimitiveDecoder;
@@ -12,6 +14,13 @@ import org.geoserver.bxml.base.StringDecoder;
 import org.geotools.feature.type.DateUtil;
 
 public class PrimitiveValuesDecoderTest extends PrimitiveValuesTestSupport {
+
+    /**
+     * This is a READ ONLY TEST so we can use one time setup
+     */
+    public static Test suite() {
+        return new OneTimeTestSetup(new PrimitiveValuesDecoderTest());
+    }
 
     public void testReadBoolean() throws Exception {
         QName testElement = new QName("test");
