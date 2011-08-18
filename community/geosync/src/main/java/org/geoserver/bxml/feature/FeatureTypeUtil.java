@@ -4,10 +4,23 @@ import javax.xml.namespace.QName;
 
 import org.gvsig.bxml.stream.BxmlStreamReader;
 
+/**
+ * The Class FeatureTypeUtil.
+ * 
+ * @author cfarina
+ */
 public class FeatureTypeUtil {
 
+    /** The Constant FEATURE_PREFIX. */
     private static final String FEATURE_PREFIX = "f:";
 
+    /**
+     * Builds the feature type name.
+     * 
+     * @param r the r
+     * @param elementName the element name
+     * @return the q name
+     */
     public static QName buildFeatureTypeName(BxmlStreamReader r, QName elementName) {
         QName name = r.getElementName();
 
@@ -27,6 +40,13 @@ public class FeatureTypeUtil {
         return null;
     }
 
+    /**
+     * Builds the q name.
+     * 
+     * @param nameString the name string
+     * @param namespaceURI the namespace uri
+     * @return the q name
+     */
     public static QName buildQName(String nameString, String namespaceURI) {
         QName qName = null;
         if (nameString.startsWith(FEATURE_PREFIX)) {

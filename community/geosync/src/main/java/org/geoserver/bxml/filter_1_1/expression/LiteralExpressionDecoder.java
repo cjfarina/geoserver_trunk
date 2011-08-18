@@ -15,11 +15,24 @@ import org.gvsig.bxml.stream.EventType;
 import org.opengis.filter.FilterFactory2;
 import org.opengis.filter.expression.Expression;
 
+/**
+ * The Class LiteralExpressionDecoder.
+ * 
+ * @author cfarina
+ */
 public class LiteralExpressionDecoder implements Decoder<Expression> {
 
+    /** The ff. */
     protected static FilterFactory2 ff = CommonFactoryFinder.getFilterFactory2(GeoTools
             .getDefaultHints());
 
+    /**
+     * Decode.
+     * 
+     * @param r the r
+     * @return the expression
+     * @throws Exception the exception
+     */
     @Override
     public Expression decode(final BxmlStreamReader r) throws Exception {
         r.require(EventType.START_ELEMENT, Literal.getNamespaceURI(), Literal.getLocalPart());
@@ -38,11 +51,22 @@ public class LiteralExpressionDecoder implements Decoder<Expression> {
         return ff.literal(value);
     }
 
+    /**
+     * Can handle.
+     * 
+     * @param name the name
+     * @return true, if successful
+     */
     @Override
     public boolean canHandle(QName name) {
         return Literal.equals(name);
     }
 
+    /**
+     * Gets the targets.
+     * 
+     * @return the targets
+     */
     @Override
     public Set<QName> getTargets() {
         return Collections.singleton(Literal);

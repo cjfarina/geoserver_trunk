@@ -12,10 +12,19 @@ import com.vividsolutions.jts.geom.Geometry;
 import com.vividsolutions.jts.geom.GeometryFactory;
 import com.vividsolutions.jts.geom.LineString;
 
+/**
+ * The Class LineStringDecoder.
+ * 
+ * @author cfarina
+ */
 public class LineStringDecoder extends AbstractGeometryDecoder<Geometry> {
 
+    /** The choice. */
     private ChoiceDecoder<CoordinateSequence> choice;
 
+    /**
+     * Instantiates a new line string decoder.
+     */
     public LineStringDecoder() {
         super(LineString);
         choice = new ChoiceDecoder<CoordinateSequence>();
@@ -25,6 +34,14 @@ public class LineStringDecoder extends AbstractGeometryDecoder<Geometry> {
         choice.addOption(new CoordDecoder());
     }
 
+    /**
+     * Decode internal.
+     * 
+     * @param r the r
+     * @param name the name
+     * @return the geometry
+     * @throws Exception the exception
+     */
     @Override
     public Geometry decodeInternal(final BxmlStreamReader r, final QName name) throws Exception {
         r.nextTag();

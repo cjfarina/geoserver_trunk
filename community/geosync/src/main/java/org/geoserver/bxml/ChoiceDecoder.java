@@ -12,14 +12,30 @@ import org.gvsig.bxml.stream.BxmlStreamReader;
 import org.gvsig.bxml.stream.EventType;
 import org.springframework.util.Assert;
 
+/**
+ * The Class ChoiceDecoder.
+ * 
+ * @param <T> the generic type
+ * 
+ * @author cfarina
+ */
 public class ChoiceDecoder<T> implements Decoder<T> {
 
+    /** The options. */
     private final List<Decoder<T>> options;
 
+    /**
+     * Instantiates a new choice decoder.
+     */
     public ChoiceDecoder() {
         this.options = new ArrayList<Decoder<T>>();
     }
 
+    /**
+     * Instantiates a new choice decoder.
+     * 
+     * @param options the options
+     */
     public ChoiceDecoder(Decoder<T>... options) {
         this.options = new ArrayList<Decoder<T>>();
         if (options != null && options.length > 0) {
@@ -28,10 +44,22 @@ public class ChoiceDecoder<T> implements Decoder<T> {
         }
     }
 
+    /**
+     * Adds the option.
+     * 
+     * @param option the option
+     */
     public void addOption(Decoder<T> option) {
         this.options.add(option);
     }
 
+    /**
+     * Decode.
+     * 
+     * @param r the r
+     * @return the t
+     * @throws Exception the exception
+     */
     @Override
     public T decode(final BxmlStreamReader r) throws Exception {
         r.require(EventType.START_ELEMENT, null, null);
@@ -44,6 +72,12 @@ public class ChoiceDecoder<T> implements Decoder<T> {
         throw new IllegalArgumentException("No decoder found for " + name);
     }
 
+    /**
+     * Can handle.
+     * 
+     * @param name the name
+     * @return true, if successful
+     */
     @Override
     public boolean canHandle(QName name) {
         for (Decoder<T> decoder : options) {
@@ -54,6 +88,11 @@ public class ChoiceDecoder<T> implements Decoder<T> {
         return false;
     }
 
+    /**
+     * Gets the targets.
+     * 
+     * @return the targets
+     */
     @Override
     public Set<QName> getTargets() {
         Set<QName> targets = new HashSet<QName>();

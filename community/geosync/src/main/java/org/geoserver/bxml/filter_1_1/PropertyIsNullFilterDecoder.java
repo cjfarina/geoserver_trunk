@@ -19,18 +19,35 @@ import org.opengis.filter.Filter;
 import org.opengis.filter.FilterFactory2;
 import org.opengis.filter.expression.Expression;
 
+/**
+ * The Class PropertyIsNullFilterDecoder.
+ * 
+ * @author cfarina
+ */
 public class PropertyIsNullFilterDecoder implements Decoder<Filter> {
 
+    /** The seq. */
     private SequenceDecoder<Expression> seq;
 
+    /** The ff. */
     protected static FilterFactory2 ff = CommonFactoryFinder.getFilterFactory2(GeoTools
             .getDefaultHints());
 
+    /**
+     * Instantiates a new property is null filter decoder.
+     */
     public PropertyIsNullFilterDecoder() {
         seq = new SequenceDecoder<Expression>(1, 1);
         seq.add(new PropertyNameExpressionDecoder(), 1, 1);
     }
 
+    /**
+     * Decode.
+     * 
+     * @param r the r
+     * @return the filter
+     * @throws Exception the exception
+     */
     @Override
     public Filter decode(final BxmlStreamReader r) throws Exception {
         r.require(EventType.START_ELEMENT, PropertyIsNull.getNamespaceURI(),
@@ -45,11 +62,22 @@ public class PropertyIsNullFilterDecoder implements Decoder<Filter> {
         return ff.isNull(e1);
     }
 
+    /**
+     * Can handle.
+     * 
+     * @param name the name
+     * @return true, if successful
+     */
     @Override
     public boolean canHandle(QName name) {
         return PropertyIsNull.equals(name);
     }
 
+    /**
+     * Gets the targets.
+     * 
+     * @return the targets
+     */
     @Override
     public Set<QName> getTargets() {
         return Collections.singleton(PropertyIsNull);

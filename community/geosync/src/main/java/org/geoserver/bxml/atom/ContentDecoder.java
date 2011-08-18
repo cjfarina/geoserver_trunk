@@ -15,10 +15,19 @@ import org.gvsig.bxml.stream.BxmlStreamReader;
 import org.gvsig.bxml.stream.EventType;
 import org.springframework.util.Assert;
 
+/**
+ * The Class ContentDecoder.
+ * 
+ * @author cfarina
+ */
 public class ContentDecoder extends SimpleDecoder<ContentImpl> {
 
+    /** The choice. */
     private Decoder<EObject> choice;
 
+    /**
+     * Instantiates a new content decoder.
+     */
     @SuppressWarnings("unchecked")
     public ContentDecoder() {
         super(Atom.content);
@@ -26,6 +35,13 @@ public class ContentDecoder extends SimpleDecoder<ContentImpl> {
                 new UpdateElementTypeDecoder(), new InsertElementTypeDecoder());
     }
 
+    /**
+     * Decode.
+     * 
+     * @param r the r
+     * @return the content impl
+     * @throws Exception the exception
+     */
     @Override
     public ContentImpl decode(BxmlStreamReader r) throws Exception {
         final QName elementName = r.getElementName();

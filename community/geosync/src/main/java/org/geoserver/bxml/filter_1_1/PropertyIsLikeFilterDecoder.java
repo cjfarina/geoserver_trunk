@@ -21,19 +21,36 @@ import org.springframework.util.Assert;
 
 import com.google.common.collect.Iterators;
 
+/**
+ * The Class PropertyIsLikeFilterDecoder.
+ * 
+ * @author cfarina
+ */
 public class PropertyIsLikeFilterDecoder extends SimpleDecoder<Filter> {
 
+    /** The seq. */
     private SequenceDecoder<Expression> seq;
 
+    /** The ff. */
     protected static FilterFactory2 ff = CommonFactoryFinder.getFilterFactory2(GeoTools
             .getDefaultHints());
 
+    /**
+     * Instantiates a new property is like filter decoder.
+     */
     public PropertyIsLikeFilterDecoder() {
         super(PropertyIsLike);
         seq = new SequenceDecoder<Expression>(2, 2);
         seq.add(new ExpressionDecoder(), 1, 1);
     }
 
+    /**
+     * Decode.
+     * 
+     * @param r the r
+     * @return the filter
+     * @throws Exception the exception
+     */
     @Override
     public Filter decode(BxmlStreamReader r) throws Exception {
         r.require(EventType.START_ELEMENT, null, null);

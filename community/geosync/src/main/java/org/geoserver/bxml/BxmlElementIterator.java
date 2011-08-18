@@ -15,20 +15,40 @@ import org.gvsig.bxml.stream.EventType;
 
 import com.google.common.collect.AbstractIterator;
 
+/**
+ * The Class BxmlElementIterator.
+ * 
+ * @author groldan
+ */
 public class BxmlElementIterator extends AbstractIterator<BxmlStreamReader> {
 
+    /** The reader. */
     private final BxmlStreamReader reader;
 
+    /** The sibling names. */
     private final Set<QName> siblingNames;
 
+    /** The depth. */
     private final int depth;
 
+    /**
+     * Instantiates a new bxml element iterator.
+     * 
+     * @param reader the reader
+     * @param elemName the elem name
+     */
     public BxmlElementIterator(final BxmlStreamReader reader, final QName elemName) {
         this.reader = reader;
         this.siblingNames = Collections.singleton(elemName);
         this.depth = reader.getTagDepth();
     }
 
+    /**
+     * Instantiates a new bxml element iterator.
+     * 
+     * @param reader the reader
+     * @param siblingNames the sibling names
+     */
     public BxmlElementIterator(final BxmlStreamReader reader, final Set<QName> siblingNames) {
         this.reader = reader;
         this.siblingNames = new HashSet<QName>(siblingNames);
@@ -74,10 +94,22 @@ public class BxmlElementIterator extends AbstractIterator<BxmlStreamReader> {
         }
     }
 
+    /**
+     * Checks if is expected element.
+     * 
+     * @param elementName the element name
+     * @return true, if is expected element
+     */
     protected boolean isExpectedElement(QName elementName) {
         return siblingNames.contains(elementName);
     }
 
+    /**
+     * Finish.
+     * 
+     * @param reader the reader
+     * @return true, if successful
+     */
     protected boolean finish(BxmlStreamReader reader) {
         return false;
     }

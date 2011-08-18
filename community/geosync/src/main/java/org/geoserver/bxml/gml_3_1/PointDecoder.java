@@ -13,10 +13,19 @@ import com.vividsolutions.jts.geom.Geometry;
 import com.vividsolutions.jts.geom.GeometryFactory;
 import com.vividsolutions.jts.geom.Point;
 
+/**
+ * The Class PointDecoder.
+ * 
+ * @author cfarina
+ */
 public class PointDecoder extends AbstractGeometryDecoder<Geometry> {
 
+    /** The choice. */
     private ChoiceDecoder<CoordinateSequence> choice;
 
+    /**
+     * Instantiates a new point decoder.
+     */
     public PointDecoder() {
         super(GML.Point);
         choice = new ChoiceDecoder<CoordinateSequence>();
@@ -25,6 +34,14 @@ public class PointDecoder extends AbstractGeometryDecoder<Geometry> {
         choice.addOption(new CoordDecoder());
     }
 
+    /**
+     * Decode internal.
+     * 
+     * @param r the r
+     * @param name the name
+     * @return the geometry
+     * @throws Exception the exception
+     */
     @Override
     protected Geometry decodeInternal(final BxmlStreamReader r, final QName name) throws Exception {
         r.nextTag();

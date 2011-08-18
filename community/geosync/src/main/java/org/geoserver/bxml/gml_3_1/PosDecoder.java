@@ -20,8 +20,20 @@ import org.gvsig.bxml.stream.EventType;
 import com.vividsolutions.jts.geom.CoordinateSequence;
 import com.vividsolutions.jts.geom.impl.PackedCoordinateSequence;
 
+/**
+ * The Class PosDecoder.
+ * 
+ * @author cfarina
+ */
 public class PosDecoder implements Decoder<CoordinateSequence> {
 
+    /**
+     * Decode.
+     * 
+     * @param r the r
+     * @return the coordinate sequence
+     * @throws Exception the exception
+     */
     @Override
     public CoordinateSequence decode(BxmlStreamReader r) throws Exception {
 
@@ -53,11 +65,22 @@ public class PosDecoder implements Decoder<CoordinateSequence> {
         return new PackedCoordinateSequence.Double(ArrayUtils.toPrimitive(arrayCoord), dimension);
     }
 
+    /**
+     * Can handle.
+     * 
+     * @param name the name
+     * @return true, if successful
+     */
     @Override
     public boolean canHandle(QName name) {
         return pos.equals(name);
     }
 
+    /**
+     * Gets the targets.
+     * 
+     * @return the targets
+     */
     @Override
     public Set<QName> getTargets() {
         return Collections.singleton(pos);

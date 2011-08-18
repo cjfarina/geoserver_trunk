@@ -20,13 +20,23 @@ import org.springframework.util.Assert;
 
 import com.google.common.collect.Iterators;
 
+/**
+ * The Class PropertyIsBetweenFilterDecoder.
+ * 
+ * @author cfarina
+ */
 public class PropertyIsBetweenFilterDecoder extends SimpleDecoder<Filter> {
 
+    /** The seq. */
     private SequenceDecoder<Expression> seq;
 
+    /** The ff. */
     protected static FilterFactory2 ff = CommonFactoryFinder.getFilterFactory2(GeoTools
             .getDefaultHints());
 
+    /**
+     * Instantiates a new property is between filter decoder.
+     */
     public PropertyIsBetweenFilterDecoder() {
         super(PropertyIsBetween);
         seq = new SequenceDecoder<Expression>(3, 3);
@@ -34,6 +44,13 @@ public class PropertyIsBetweenFilterDecoder extends SimpleDecoder<Filter> {
         seq.add(new BoundaryFilterDecoder(), 2, 2);
     }
 
+    /**
+     * Decode.
+     * 
+     * @param r the r
+     * @return the filter
+     * @throws Exception the exception
+     */
     @Override
     public Filter decode(BxmlStreamReader r) throws Exception {
         r.require(EventType.START_ELEMENT, null, null);

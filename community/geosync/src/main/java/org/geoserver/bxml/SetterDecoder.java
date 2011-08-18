@@ -11,18 +11,37 @@ import org.apache.commons.beanutils.BeanUtils;
 import org.gvsig.bxml.stream.BxmlStreamReader;
 import org.springframework.util.Assert;
 
+/**
+ * The Class SetterDecoder.
+ * 
+ * @param <T> the generic type
+ * 
+ * @author groldan
+ */
 public class SetterDecoder<T> implements Decoder<T> {
 
+    /** The property decoder. */
     private final Decoder<? extends T> propertyDecoder;
 
+    /** The target. */
     private final Object target;
 
+    /** The property name. */
     private final String propertyName;
 
+    /** The setter. */
     private final Method setter;
 
+    /** The is collection. */
     private boolean isCollection;
 
+    /**
+     * Instantiates a new setter decoder.
+     * 
+     * @param propertyDecoder the property decoder
+     * @param target the target
+     * @param propertyName the property name
+     */
     public SetterDecoder(final Decoder<? extends T> propertyDecoder, final Object target,
             final String propertyName) {
         Assert.notNull(propertyDecoder);
@@ -35,6 +54,11 @@ public class SetterDecoder<T> implements Decoder<T> {
         this.setter = findSetter();
     }
 
+    /**
+     * Find setter.
+     * 
+     * @return the method
+     */
     private Method findSetter() {
         for (Method m : target.getClass().getMethods()) {
             if (!Modifier.isPublic(m.getModifiers())) {
@@ -58,6 +82,13 @@ public class SetterDecoder<T> implements Decoder<T> {
                 + " found in class " + target.getClass().getName());
     }
 
+    /**
+     * Decode.
+     * 
+     * @param r the r
+     * @return the t
+     * @throws Exception the exception
+     */
     @Override
     public T decode(BxmlStreamReader r) throws Exception {
         T propertyValue = propertyDecoder.decode(r);
@@ -65,7 +96,7 @@ public class SetterDecoder<T> implements Decoder<T> {
         if (isCollection) {
             @SuppressWarnings("unchecked")
             Collection<T> c = (Collection<T>) this.setter.invoke(target, null);
-            if(propertyValue != null){
+            if (propertyValue != null) {
                 c.add(propertyValue);
             }
         } else {
@@ -74,11 +105,22 @@ public class SetterDecoder<T> implements Decoder<T> {
         return propertyValue;
     }
 
+    /**
+     * Can handle.
+     * 
+     * @param name the name
+     * @return true, if successful
+     */
     @Override
     public boolean canHandle(QName name) {
         return propertyDecoder.canHandle(name);
     }
 
+    /**
+     * Gets the targets.
+     * 
+     * @return the targets
+     */
     @Override
     public Set<QName> getTargets() {
         return propertyDecoder.getTargets();

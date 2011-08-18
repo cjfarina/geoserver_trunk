@@ -16,18 +16,37 @@ import com.google.common.base.Function;
 import com.google.common.base.Throwables;
 import com.google.common.collect.Iterators;
 
+/**
+ * The Class SequenceDecoder.
+ * 
+ * @param <T> the generic type
+ * 
+ * @author groldan
+ */
 public class SequenceDecoder<T> implements Decoder<Iterator<T>> {
 
+    /** The sequence. */
     private List<Particle<T>> sequence;
 
+    /** The min occurs. */
     private final int minOccurs;
 
+    /** The max occurs. */
     private final int maxOccurs;
 
+    /**
+     * Instantiates a new sequence decoder.
+     */
     public SequenceDecoder() {
         this(1, 1);
     }
 
+    /**
+     * Instantiates a new sequence decoder.
+     * 
+     * @param minOccurs the min occurs
+     * @param maxOccurs the max occurs
+     */
     public SequenceDecoder(final int minOccurs, final int maxOccurs) {
         this.minOccurs = minOccurs;
         this.maxOccurs = maxOccurs;
@@ -37,6 +56,13 @@ public class SequenceDecoder<T> implements Decoder<Iterator<T>> {
         this.sequence = new LinkedList<Particle<T>>();
     }
 
+    /**
+     * Adds the.
+     * 
+     * @param particleDecoder the particle decoder
+     * @param minOccurs the min occurs
+     * @param maxOccurs the max occurs
+     */
     public void add(final Decoder<T> particleDecoder, final int minOccurs, final int maxOccurs) {
         Assert.notNull(particleDecoder);
         Assert.isTrue(minOccurs >= 0);
@@ -45,6 +71,13 @@ public class SequenceDecoder<T> implements Decoder<Iterator<T>> {
         sequence.add(new Particle<T>(particleDecoder, minOccurs, maxOccurs));
     }
 
+    /**
+     * Decode.
+     * 
+     * @param r the r
+     * @return the iterator
+     * @throws Exception the exception
+     */
     @Override
     public Iterator<T> decode(final BxmlStreamReader r) throws Exception {
         r.require(EventType.START_ELEMENT, null, null);
@@ -57,11 +90,21 @@ public class SequenceDecoder<T> implements Decoder<Iterator<T>> {
         return result;
     }
 
+    /**
+     * Builds the iterator.
+     * 
+     * @param r the r
+     * @param sequenceNames the sequence names
+     * @return the bxml element iterator
+     */
     protected BxmlElementIterator buildIterator(final BxmlStreamReader r, Set<QName> sequenceNames) {
         return new BxmlElementIterator(r, new HashSet<QName>(sequenceNames));
     }
 
     /**
+     * Gets the targets.
+     * 
+     * @return the targets
      * @see org.geoserver.bxml.Decoder#getTargets()
      */
     public Set<QName> getTargets() {
@@ -72,6 +115,12 @@ public class SequenceDecoder<T> implements Decoder<Iterator<T>> {
         return names;
     }
 
+    /**
+     * Can handle.
+     * 
+     * @param name the name
+     * @return true, if successful
+     */
     @Override
     public boolean canHandle(final QName name) {
         for (Particle<T> p : sequence) {
@@ -83,18 +132,29 @@ public class SequenceDecoder<T> implements Decoder<Iterator<T>> {
     }
 
     /**
-     * @author groldan
+     * The Class Particle.
      * 
-     * @param <E>
+     * @param <E> the element type
+     * @author groldan
      */
     private static class Particle<E> {
 
+        /** The particle decoder. */
         private final Decoder<E> particleDecoder;
 
+        /** The min occurs. */
         private final int minOccurs;
 
+        /** The max occurs. */
         private final int maxOccurs;
 
+        /**
+         * Instantiates a new particle.
+         * 
+         * @param particleDecoder the particle decoder
+         * @param minOccurs the min occurs
+         * @param maxOccurs the max occurs
+         */
         public Particle(Decoder<E> particleDecoder, int minOccurs, int maxOccurs) {
             this.particleDecoder = particleDecoder;
             this.minOccurs = minOccurs;
@@ -103,20 +163,38 @@ public class SequenceDecoder<T> implements Decoder<Iterator<T>> {
 
     }
 
+    /**
+     * The Class Chain.
+     * 
+     * @param <E> the element type
+     */
     private static class Chain<E> implements Function<BxmlStreamReader, E> {
 
+        /** The sequence min occurs. */
         private final int sequenceMinOccurs;
 
+        /** The sequence max occurs. */
         private final int sequenceMaxOccurs;
 
+        /** The sequence occurrencies. */
         private int sequenceOccurrencies;
 
+        /** The sequence. */
         private final List<Particle<E>> sequence;
 
+        /** The current particle. */
         private int currentParticle;
 
+        /** The current particle occurrencies. */
         private int currentParticleOccurrencies;
 
+        /**
+         * Instantiates a new chain.
+         * 
+         * @param sequence the sequence
+         * @param minOccurs the min occurs
+         * @param maxOccurs the max occurs
+         */
         public Chain(List<Particle<E>> sequence, int minOccurs, int maxOccurs) {
             this.sequenceMinOccurs = minOccurs;
             this.sequenceMaxOccurs = maxOccurs;
@@ -125,6 +203,12 @@ public class SequenceDecoder<T> implements Decoder<Iterator<T>> {
             this.currentParticle = -1;
         }
 
+        /**
+         * Apply.
+         * 
+         * @param positionedReader the positioned reader
+         * @return the e
+         */
         @Override
         public E apply(final BxmlStreamReader positionedReader) {
             final QName elementName = positionedReader.getElementName();
@@ -139,6 +223,12 @@ public class SequenceDecoder<T> implements Decoder<Iterator<T>> {
             return decoded;
         }
 
+        /**
+         * Find particle decoder.
+         * 
+         * @param elementName the element name
+         * @return the decoder
+         */
         private Decoder<E> findParticleDecoder(final QName elementName) {
             while (true) {
                 if (currentParticle == -1 || currentParticle == sequence.size()) {

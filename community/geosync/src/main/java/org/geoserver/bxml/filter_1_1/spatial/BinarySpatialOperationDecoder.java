@@ -23,17 +23,24 @@ import org.opengis.filter.Filter;
 import org.opengis.filter.FilterFactory2;
 import org.opengis.filter.expression.Expression;
 
-import com.vividsolutions.jts.geom.Geometry;
-
+/**
+ * The Class BinarySpatialOperationDecoder.
+ * 
+ * @author cfarina
+ */
 public class BinarySpatialOperationDecoder extends AbstractTypeDecoder<Filter> {
 
-    
+    /** The ff. */
     protected static FilterFactory2 ff = CommonFactoryFinder.getFilterFactory2(GeoTools
             .getDefaultHints());
 
+    /** The choice. */
     @SuppressWarnings("rawtypes")
     private ChoiceDecoder choice;
 
+    /**
+     * Instantiates a new binary spatial operation decoder.
+     */
     @SuppressWarnings("unchecked")
     public BinarySpatialOperationDecoder() {
         super(Equals, Disjoint, Touches, Within, Overlaps, Intersects, Crosses, Contains);
@@ -42,6 +49,14 @@ public class BinarySpatialOperationDecoder extends AbstractTypeDecoder<Filter> {
         choice.addOption(new EnvelopeDecoder());
     }
 
+    /**
+     * Decode internal.
+     * 
+     * @param r the r
+     * @param name the name
+     * @return the filter
+     * @throws Exception the exception
+     */
     @Override
     protected Filter decodeInternal(final BxmlStreamReader r, final QName name) throws Exception {
 

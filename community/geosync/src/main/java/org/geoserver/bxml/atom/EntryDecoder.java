@@ -30,8 +30,20 @@ import org.gvsig.bxml.stream.EventType;
 
 import com.google.common.collect.Iterators;
 
+/**
+ * The Class EntryDecoder.
+ * 
+ * @author cfarina
+ */
 public class EntryDecoder implements Decoder<EntryImpl> {
 
+    /**
+     * Decode.
+     * 
+     * @param r the r
+     * @return the entry impl
+     * @throws Exception the exception
+     */
     @Override
     public EntryImpl decode(BxmlStreamReader r) throws Exception {
         r.require(EventType.START_ELEMENT, entry.getNamespaceURI(), entry.getLocalPart());
@@ -62,11 +74,22 @@ public class EntryDecoder implements Decoder<EntryImpl> {
         return entry;
     }
 
+    /**
+     * Can handle.
+     * 
+     * @param name the name
+     * @return true, if successful
+     */
     @Override
     public boolean canHandle(QName name) {
         return Atom.entry.equals(name);
     }
 
+    /**
+     * Gets the targets.
+     * 
+     * @return the targets
+     */
     @Override
     public Set<QName> getTargets() {
         return Collections.singleton(Atom.entry);

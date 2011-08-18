@@ -10,12 +10,29 @@ import org.gvsig.bxml.stream.EventType;
 
 import com.google.common.base.Throwables;
 
+/**
+ * The Class DateDecoder.
+ * 
+ * @author cfarina
+ */
 public class DateDecoder extends SimpleDecoder<Date> {
 
+    /**
+     * Instantiates a new date decoder.
+     * 
+     * @param elemName the elem name
+     */
     public DateDecoder(QName elemName) {
         super(elemName);
     }
 
+    /**
+     * Decode.
+     * 
+     * @param r the r
+     * @return the date
+     * @throws Exception the exception
+     */
     @Override
     public Date decode(BxmlStreamReader r) throws Exception {
         r.require(EventType.START_ELEMENT, null, elemName.getLocalPart());
@@ -31,6 +48,13 @@ public class DateDecoder extends SimpleDecoder<Date> {
         return value;
     }
 
+    /**
+     * Read date value.
+     * 
+     * @param r the r
+     * @return the date
+     * @throws Exception the exception
+     */
     public static Date readDateValue(BxmlStreamReader r) throws Exception {
         StringValueDecoder valueDecoder = new StringValueDecoder();
         Date date = null;

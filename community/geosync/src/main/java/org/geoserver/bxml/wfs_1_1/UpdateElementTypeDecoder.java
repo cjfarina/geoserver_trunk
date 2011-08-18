@@ -24,15 +24,31 @@ import org.springframework.util.Assert;
 
 import com.google.common.collect.Iterators;
 
+/**
+ * The Class UpdateElementTypeDecoder.
+ * 
+ * @author cfarina
+ */
 public class UpdateElementTypeDecoder extends SimpleDecoder<EObject> {
 
+    /** The factory. */
     private final WfsFactory factory;
 
+    /**
+     * Instantiates a new update element type decoder.
+     */
     public UpdateElementTypeDecoder() {
         super(UPDATE);
         factory = WfsFactoryImpl.eINSTANCE;
     }
 
+    /**
+     * Decode.
+     * 
+     * @param r the r
+     * @return the e object
+     * @throws Exception the exception
+     */
     @Override
     public EObject decode(BxmlStreamReader r) throws Exception {
         final QName elementName = r.getElementName();

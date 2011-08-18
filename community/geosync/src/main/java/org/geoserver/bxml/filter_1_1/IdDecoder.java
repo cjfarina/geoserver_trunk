@@ -19,18 +19,35 @@ import org.opengis.filter.identity.FeatureId;
 
 import com.google.common.collect.Iterators;
 
+/**
+ * The Class IdDecoder.
+ * 
+ * @author cfarina
+ */
 public class IdDecoder implements Decoder<Filter> {
 
+    /** The Constant ff. */
     private static final FilterFactory2 ff = CommonFactoryFinder.getFilterFactory2(GeoTools
             .getDefaultHints());
 
+    /** The sequence. */
     private SequenceDecoder<FeatureId> sequence;
 
+    /**
+     * Instantiates a new id decoder.
+     */
     public IdDecoder() {
         this.sequence = new SequenceDecoder<FeatureId>(1, Integer.MAX_VALUE);
         sequence.add(new FeatureIdDecoder(), 1, 1);
     }
 
+    /**
+     * Decode.
+     * 
+     * @param r the r
+     * @return the id
+     * @throws Exception the exception
+     */
     @Override
     public Id decode(BxmlStreamReader r) throws Exception {
         final Iterator<FeatureId> iterator = sequence.decode(r);
@@ -39,11 +56,22 @@ public class IdDecoder implements Decoder<Filter> {
         return ff.id(new HashSet<FeatureId>(Arrays.asList(identifiers)));
     }
 
+    /**
+     * Can handle.
+     * 
+     * @param name the name
+     * @return true, if successful
+     */
     @Override
     public boolean canHandle(QName name) {
         return sequence.canHandle(name);
     }
 
+    /**
+     * Gets the targets.
+     * 
+     * @return the targets
+     */
     @Override
     public Set<QName> getTargets() {
         return sequence.getTargets();

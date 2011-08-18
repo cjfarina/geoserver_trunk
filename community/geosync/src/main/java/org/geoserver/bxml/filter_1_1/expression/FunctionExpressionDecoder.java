@@ -18,15 +18,32 @@ import org.springframework.util.Assert;
 
 import com.google.common.collect.Iterators;
 
+/**
+ * The Class FunctionExpressionDecoder.
+ * 
+ * @author cfarina
+ */
 public class FunctionExpressionDecoder extends AbstractTypeDecoder<Expression> {
 
+    /** The ff. */
     protected static FilterFactory2 ff = CommonFactoryFinder.getFilterFactory2(GeoTools
             .getDefaultHints());
 
+    /**
+     * Instantiates a new function expression decoder.
+     */
     public FunctionExpressionDecoder() {
         super(Function);
     }
 
+    /**
+     * Decode internal.
+     * 
+     * @param r the r
+     * @param name the name
+     * @return the expression
+     * @throws Exception the exception
+     */
     @Override
     public Expression decodeInternal(final BxmlStreamReader r, final QName name) throws Exception {
 
@@ -41,11 +58,22 @@ public class FunctionExpressionDecoder extends AbstractTypeDecoder<Expression> {
         return ff.function(functionName, expressions);
     }
 
+    /**
+     * Can handle.
+     * 
+     * @param name the name
+     * @return true, if successful
+     */
     @Override
     public boolean canHandle(final QName name) {
         return Function.equals(name);
     }
 
+    /**
+     * Gets the targets.
+     * 
+     * @return the targets
+     */
     @Override
     public Set<QName> getTargets() {
         return Collections.singleton(Function);

@@ -7,15 +7,34 @@ import org.gvsig.bxml.stream.BxmlStreamReader;
 import org.gvsig.bxml.stream.EventType;
 import org.springframework.util.Assert;
 
+/**
+ * The Class PropertyNameDecoder.
+ * 
+ * @author cfarina
+ */
 public class PropertyNameDecoder extends SimpleDecoder<QName> {
 
+    /** The type name. */
     private final QName typeName;
 
+    /**
+     * Instantiates a new property name decoder.
+     * 
+     * @param typeName the type name
+     */
     public PropertyNameDecoder(QName typeName) {
         super(new QName("http://www.opengis.net/wfs", "Name"));
         this.typeName = typeName;
     }
 
+    /**
+     * Decode.
+     * 
+     * @param r the r
+     * @return the q name
+     * @throws Exception the exception
+     */
+    @SuppressWarnings("unused")
     @Override
     public QName decode(BxmlStreamReader r) throws Exception {
         final QName elementName = r.getElementName();

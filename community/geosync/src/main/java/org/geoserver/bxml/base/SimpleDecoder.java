@@ -9,24 +9,54 @@ import org.geoserver.bxml.Decoder;
 import org.gvsig.bxml.stream.BxmlStreamReader;
 import org.gvsig.bxml.stream.EventType;
 
+/**
+ * The Class SimpleDecoder.
+ * 
+ * @param <T> the generic type
+ * 
+ * @author cfarina
+ */
 public abstract class SimpleDecoder<T> implements Decoder<T> {
 
+    /** The elem name. */
     protected final QName elemName;
 
+    /**
+     * Instantiates a new simple decoder.
+     * 
+     * @param elemName the elem name
+     */
     public SimpleDecoder(final QName elemName) {
         this.elemName = elemName;
     }
 
+    /**
+     * Can handle.
+     * 
+     * @param name the name
+     * @return true, if successful
+     */
     @Override
     public boolean canHandle(QName name) {
         return elemName.equals(name);
     }
 
+    /**
+     * Gets the targets.
+     * 
+     * @return the targets
+     */
     @Override
     public Set<QName> getTargets() {
         return Collections.singleton(elemName);
     }
-    
+
+    /**
+     * Checks if is end element.
+     * 
+     * @param r the r
+     * @return true, if is end element
+     */
     protected boolean isEndElement(BxmlStreamReader r) {
         return r.getEventType() == EventType.END_ELEMENT && r.getElementName().equals(elemName);
     }

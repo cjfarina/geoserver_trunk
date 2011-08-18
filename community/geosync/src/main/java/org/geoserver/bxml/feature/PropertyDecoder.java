@@ -20,17 +20,36 @@ import org.springframework.util.Assert;
 
 import com.google.common.collect.Iterators;
 
+/**
+ * The Class PropertyDecoder.
+ * 
+ * @author cfarina
+ */
 public class PropertyDecoder extends SimpleDecoder<PropertyType> {
 
+    /** The factory. */
     final WfsFactory factory = WfsFactoryImpl.eINSTANCE;
 
+    /** The type name. */
     private final QName typeName;
 
+    /**
+     * Instantiates a new property decoder.
+     * 
+     * @param typeName the type name
+     */
     public PropertyDecoder(QName typeName) {
         super(PROPERTY);
         this.typeName = typeName;
     }
 
+    /**
+     * Decode.
+     * 
+     * @param r the r
+     * @return the property type
+     * @throws Exception the exception
+     */
     @Override
     public PropertyType decode(BxmlStreamReader r) throws Exception {
         final QName elementName = r.getElementName();

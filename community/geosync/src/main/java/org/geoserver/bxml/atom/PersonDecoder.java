@@ -16,12 +16,29 @@ import org.gvsig.bxml.stream.EventType;
 
 import com.google.common.collect.Iterators;
 
+/**
+ * The Class PersonDecoder.
+ * 
+ * @author cfarina
+ */
 public class PersonDecoder extends SimpleDecoder<PersonImpl> {
 
+    /**
+     * Instantiates a new person decoder.
+     * 
+     * @param elemName the elem name
+     */
     public PersonDecoder(QName elemName) {
         super(elemName);
     }
 
+    /**
+     * Decode.
+     * 
+     * @param r the r
+     * @return the person impl
+     * @throws Exception the exception
+     */
     @Override
     public PersonImpl decode(BxmlStreamReader r) throws Exception {
         r.require(EventType.START_ELEMENT, elemName.getNamespaceURI(), elemName.getLocalPart());
@@ -34,11 +51,11 @@ public class PersonDecoder extends SimpleDecoder<PersonImpl> {
 
         SequenceDecoder<Object> seq = new SequenceDecoder<Object>(1, 1);
         seq.add(choice, 0, Integer.MAX_VALUE);
-        
+
         r.nextTag();
-        
-        //if empty element
-        if(isEndElement(r)){
+
+        // if empty element
+        if (isEndElement(r)) {
             return null;
         }
         Iterator<Object> iterator = seq.decode(r);

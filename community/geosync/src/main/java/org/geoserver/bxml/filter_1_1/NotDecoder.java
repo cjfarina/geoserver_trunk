@@ -15,11 +15,24 @@ import org.gvsig.bxml.stream.EventType;
 import org.opengis.filter.Filter;
 import org.opengis.filter.FilterFactory2;
 
+/**
+ * The Class NotDecoder.
+ * 
+ * @author cfarina
+ */
 public class NotDecoder implements Decoder<Filter> {
 
+    /** The ff. */
     protected static FilterFactory2 ff = CommonFactoryFinder.getFilterFactory2(GeoTools
             .getDefaultHints());
 
+    /**
+     * Decode.
+     * 
+     * @param r the r
+     * @return the filter
+     * @throws Exception the exception
+     */
     @Override
     public Filter decode(BxmlStreamReader r) throws Exception {
         r.require(EventType.START_ELEMENT, Not.getNamespaceURI(), Not.getLocalPart());
@@ -35,11 +48,22 @@ public class NotDecoder implements Decoder<Filter> {
         return ff.not(negated);
     }
 
+    /**
+     * Can handle.
+     * 
+     * @param name the name
+     * @return true, if successful
+     */
     @Override
     public boolean canHandle(QName name) {
         return Not.equals(name);
     }
 
+    /**
+     * Gets the targets.
+     * 
+     * @return the targets
+     */
     @Override
     public Set<QName> getTargets() {
         return Collections.singleton(Not);

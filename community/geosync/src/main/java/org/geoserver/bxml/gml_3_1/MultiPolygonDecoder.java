@@ -15,12 +15,28 @@ import com.vividsolutions.jts.geom.GeometryFactory;
 import com.vividsolutions.jts.geom.MultiPolygon;
 import com.vividsolutions.jts.geom.Polygon;
 
+/**
+ * The Class MultiPolygonDecoder.
+ * 
+ * @author cfarina
+ */
 public class MultiPolygonDecoder extends AbstractGeometryDecoder<Geometry> {
 
+    /**
+     * Instantiates a new multi polygon decoder.
+     */
     public MultiPolygonDecoder() {
         super(GML.MultiPolygon);
     }
 
+    /**
+     * Decode internal.
+     * 
+     * @param r the r
+     * @param name the name
+     * @return the multi polygon
+     * @throws Exception the exception
+     */
     @Override
     protected MultiPolygon decodeInternal(BxmlStreamReader r, QName name) throws Exception {
         SequenceDecoder<Geometry> seq = new SequenceDecoder<Geometry>(1, Integer.MAX_VALUE);

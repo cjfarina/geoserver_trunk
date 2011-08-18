@@ -7,14 +7,32 @@ import org.geotools.filter.v1_1.OGC;
 import org.gvsig.bxml.stream.BxmlStreamReader;
 import org.gvsig.bxml.stream.EventType;
 
+/**
+ * The Class DistanceTypeDecoder.
+ * 
+ * @author cfarina
+ */
 public class DistanceTypeDecoder extends AbstractTypeDecoder<Distance> {
 
+    /** The Constant Distance. */
     public static final QName Distance = new QName(OGC.NAMESPACE, "Distance");
 
+    /**
+     * Instantiates a new distance type decoder.
+     */
     public DistanceTypeDecoder() {
         super(Distance);
     }
 
+    /**
+     * Decode internal.
+     * 
+     * @param r the r
+     * @param name the name
+     * @return the distance
+     * @throws Exception the exception
+     */
+    @SuppressWarnings("unused")
     @Override
     protected Distance decodeInternal(BxmlStreamReader r, QName name) throws Exception {
         StringBuilder sb = new StringBuilder();

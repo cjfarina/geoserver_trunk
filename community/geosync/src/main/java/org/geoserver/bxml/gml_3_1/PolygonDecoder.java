@@ -21,12 +21,28 @@ import com.vividsolutions.jts.geom.GeometryFactory;
 import com.vividsolutions.jts.geom.LinearRing;
 import com.vividsolutions.jts.geom.Polygon;
 
+/**
+ * The Class PolygonDecoder.
+ * 
+ * @author cfarina
+ */
 public class PolygonDecoder extends AbstractGeometryDecoder<Geometry> {
 
+    /**
+     * Instantiates a new polygon decoder.
+     */
     public PolygonDecoder() {
         super(Polygon);
     }
 
+    /**
+     * Decode internal.
+     * 
+     * @param r the r
+     * @param name the name
+     * @return the geometry
+     * @throws Exception the exception
+     */
     @Override
     public Geometry decodeInternal(BxmlStreamReader r, QName name) throws Exception {
         ChoiceDecoder<Object> choice = new ChoiceDecoder<Object>();
@@ -55,20 +71,40 @@ public class PolygonDecoder extends AbstractGeometryDecoder<Geometry> {
         return geometry;
     }
 
+    /**
+     * The Class PolygonRings.
+     */
     public class PolygonRings {
 
+        /** The exterior. */
         private LinearRing exterior;
 
+        /** The interior. */
         private List<LinearRing> interior;
 
+        /**
+         * Gets the exterior.
+         * 
+         * @return the exterior
+         */
         public LinearRing getExterior() {
             return exterior;
         }
 
+        /**
+         * Sets the exterior.
+         * 
+         * @param exterior the new exterior
+         */
         public void setExterior(LinearRing exterior) {
             this.exterior = exterior;
         }
 
+        /**
+         * Gets the interior.
+         * 
+         * @return the interior
+         */
         public List<LinearRing> getInterior() {
             if (interior == null) {
                 interior = new ArrayList<LinearRing>(2);
@@ -76,6 +112,11 @@ public class PolygonDecoder extends AbstractGeometryDecoder<Geometry> {
             return interior;
         }
 
+        /**
+         * Sets the interior.
+         * 
+         * @param interior the new interior
+         */
         public void setInterior(List<LinearRing> interior) {
             this.interior = interior;
         }

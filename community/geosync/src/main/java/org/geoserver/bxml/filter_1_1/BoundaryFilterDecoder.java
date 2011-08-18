@@ -17,15 +17,24 @@ import org.opengis.filter.FilterFactory2;
 import org.opengis.filter.expression.Expression;
 import org.springframework.util.Assert;
 
+/**
+ * The Class BoundaryFilterDecoder.
+ * 
+ * @author cfarina
+ */
 public class BoundaryFilterDecoder implements Decoder<Expression> {
 
+    /** The Constant LowerBoundary. */
     public static final QName LowerBoundary = new QName(OGC.NAMESPACE, "LowerBoundary");
 
+    /** The Constant UpperBoundary. */
     public static final QName UpperBoundary = new QName(OGC.NAMESPACE, "UpperBoundary");
 
+    /** The ff. */
     protected static FilterFactory2 ff = CommonFactoryFinder.getFilterFactory2(GeoTools
             .getDefaultHints());
 
+    /** The Constant names. */
     private static final Set<QName> names;
     static {
         Set<QName> n = new HashSet<QName>();
@@ -34,6 +43,13 @@ public class BoundaryFilterDecoder implements Decoder<Expression> {
         names = Collections.unmodifiableSet(n);
     }
 
+    /**
+     * Decode.
+     * 
+     * @param r the r
+     * @return the expression
+     * @throws Exception the exception
+     */
     @Override
     public Expression decode(BxmlStreamReader r) throws Exception {
         r.require(EventType.START_ELEMENT, null, null);
@@ -49,11 +65,22 @@ public class BoundaryFilterDecoder implements Decoder<Expression> {
         return expression;
     }
 
+    /**
+     * Can handle.
+     * 
+     * @param name the name
+     * @return true, if successful
+     */
     @Override
     public boolean canHandle(final QName name) {
         return names.contains(name);
     }
 
+    /**
+     * Gets the targets.
+     * 
+     * @return the targets
+     */
     @Override
     public Set<QName> getTargets() {
         return names;

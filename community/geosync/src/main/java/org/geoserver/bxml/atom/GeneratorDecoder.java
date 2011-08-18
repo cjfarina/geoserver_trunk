@@ -6,7 +6,6 @@ import static org.geoserver.gss.internal.atom.Atom.version;
 import javax.xml.namespace.QName;
 
 import org.geoserver.bxml.base.SimpleDecoder;
-import org.geoserver.bxml.base.StringDecoder;
 import org.geoserver.bxml.base.StringValueDecoder;
 import org.geoserver.gss.internal.atom.Atom;
 import org.geoserver.gss.internal.atom.GeneratorImpl;
@@ -14,12 +13,27 @@ import org.gvsig.bxml.stream.BxmlStreamReader;
 import org.gvsig.bxml.stream.EventType;
 import org.springframework.util.Assert;
 
+/**
+ * The Class GeneratorDecoder.
+ * 
+ * @author cfarina
+ */
 public class GeneratorDecoder extends SimpleDecoder<GeneratorImpl> {
 
+    /**
+     * Instantiates a new generator decoder.
+     */
     public GeneratorDecoder() {
         super(Atom.generator);
     }
 
+    /**
+     * Decode.
+     * 
+     * @param r the r
+     * @return the generator impl
+     * @throws Exception the exception
+     */
     @Override
     public GeneratorImpl decode(BxmlStreamReader r) throws Exception {
         r.require(EventType.START_ELEMENT, elemName.getNamespaceURI(), elemName.getLocalPart());

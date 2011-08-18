@@ -33,16 +33,28 @@ import com.google.common.base.Function;
 import com.google.common.base.Throwables;
 import com.google.common.collect.Iterators;
 
+/**
+ * Decodes an atom xml with.
+ * 
+ * @author cfarina
+ */
 public class FeedDecoder extends SimpleDecoder<FeedImpl> {
 
+    /** The LOGGER. */
     protected final Logger LOGGER;
 
+    /** The start position. */
     public static QName startPosition = new QName("http://www.w3.org/2005/Atom", "startPosition");
 
+    /** The max entries. */
     public static QName maxEntries = new QName("http://www.w3.org/2005/Atom", "maxEntries");
 
+    /** The entry reader function. */
     private Function<BxmlStreamReader, EntryImpl> entryReaderFunction;
 
+    /**
+     * Instantiates a new feed decoder.
+     */
     public FeedDecoder() {
         super(Atom.feed);
         LOGGER = Logging.getLogger(getClass());
@@ -62,6 +74,13 @@ public class FeedDecoder extends SimpleDecoder<FeedImpl> {
         };
     }
 
+    /**
+     * Decode.
+     * 
+     * @param r the r
+     * @return the feed impl
+     * @throws Exception the exception
+     */
     @Override
     public FeedImpl decode(BxmlStreamReader r) throws Exception {
         // r.nextTag();

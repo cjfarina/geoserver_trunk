@@ -16,15 +16,31 @@ import org.gvsig.bxml.stream.BxmlStreamReader;
 import org.gvsig.bxml.stream.EventType;
 import org.springframework.util.Assert;
 
+/**
+ * The Class DeleteElementTypeDecoder.
+ * 
+ * @author cfarina
+ */
 public class DeleteElementTypeDecoder extends SimpleDecoder<EObject> {
 
+    /** The factory. */
     private final WfsFactory factory;
 
+    /**
+     * Instantiates a new delete element type decoder.
+     */
     public DeleteElementTypeDecoder() {
         super(DELETE);
         factory = WfsFactoryImpl.eINSTANCE;
     }
 
+    /**
+     * Decode.
+     * 
+     * @param r the r
+     * @return the e object
+     * @throws Exception the exception
+     */
     @Override
     public EObject decode(BxmlStreamReader r) throws Exception {
         final QName elementName = r.getElementName();

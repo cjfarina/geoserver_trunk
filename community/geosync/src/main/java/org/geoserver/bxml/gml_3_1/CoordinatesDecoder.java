@@ -18,8 +18,20 @@ import com.vividsolutions.jts.geom.Coordinate;
 import com.vividsolutions.jts.geom.CoordinateSequence;
 import com.vividsolutions.jts.geom.impl.PackedCoordinateSequence;
 
+/**
+ * The Class CoordinatesDecoder.
+ * 
+ * @author cfarina
+ */
 public class CoordinatesDecoder implements Decoder<CoordinateSequence> {
 
+    /**
+     * Decode.
+     * 
+     * @param r the r
+     * @return the coordinate sequence
+     * @throws Exception the exception
+     */
     @Override
     public CoordinateSequence decode(BxmlStreamReader r) throws Exception {
         r.require(EventType.START_ELEMENT, coordinates.getNamespaceURI(),
@@ -38,6 +50,15 @@ public class CoordinatesDecoder implements Decoder<CoordinateSequence> {
         return new PackedCoordinateSequence.Double(coordinates);
     }
 
+    /**
+     * Parses the.
+     * 
+     * @param string the string
+     * @param decimal the decimal
+     * @param cs the cs
+     * @param ts the ts
+     * @return the coordinate[]
+     */
     private Coordinate[] parse(String string, String decimal, char cs, char ts) {
         String trim = string.trim();
         final int len = trim.length();
@@ -81,6 +102,13 @@ public class CoordinatesDecoder implements Decoder<CoordinateSequence> {
         return coordinates.toArray(new Coordinate[coordinates.size()]);
     }
 
+    /**
+     * Builds the coordinate.
+     * 
+     * @param strings the strings
+     * @param decimal the decimal
+     * @return the coordinate
+     */
     private Coordinate buildCoordinate(List<String> strings, String decimal) {
         Coordinate coordinate = new Coordinate();
         coordinate.x = Double.parseDouble(strings.get(0));
@@ -91,11 +119,22 @@ public class CoordinatesDecoder implements Decoder<CoordinateSequence> {
         return coordinate;
     }
 
+    /**
+     * Can handle.
+     * 
+     * @param name the name
+     * @return true, if successful
+     */
     @Override
     public boolean canHandle(QName name) {
         return coordinates.equals(name);
     }
 
+    /**
+     * Gets the targets.
+     * 
+     * @return the targets
+     */
     @Override
     public Set<QName> getTargets() {
         return Collections.singleton(coordinates);

@@ -15,11 +15,24 @@ import org.gvsig.bxml.stream.EventType;
 import org.opengis.filter.FilterFactory2;
 import org.opengis.filter.expression.Expression;
 
+/**
+ * The Class PropertyNameExpressionDecoder.
+ * 
+ * @author cfarina
+ */
 public class PropertyNameExpressionDecoder implements Decoder<Expression> {
 
+    /** The ff. */
     protected static FilterFactory2 ff = CommonFactoryFinder.getFilterFactory2(GeoTools
             .getDefaultHints());
 
+    /**
+     * Decode.
+     * 
+     * @param r the r
+     * @return the expression
+     * @throws Exception the exception
+     */
     @Override
     public Expression decode(final BxmlStreamReader r) throws Exception {
         r.require(EventType.START_ELEMENT, PropertyName.getNamespaceURI(),
@@ -37,11 +50,22 @@ public class PropertyNameExpressionDecoder implements Decoder<Expression> {
         return ff.property(sb.toString());
     }
 
+    /**
+     * Can handle.
+     * 
+     * @param name the name
+     * @return true, if successful
+     */
     @Override
     public boolean canHandle(QName name) {
         return PropertyName.equals(name);
     }
 
+    /**
+     * Gets the targets.
+     * 
+     * @return the targets
+     */
     @Override
     public Set<QName> getTargets() {
         return Collections.singleton(PropertyName);

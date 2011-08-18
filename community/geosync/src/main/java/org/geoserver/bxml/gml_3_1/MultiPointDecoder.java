@@ -15,12 +15,28 @@ import com.vividsolutions.jts.geom.GeometryFactory;
 import com.vividsolutions.jts.geom.MultiPoint;
 import com.vividsolutions.jts.geom.Point;
 
+/**
+ * The Class MultiPointDecoder.
+ * 
+ * @author cfarina
+ */
 public class MultiPointDecoder extends AbstractGeometryDecoder<Geometry> {
 
+    /**
+     * Instantiates a new multi point decoder.
+     */
     public MultiPointDecoder() {
         super(GML.MultiPoint);
     }
 
+    /**
+     * Decode internal.
+     * 
+     * @param r the r
+     * @param name the name
+     * @return the multi point
+     * @throws Exception the exception
+     */
     @Override
     protected MultiPoint decodeInternal(BxmlStreamReader r, QName name) throws Exception {
         SequenceDecoder<Geometry> seq = new SequenceDecoder<Geometry>(1, Integer.MAX_VALUE);

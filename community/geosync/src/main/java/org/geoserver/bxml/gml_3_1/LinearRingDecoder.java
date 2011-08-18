@@ -12,10 +12,19 @@ import com.vividsolutions.jts.geom.Geometry;
 import com.vividsolutions.jts.geom.GeometryFactory;
 import com.vividsolutions.jts.geom.LinearRing;
 
+/**
+ * The Class LinearRingDecoder.
+ * 
+ * @author cfarina
+ */
 public class LinearRingDecoder extends AbstractGeometryDecoder<Geometry> {
 
+    /** The choice. */
     private ChoiceDecoder<CoordinateSequence> choice;
 
+    /**
+     * Instantiates a new linear ring decoder.
+     */
     public LinearRingDecoder() {
         super(LinearRing);
         choice = new ChoiceDecoder<CoordinateSequence>();
@@ -25,6 +34,14 @@ public class LinearRingDecoder extends AbstractGeometryDecoder<Geometry> {
         choice.addOption(new CoordDecoder());
     }
 
+    /**
+     * Decode internal.
+     * 
+     * @param r the r
+     * @param name the name
+     * @return the geometry
+     * @throws Exception the exception
+     */
     @Override
     public Geometry decodeInternal(final BxmlStreamReader r, final QName name) throws Exception {
         r.nextTag();

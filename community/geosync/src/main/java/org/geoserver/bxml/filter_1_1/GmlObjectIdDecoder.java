@@ -16,14 +16,30 @@ import org.gvsig.bxml.stream.EventType;
 import org.opengis.filter.FilterFactory2;
 import org.opengis.filter.identity.GmlObjectId;
 
+/**
+ * The Class GmlObjectIdDecoder.
+ * 
+ * @author cfarina
+ */
 public class GmlObjectIdDecoder implements Decoder<GmlObjectId> {
 
+    /** The ff. */
     protected static FilterFactory2 ff = CommonFactoryFinder.getFilterFactory2(GeoTools
             .getDefaultHints());
 
+    /**
+     * Instantiates a new gml object id decoder.
+     */
     public GmlObjectIdDecoder() {
     }
 
+    /**
+     * Decode.
+     * 
+     * @param r the r
+     * @return the gml object id
+     * @throws Exception the exception
+     */
     @Override
     public GmlObjectId decode(BxmlStreamReader r) throws Exception {
         r.require(EventType.START_ELEMENT, GmlObjectId.getNamespaceURI(),
@@ -38,11 +54,22 @@ public class GmlObjectIdDecoder implements Decoder<GmlObjectId> {
         return gmlId;
     }
 
+    /**
+     * Can handle.
+     * 
+     * @param name the name
+     * @return true, if successful
+     */
     @Override
     public boolean canHandle(QName name) {
         return GmlObjectId.equals(name);
     }
 
+    /**
+     * Gets the targets.
+     * 
+     * @return the targets
+     */
     @Override
     public Set<QName> getTargets() {
         return Collections.singleton(GmlObjectId);

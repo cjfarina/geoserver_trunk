@@ -11,10 +11,19 @@ import org.gvsig.bxml.stream.EventType;
 import org.opengis.filter.expression.Expression;
 import org.springframework.util.Assert;
 
+/**
+ * The Class ExpressionDecoder.
+ * 
+ * @author cfarina
+ */
 public class ExpressionDecoder implements Decoder<Expression> {
 
+    /** The chain. */
     private Decoder<Expression> chain;
 
+    /**
+     * Instantiates a new expression decoder.
+     */
     @SuppressWarnings("unchecked")
     public ExpressionDecoder() {
         this.chain = new ChoiceDecoder<Expression>(new ArithmeticOperatorDecoder(),
@@ -22,6 +31,13 @@ public class ExpressionDecoder implements Decoder<Expression> {
                 new PropertyNameExpressionDecoder());
     }
 
+    /**
+     * Decode.
+     * 
+     * @param r the r
+     * @return the expression
+     * @throws Exception the exception
+     */
     @Override
     public Expression decode(final BxmlStreamReader r) throws Exception {
         r.require(EventType.START_ELEMENT, null, null);
@@ -33,11 +49,22 @@ public class ExpressionDecoder implements Decoder<Expression> {
         return expression;
     }
 
+    /**
+     * Can handle.
+     * 
+     * @param name the name
+     * @return true, if successful
+     */
     @Override
     public boolean canHandle(QName name) {
         return chain.canHandle(name);
     }
 
+    /**
+     * Gets the targets.
+     * 
+     * @return the targets
+     */
     @Override
     public Set<QName> getTargets() {
         return chain.getTargets();

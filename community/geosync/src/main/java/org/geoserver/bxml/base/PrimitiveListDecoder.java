@@ -10,23 +10,46 @@ import org.geoserver.bxml.Decoder;
 import org.gvsig.bxml.stream.BxmlStreamReader;
 import org.gvsig.bxml.stream.EventType;
 
+/**
+ * The Class PrimitiveListDecoder.
+ * 
+ * @param <T> the generic type
+ * 
+ * @author cfarina
+ */
 public class PrimitiveListDecoder<T> implements Decoder<T[]> {
 
+    /** The name. */
     private final QName name;
+
+    /** The type. */
     private final Class<T> type;
 
+    /**
+     * Instantiates a new primitive list decoder.
+     * 
+     * @param name the name
+     * @param type the type
+     */
     public PrimitiveListDecoder(final QName name, Class<T> type) {
         this.name = name;
         this.type = type;
     }
 
+    /**
+     * Decode.
+     * 
+     * @param r the r
+     * @return the t[]
+     * @throws Exception the exception
+     */
     @Override
     public T[] decode(BxmlStreamReader r) throws Exception {
         r.require(EventType.START_ELEMENT, null, name.getLocalPart());
         EventType eventType = r.next();
 
         T[] values = null;
-        if(eventType.isValue()){
+        if (eventType.isValue()) {
             values = new PrimitiveListValueDecoder<T>(type).decode(r);
         }
 
@@ -35,11 +58,22 @@ public class PrimitiveListDecoder<T> implements Decoder<T[]> {
         return values;
     }
 
+    /**
+     * Can handle.
+     * 
+     * @param name the name
+     * @return true, if successful
+     */
     @Override
     public boolean canHandle(QName name) {
         return this.name.equals(name);
     }
 
+    /**
+     * Gets the targets.
+     * 
+     * @return the targets
+     */
     @Override
     public Set<QName> getTargets() {
         return Collections.singleton(name);

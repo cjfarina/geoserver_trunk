@@ -17,12 +17,27 @@ import org.gvsig.bxml.stream.BxmlStreamReader;
 import org.gvsig.bxml.stream.EventType;
 import org.springframework.util.Assert;
 
+/**
+ * The Class LinkDecoder.
+ * 
+ * @author cfarina
+ */
 public class LinkDecoder extends SimpleDecoder<LinkImpl> {
 
+    /**
+     * Instantiates a new link decoder.
+     */
     public LinkDecoder() {
         super(Atom.link);
     }
 
+    /**
+     * Decode.
+     * 
+     * @param r the r
+     * @return the link impl
+     * @throws Exception the exception
+     */
     @Override
     public LinkImpl decode(BxmlStreamReader r) throws Exception {
         r.require(EventType.START_ELEMENT, elemName.getNamespaceURI(), elemName.getLocalPart());

@@ -11,10 +11,19 @@ import org.gvsig.bxml.stream.EventType;
 
 import com.vividsolutions.jts.geom.Geometry;
 
+/**
+ * The Class GeometryDecoder.
+ * 
+ * @author cfarina
+ */
 public class GeometryDecoder implements Decoder<Geometry> {
 
+    /** The choice. */
     private ChoiceDecoder<Geometry> choice;
 
+    /**
+     * Instantiates a new geometry decoder.
+     */
     public GeometryDecoder() {
         choice = new ChoiceDecoder<Geometry>();
         choice.addOption(new PointDecoder());
@@ -26,6 +35,13 @@ public class GeometryDecoder implements Decoder<Geometry> {
         choice.addOption(new LinearRingDecoder());
     }
 
+    /**
+     * Decode.
+     * 
+     * @param r the r
+     * @return the geometry
+     * @throws Exception the exception
+     */
     @Override
     public Geometry decode(BxmlStreamReader r) throws Exception {
         r.require(EventType.START_ELEMENT, null, null);
@@ -36,11 +52,22 @@ public class GeometryDecoder implements Decoder<Geometry> {
         return geometry;
     }
 
+    /**
+     * Can handle.
+     * 
+     * @param name the name
+     * @return true, if successful
+     */
     @Override
     public boolean canHandle(final QName name) {
         return choice.canHandle(name);
     }
 
+    /**
+     * Gets the targets.
+     * 
+     * @return the targets
+     */
     @Override
     public Set<QName> getTargets() {
         return choice.getTargets();

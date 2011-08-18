@@ -17,15 +17,32 @@ import org.opengis.filter.expression.Expression;
 
 import com.vividsolutions.jts.geom.Geometry;
 
+/**
+ * The Class DistanceBufferFilterDecoder.
+ * 
+ * @author cfarina
+ */
 public class DistanceBufferFilterDecoder extends AbstractTypeDecoder<Filter> {
 
+    /** The ff. */
     protected static FilterFactory2 ff = CommonFactoryFinder.getFilterFactory2(GeoTools
             .getDefaultHints());
 
+    /**
+     * Instantiates a new distance buffer filter decoder.
+     */
     public DistanceBufferFilterDecoder() {
         super(DWithin, Beyond);
     }
 
+    /**
+     * Decode internal.
+     * 
+     * @param r the r
+     * @param name the name
+     * @return the filter
+     * @throws Exception the exception
+     */
     @Override
     protected Filter decodeInternal(final BxmlStreamReader r, final QName name) throws Exception {
         r.nextTag();

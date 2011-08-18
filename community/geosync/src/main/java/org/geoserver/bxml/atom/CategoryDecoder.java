@@ -9,12 +9,27 @@ import org.gvsig.bxml.stream.BxmlStreamReader;
 import org.gvsig.bxml.stream.EventType;
 import org.springframework.util.Assert;
 
+/**
+ * The Class CategoryDecoder.
+ * 
+ * @author cfarina
+ */
 public class CategoryDecoder extends SimpleDecoder<CategoryImpl> {
 
+    /**
+     * Instantiates a new category decoder.
+     */
     public CategoryDecoder() {
         super(Atom.category);
     }
 
+    /**
+     * Decode.
+     * 
+     * @param r the r
+     * @return the category impl
+     * @throws Exception the exception
+     */
     @Override
     public CategoryImpl decode(BxmlStreamReader r) throws Exception {
         r.require(EventType.START_ELEMENT, elemName.getNamespaceURI(), elemName.getLocalPart());
@@ -26,7 +41,7 @@ public class CategoryDecoder extends SimpleDecoder<CategoryImpl> {
         final String term = r.getAttributeValue(null, Atom.term.getLocalPart());
 
         r.nextTag();
-        
+
         category.setScheme(scheme);
         category.setTerm(term);
 

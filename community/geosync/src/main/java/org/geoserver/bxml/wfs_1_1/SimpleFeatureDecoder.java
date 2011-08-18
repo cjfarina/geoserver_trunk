@@ -21,17 +21,37 @@ import org.opengis.feature.type.FeatureType;
 
 import com.google.common.collect.Iterators;
 
+/**
+ * The Class SimpleFeatureDecoder.
+ * 
+ * @author cfarina
+ */
 public class SimpleFeatureDecoder implements Decoder<SimpleFeature> {
 
+    /** The namespace. */
     private final String namespace;
 
+    /** The catalog. */
     private final Catalog catalog;
 
+    /**
+     * Instantiates a new simple feature decoder.
+     * 
+     * @param catalog the catalog
+     * @param namespaceURI the namespace uri
+     */
     public SimpleFeatureDecoder(Catalog catalog, String namespaceURI) {
         this.namespace = namespaceURI;
         this.catalog = catalog;
     }
 
+    /**
+     * Decode.
+     * 
+     * @param r the r
+     * @return the simple feature
+     * @throws Exception the exception
+     */
     @Override
     public SimpleFeature decode(BxmlStreamReader r) throws Exception {
         r.require(EventType.START_ELEMENT, null, null);
@@ -63,11 +83,22 @@ public class SimpleFeatureDecoder implements Decoder<SimpleFeature> {
         return simpleFeature;
     }
 
+    /**
+     * Can handle.
+     * 
+     * @param name the name
+     * @return true, if successful
+     */
     @Override
     public boolean canHandle(QName name) {
         return namespace.equals(name.getNamespaceURI());
     }
 
+    /**
+     * Gets the targets.
+     * 
+     * @return the targets
+     */
     @Override
     public Set<QName> getTargets() {
         return new HashSet<QName>();

@@ -5,56 +5,88 @@ import java.io.IOException;
 import org.gvsig.bxml.stream.BxmlStreamReader;
 import org.gvsig.bxml.stream.EventType;
 
+// TODO: Auto-generated Javadoc
+/**
+ * The Class PrimitiveReader.
+ * 
+ * @param <T> the generic type
+ * 
+ * @author cfarina
+ */
 public class PrimitiveReader<T> {
 
-
+    /**
+     * Read.
+     * 
+     * @param r the r
+     * @param toType the to type
+     * @param type the type
+     * @return the t
+     * @throws Exception the exception
+     */
     @SuppressWarnings("rawtypes")
     public T read(BxmlStreamReader r, Class toType, EventType type) throws Exception {
         Object value = readValue(r, type);
-        if(value == null){
+        if (value == null) {
             return null;
         }
         return convertToType(value, toType);
     }
 
+    /**
+     * Convert to type.
+     * 
+     * @param value the value
+     * @param type the type
+     * @return the t
+     */
     @SuppressWarnings({ "unchecked", "rawtypes" })
     public T convertToType(Object value, Class type) {
-        
-        if(type.equals(Object.class)){
-            return (T)value;
+
+        if (type.equals(Object.class)) {
+            return (T) value;
         }
-        
-        if(type.equals(String.class)){
-            return (T)value.toString();
+
+        if (type.equals(String.class)) {
+            return (T) value.toString();
         }
-        
-        if(type.equals(Boolean.class)){
-            return (T)new Boolean(value.toString());
+
+        if (type.equals(Boolean.class)) {
+            return (T) new Boolean(value.toString());
         }
-        
-        if(type.equals(Double.class)){
-            return (T)new Double(value.toString());
+
+        if (type.equals(Double.class)) {
+            return (T) new Double(value.toString());
         }
-        
-        if(type.equals(Float.class)){
-            return (T)new Float(value.toString());
+
+        if (type.equals(Float.class)) {
+            return (T) new Float(value.toString());
         }
-        
-        if(type.equals(Byte.class)){
-            return (T)new Byte(value.toString());
+
+        if (type.equals(Byte.class)) {
+            return (T) new Byte(value.toString());
         }
-        
-        if(type.equals(Integer.class)){
-            return (T)new Integer(value.toString());
+
+        if (type.equals(Integer.class)) {
+            return (T) new Integer(value.toString());
         }
-        
-        if(type.equals(Long.class)){
-            return (T)new Long(value.toString());
+
+        if (type.equals(Long.class)) {
+            return (T) new Long(value.toString());
         }
-        
+
         return null;
     }
 
+    /**
+     * Read value.
+     * 
+     * @param r the r
+     * @param type the type
+     * @return the object
+     * @throws IOException Signals that an I/O exception has occurred.
+     * @throws Exception the exception
+     */
     private Object readValue(BxmlStreamReader r, EventType type) throws IOException, Exception {
         Object value = null;
         switch (type) {

@@ -17,15 +17,32 @@ import org.opengis.filter.expression.Expression;
 
 import com.google.common.collect.Iterators;
 
+/**
+ * The Class ArithmeticOperatorDecoder.
+ * 
+ * @author cfarina
+ */
 public class ArithmeticOperatorDecoder extends AbstractTypeDecoder<Expression> {
 
+    /** The ff. */
     protected static FilterFactory2 ff = CommonFactoryFinder.getFilterFactory2(GeoTools
             .getDefaultHints());
 
+    /**
+     * Instantiates a new arithmetic operator decoder.
+     */
     public ArithmeticOperatorDecoder() {
         super(Add, Sub, Mul, Div);
     }
 
+    /**
+     * Decode internal.
+     * 
+     * @param r the r
+     * @param name the name
+     * @return the expression
+     * @throws Exception the exception
+     */
     @Override
     protected Expression decodeInternal(BxmlStreamReader r, QName name) throws Exception {
 

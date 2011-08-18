@@ -28,11 +28,18 @@ import org.springframework.util.Assert;
 
 import com.google.common.collect.Iterators;
 
+/**
+ * The Class BinaryComparisonOperatorDecoder.
+ * 
+ * @author cfarina
+ */
 public class BinaryComparisonOperatorDecoder implements Decoder<Filter> {
 
+    /** The ff. */
     protected static FilterFactory2 ff = CommonFactoryFinder.getFilterFactory2(GeoTools
             .getDefaultHints());
 
+    /** The Constant names. */
     private static final Set<QName> names;
     static {
         Set<QName> n = new HashSet<QName>();
@@ -45,13 +52,24 @@ public class BinaryComparisonOperatorDecoder implements Decoder<Filter> {
         names = Collections.unmodifiableSet(n);
     }
 
+    /** The seq. */
     private SequenceDecoder<Expression> seq;
 
+    /**
+     * Instantiates a new binary comparison operator decoder.
+     */
     public BinaryComparisonOperatorDecoder() {
         seq = new SequenceDecoder<Expression>(2, 2);
         seq.add(new ExpressionDecoder(), 1, 1);
     }
 
+    /**
+     * Decode.
+     * 
+     * @param r the r
+     * @return the filter
+     * @throws Exception the exception
+     */
     @Override
     public Filter decode(final BxmlStreamReader r) throws Exception {
         r.require(EventType.START_ELEMENT, null, null);
@@ -97,11 +115,22 @@ public class BinaryComparisonOperatorDecoder implements Decoder<Filter> {
         throw new IllegalArgumentException(this.getClass().getName() + " can not decode " + name);
     }
 
+    /**
+     * Can handle.
+     * 
+     * @param name the name
+     * @return true, if successful
+     */
     @Override
     public boolean canHandle(final QName name) {
         return names.contains(name);
     }
 
+    /**
+     * Gets the targets.
+     * 
+     * @return the targets
+     */
     @Override
     public Set<QName> getTargets() {
         return names;

@@ -19,18 +19,33 @@ import org.gvsig.bxml.stream.EventType;
 import org.opengis.feature.simple.SimpleFeature;
 import org.springframework.util.Assert;
 
+/**
+ * The Class InsertElementTypeDecoder.
+ * 
+ * @author cfarina
+ */
 public class InsertElementTypeDecoder extends SimpleDecoder<EObject> {
 
+    /** The factory. */
     private final WfsFactory factory;
 
+    /** The catalog. */
     private final Catalog catalog;
 
+    /**
+     * Instantiates a new insert element type decoder.
+     */
     public InsertElementTypeDecoder() {
         super(INSERT);
         factory = WfsFactoryImpl.eINSTANCE;
         this.catalog = (Catalog) GeoServerExtensions.bean("catalog");
     }
 
+    /**
+     * Instantiates a new insert element type decoder.
+     * 
+     * @param catalog the catalog
+     */
     public InsertElementTypeDecoder(Catalog catalog) {
         super(INSERT);
         Assert.notNull(catalog);
@@ -38,6 +53,13 @@ public class InsertElementTypeDecoder extends SimpleDecoder<EObject> {
         this.catalog = catalog;
     }
 
+    /**
+     * Decode.
+     * 
+     * @param r the r
+     * @return the e object
+     * @throws Exception the exception
+     */
     @Override
     public EObject decode(BxmlStreamReader r) throws Exception {
         final QName elementName = r.getElementName();

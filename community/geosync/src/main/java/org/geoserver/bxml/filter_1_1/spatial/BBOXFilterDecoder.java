@@ -19,15 +19,32 @@ import org.opengis.filter.Filter;
 import org.opengis.filter.FilterFactory2;
 import org.opengis.referencing.FactoryException;
 
+/**
+ * The Class BBOXFilterDecoder.
+ * 
+ * @author cfarina
+ */
 public class BBOXFilterDecoder extends AbstractTypeDecoder<Filter> {
 
+    /** The ff. */
     protected static FilterFactory2 ff = CommonFactoryFinder.getFilterFactory2(GeoTools
             .getDefaultHints());
 
+    /**
+     * Instantiates a new bBOX filter decoder.
+     */
     public BBOXFilterDecoder() {
         super(BBOX);
     }
 
+    /**
+     * Decode internal.
+     * 
+     * @param r the r
+     * @param name the name
+     * @return the filter
+     * @throws Exception the exception
+     */
     @Override
     protected Filter decodeInternal(BxmlStreamReader r, QName name) throws Exception {
         r.nextTag();
