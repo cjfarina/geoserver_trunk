@@ -73,12 +73,10 @@ public abstract class AbstractEncoder<T> implements Encoder<T> {
      * @param element
      * @param encodeIfNull
      * @param value
-     * @param stringTable
-     *            if {@code true} try using a string table reference to encode the value (use only
-     *            for highly repetitive values)
-     * @param stringTableAtts
-     *            if {@code true} try using a string table reference to encode the value (use only
-     *            for highly repetitive attributes)
+     * @param stringTable if {@code true} try using a string table reference to encode the value
+     *        (use only for highly repetitive values)
+     * @param stringTableAtts if {@code true} try using a string table reference to encode the value
+     *        (use only for highly repetitive attributes)
      * @param attributes
      */
     protected void element(BxmlStreamWriter w, QName element, boolean encodeIfNull, String value,
