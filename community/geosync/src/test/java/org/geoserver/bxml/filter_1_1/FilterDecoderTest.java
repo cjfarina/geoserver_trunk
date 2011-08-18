@@ -51,7 +51,6 @@ public class FilterDecoderTest extends BxmlTestSupport {
     }
 
     public void testFilterDecoder2() throws Exception {
-
         Object expected = new Parser(new OGCConfiguration()).parse(getClass().getResourceAsStream(
                 "filter.xml"));
 
@@ -59,7 +58,9 @@ public class FilterDecoderTest extends BxmlTestSupport {
         reader.nextTag();
 
         Filter f = decoder.decode(reader);
+        System.out.println("isBinary=" + isBinary());
         System.out.println(f.toString());
+        System.out.println(expected.toString());
         assertNotNull(f);
         assertEquals(expected.toString(), f.toString());
     }

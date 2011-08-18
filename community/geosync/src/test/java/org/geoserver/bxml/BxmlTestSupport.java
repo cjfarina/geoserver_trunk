@@ -143,5 +143,10 @@ public abstract class BxmlTestSupport extends GSSFunctionalTestSupport {
             testPoint(ds[i], (Point) multiPoint.getGeometryN(i));
         }
     }
+    
+
+    public boolean isBinary() {
+        return isBinary;
+    }
 
 }
