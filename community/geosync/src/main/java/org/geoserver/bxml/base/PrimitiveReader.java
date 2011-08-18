@@ -125,6 +125,9 @@ public class PrimitiveReader<T> {
         case VALUE_STRING:
             value = new StringValueDecoder().decode(r);
             break;
+        case VALUE_CDATA:
+            value = new StringValueDecoder().decode(r);
+            break;
         }
         return value;
     }
