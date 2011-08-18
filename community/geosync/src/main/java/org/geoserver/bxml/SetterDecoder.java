@@ -12,7 +12,8 @@ import org.gvsig.bxml.stream.BxmlStreamReader;
 import org.springframework.util.Assert;
 
 /**
- * The Class SetterDecoder.
+ * The Class SetterDecoder execute the decoder given in <code>propertyDecoder</code> and sets the result
+ * in property <code>propertyName</code> of <code>target</code>.
  * 
  * @param <T> the generic type
  * 

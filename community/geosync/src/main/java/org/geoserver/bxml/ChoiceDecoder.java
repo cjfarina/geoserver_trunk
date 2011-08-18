@@ -13,7 +13,7 @@ import org.gvsig.bxml.stream.EventType;
 import org.springframework.util.Assert;
 
 /**
- * The Class ChoiceDecoder.
+ * Choice the appropriate decoder from options for a given element to decode.
  * 
  * @param <T> the generic type
  * 

@@ -6,16 +6,17 @@ import javax.xml.namespace.QName;
 
 import org.gvsig.bxml.stream.BxmlStreamReader;
 
-// TODO: Auto-generated Javadoc
 /**
- * The Interface Decoder.
+ * This interface has to been implemented by any element decoder.
  * 
  * @param <T> the generic type
+ * 
+ * @author groldan
  */
 public interface Decoder<T> {
 
     /**
-     * Decode.
+     * Decode the actual element pointed by r.
      * 
      * @param r the r
      * @return the t
@@ -24,15 +25,15 @@ public interface Decoder<T> {
     public abstract T decode(BxmlStreamReader r) throws Exception;
 
     /**
-     * Can handle.
+     * Return true if can decode an element with name.
      * 
-     * @param name the name
-     * @return true, if successful
+     * @param name the name of element
+     * @return true, if can decode an element with name, else, return false
      */
     public abstract boolean canHandle(QName name);
 
     /**
-     * Gets the targets.
+     * Return the sets of names that can be decoded by the decoder.
      * 
      * @return the targets
      */

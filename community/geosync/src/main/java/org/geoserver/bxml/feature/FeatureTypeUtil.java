@@ -41,7 +41,7 @@ public class FeatureTypeUtil {
     }
 
     /**
-     * Builds the q name.
+     * Builds the feature name.
      * 
      * @param nameString the name string
      * @param namespaceURI the namespace uri

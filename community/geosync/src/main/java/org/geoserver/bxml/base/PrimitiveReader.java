@@ -5,7 +5,6 @@ import java.io.IOException;
 import org.gvsig.bxml.stream.BxmlStreamReader;
 import org.gvsig.bxml.stream.EventType;
 
-// TODO: Auto-generated Javadoc
 /**
  * The Class PrimitiveReader.
  * 
@@ -34,7 +33,7 @@ public class PrimitiveReader<T> {
     }
 
     /**
-     * Convert to type.
+     * Convert the given <code>value</code> to type given in <code>type</code> parameter.
      * 
      * @param value the value
      * @param type the type
@@ -43,6 +42,10 @@ public class PrimitiveReader<T> {
     @SuppressWarnings({ "unchecked", "rawtypes" })
     public T convertToType(Object value, Class type) {
 
+        if(value == null){
+            return null;
+        }
+        
         if (type.equals(Object.class)) {
             return (T) value;
         }
@@ -79,7 +82,7 @@ public class PrimitiveReader<T> {
     }
 
     /**
-     * Read value.
+     * Return a value from r given an EventType.Value_...
      * 
      * @param r the r
      * @param type the type

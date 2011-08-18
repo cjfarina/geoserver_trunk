@@ -10,7 +10,7 @@ import org.gvsig.bxml.stream.BxmlStreamReader;
 import org.gvsig.bxml.stream.EventType;
 
 /**
- * The Class SimpleDecoder.
+ * This class is intend to be extended by one simple element decoders.
  * 
  * @param <T> the generic type
  * 

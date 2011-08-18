@@ -11,7 +11,8 @@ import org.gvsig.bxml.stream.EventType;
 import org.springframework.util.Assert;
 
 /**
- * The Class PrimitiveListValueDecoder.
+ * This class parses an array of primitive values when an EventType.VALUE_ occurs, and return this
+ * as an array of <T>.
  * 
  * @param <T> the generic type
  * 

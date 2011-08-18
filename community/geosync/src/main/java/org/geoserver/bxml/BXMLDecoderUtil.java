@@ -11,7 +11,7 @@ import org.gvsig.bxml.stream.BxmlStreamReader;
 import org.gvsig.bxml.stream.EventType;
 
 /**
- * The Class BXMLDecoderUtil.
+ * The Class BXMLDecoderUtil has some static helpers methods.
  * 
  * @author cfarina
  */

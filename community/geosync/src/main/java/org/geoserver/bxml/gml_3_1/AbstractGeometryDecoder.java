@@ -16,7 +16,9 @@ import org.opengis.referencing.crs.CoordinateReferenceSystem;
 import org.springframework.util.Assert;
 
 /**
- * The Class AbstractGeometryDecoder.
+ * The Class AbstractGeometryDecoder is intend to be extended by Geometry decoders.
+ * By default, this class parses de crs and dimension attribute of the
+ * element to parse.
  * 
  * @param <T> the generic type
  * 

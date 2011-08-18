@@ -11,7 +11,8 @@ import org.gvsig.bxml.stream.BxmlStreamReader;
 import org.gvsig.bxml.stream.EventType;
 
 /**
- * The Class PrimitiveDecoder.
+ * This class parses an element with a primitive value and return this value as an in an instance
+ * of <T>.
  * 
  * @param <T> the generic type
  * 
