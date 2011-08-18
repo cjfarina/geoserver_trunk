@@ -1,9 +1,13 @@
 <?xml version="1.0" encoding="ISO-8859-1"?>
 <Insert xmlns="http://www.opengis.net/wfs" xmlns:fes="http://www.opengis.net/ogc"
-	xmlns:gml="http://www.opengis.net/gml" xmlns:f="http://opengeo.org/osm">
-	<f:planet_osm_point gml:id="planet_osm_point.1">
-		<f:osm_id>158607824</f:osm_id>
-		<f:ele>166</f:ele>
+	xmlns:gml="http://www.opengis.net/gml" 
+    xmlns:f="http://opengeo.org/osm"
+    xmlns:f2="http://opengeo.org/osm" 
+    xmlns:f3="http://opengeo.org/osm" 
+    xmlns:f4="http://opengeo.org/osm">
+	<f2:planet_osm_point gml:id="planet_osm_point.1">
+		<f3:osm_id>158607824</f3:osm_id>
+		<f4:ele>166</f4:ele>
 		<f:name>New Center Historical Place</f:name>
 		<f:power_source></f:power_source>
 		<f:place>hamlet</f:place>
@@ -13,18 +17,18 @@
 				</gml:pos>
 			</gml:Point>
 		</f:way>
-	</f:planet_osm_point>
+	</f2:planet_osm_point>
 	<f:planet_osm_point gml:id="planet_osm_point.2">
-		<f:osm_id>98765</f:osm_id>
+		<f2:osm_id>98765</f2:osm_id>
 		<f:ele>255</f:ele>
 		<f:name>Another name</f:name>
-		<f:power_source>abc</f:power_source>
+		<f3:power_source>abc</f3:power_source>
 		<f:place>burgos</f:place>
-		<f:way>
+		<f4:way>
 			<gml:Point>
 				<gml:pos gml:srsName="urn:x-ogc:def:crs:EPSG:900913">-255.33 365.12
 				</gml:pos>
 			</gml:Point>
-		</f:way>
+		</f4:way>
 	</f:planet_osm_point>
 </Insert>
