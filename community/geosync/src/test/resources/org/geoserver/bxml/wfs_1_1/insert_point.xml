@@ -18,7 +18,7 @@
 			</gml:Point>
 		</f:way>
 	</f2:planet_osm_point>
-	<f:planet_osm_point gml:id="planet_osm_point.2">
+	<planet_osm_point gml:id="planet_osm_point.2" xmlns="http://opengeo.org/osm">
 		<f2:osm_id>98765</f2:osm_id>
 		<f:ele>255</f:ele>
 		<f:name>Another name</f:name>
@@ -30,5 +30,5 @@
 				</gml:pos>
 			</gml:Point>
 		</f4:way>
-	</f:planet_osm_point>
+	</planet_osm_point>
 </Insert>
