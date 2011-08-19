@@ -22,8 +22,7 @@ public class ArrayWrapperFactory {
         if(type.equals(double[].class)){
             return new DoubleArrayWrapper();
         }
-        return null;
-
+        throw new IllegalArgumentException("Bad primitive array class: " + type);
     }
     
 }

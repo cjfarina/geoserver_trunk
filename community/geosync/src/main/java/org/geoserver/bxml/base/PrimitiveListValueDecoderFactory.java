@@ -18,9 +18,8 @@ public class PrimitiveListValueDecoderFactory {
             return new PrimitiveListValueDecoder<int[]>(int[].class);
         case VALUE_LONG:
             return new PrimitiveListValueDecoder<long[]>(long[].class);
-        }
-
-        return null;
-
+        default:
+            throw new IllegalArgumentException("Bad primitive array class: " + type);
+        } 
     }
 }
