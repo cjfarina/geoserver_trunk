@@ -72,10 +72,8 @@ public class InsertElementTypeDecoder extends SimpleDecoder<EObject> {
 
         final InsertElementType insertElement = factory.createInsertElementType();
 
-        String namespaceURI = r.getNamespaceURI("f");
-        SimpleFeatureSequenceDecoder<SimpleFeature> sequenceDecoder = new SimpleFeatureSequenceDecoder<SimpleFeature>(
-                namespaceURI, 1, 1);
-        sequenceDecoder.add(new SimpleFeatureDecoder(catalog, namespaceURI), 1, Integer.MAX_VALUE);
+        SimpleFeatureSequenceDecoder<SimpleFeature> sequenceDecoder = new SimpleFeatureSequenceDecoder<SimpleFeature>(1, 1);
+        sequenceDecoder.add(new SimpleFeatureDecoder(catalog), 1, Integer.MAX_VALUE);
 
         r.nextTag();
         Iterator<SimpleFeature> iterator = sequenceDecoder.decode(r);

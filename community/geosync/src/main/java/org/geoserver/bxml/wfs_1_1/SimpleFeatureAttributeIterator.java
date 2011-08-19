@@ -16,9 +16,6 @@ import org.gvsig.bxml.stream.BxmlStreamReader;
  */
 public class SimpleFeatureAttributeIterator extends BxmlElementIterator {
 
-    /** The namespace. */
-    private final String namespace;
-
     /**
      * Instantiates a new simple feature attribute iterator.
      * 
@@ -27,9 +24,8 @@ public class SimpleFeatureAttributeIterator extends BxmlElementIterator {
      * @param namespace
      *            the namespace
      */
-    public SimpleFeatureAttributeIterator(final BxmlStreamReader reader, final String namespace) {
+    public SimpleFeatureAttributeIterator(final BxmlStreamReader reader) {
         super(reader, new HashSet<QName>());
-        this.namespace = namespace;
     }
 
     /**
@@ -39,7 +35,7 @@ public class SimpleFeatureAttributeIterator extends BxmlElementIterator {
      *            the element name
      * @return true, if is expected element
      */
-    protected boolean isExpectedElement(QName elementName, final BxmlStreamReader reader) {
+    protected boolean isExpectedElement(QName elementName) {
         return true;
     }
 

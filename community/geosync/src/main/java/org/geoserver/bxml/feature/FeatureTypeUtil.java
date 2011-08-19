@@ -11,9 +11,6 @@ import org.gvsig.bxml.stream.BxmlStreamReader;
  */
 public class FeatureTypeUtil {
 
-    /** The Constant FEATURE_PREFIX. */
-    private static final String FEATURE_PREFIX = "f:";
-
     /**
      * Builds the feature type name.
      * 
@@ -26,16 +23,18 @@ public class FeatureTypeUtil {
     public static QName buildFeatureTypeName(BxmlStreamReader r, QName elementName) {
         QName name = r.getElementName();
 
-        String namespaceURI = r.getNamespaceURI("f");
-
         if (elementName.equals(name)) {
             if (r.getAttributeValue(null, "typeName") != null) {
 
                 String value = r.getAttributeValue(null, "typeName");
-                if (value.startsWith(FEATURE_PREFIX)) {
-                    value = value.substring(2);
+                String namespaceURI = null;
+                String localPart = value;
+                if (value.indexOf(':') != -1) {
+                    String prefix = value.substring(0, value.indexOf(':'));
+                    namespaceURI = r.getNamespaceURI(prefix);
+                    localPart = value.substring(value.indexOf(':') + 1);
                 }
-                QName typeNameValue = new QName(namespaceURI, value);
+                QName typeNameValue = new QName(namespaceURI, localPart);
                 return typeNameValue;
             }
         }
@@ -53,9 +52,11 @@ public class FeatureTypeUtil {
      */
     public static QName buildQName(String nameString, String namespaceURI) {
         QName qName = null;
-        if (nameString.startsWith(FEATURE_PREFIX)) {
-            qName = new QName(namespaceURI, nameString.substring(2));
+        String localPart = nameString;
+        if (nameString.indexOf(':') != -1) {
+            localPart = nameString.substring(nameString.indexOf(':') + 1);
         }
+        qName = new QName(namespaceURI, localPart);
         return qName;
     }
 }

@@ -17,19 +17,6 @@ import org.gvsig.bxml.stream.EventType;
  */
 public class SimpleFeatureAttributeDecoder implements Decoder<Object> {
 
-    /** The namespace. */
-    private final String namespace;
-
-    /**
-     * Instantiates a new simple feature attribute decoder.
-     * 
-     * @param namespace
-     *            the namespace
-     */
-    public SimpleFeatureAttributeDecoder(String namespace) {
-        this.namespace = namespace;
-    }
-
     /**
      * Decode.
      * 
@@ -56,7 +43,7 @@ public class SimpleFeatureAttributeDecoder implements Decoder<Object> {
      */
     @Override
     public boolean canHandle(QName name) {
-        return namespace.equals(name.getNamespaceURI());
+        return true;
     }
 
     /**

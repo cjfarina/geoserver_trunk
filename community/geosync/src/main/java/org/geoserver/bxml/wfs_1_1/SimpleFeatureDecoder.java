@@ -28,9 +28,6 @@ import com.google.common.collect.Iterators;
  */
 public class SimpleFeatureDecoder implements Decoder<SimpleFeature> {
 
-    /** The namespace. */
-    private final String namespace;
-
     /** The catalog. */
     private final Catalog catalog;
 
@@ -42,8 +39,7 @@ public class SimpleFeatureDecoder implements Decoder<SimpleFeature> {
      * @param namespaceURI
      *            the namespace uri
      */
-    public SimpleFeatureDecoder(Catalog catalog, String namespaceURI) {
-        this.namespace = namespaceURI;
+    public SimpleFeatureDecoder(Catalog catalog) {
         this.catalog = catalog;
     }
 
@@ -68,10 +64,9 @@ public class SimpleFeatureDecoder implements Decoder<SimpleFeature> {
         SimpleFeatureBuilder builder = new SimpleFeatureBuilder((SimpleFeatureType) featureType);
         String featureId = r.getAttributeValue(null, id.getLocalPart());
 
-        SimpleFeatureSequenceDecoder<Object> seq = new SimpleFeatureSequenceDecoder<Object>(
-                namespace, 1, 1);
+        SimpleFeatureSequenceDecoder<Object> seq = new SimpleFeatureSequenceDecoder<Object>(1, 1);
         SimpleFeatureAttributes simpleFeatureAttributes = new SimpleFeatureAttributes();
-        seq.add(new SetterDecoder<Object>(new SimpleFeatureAttributeDecoder(namespace),
+        seq.add(new SetterDecoder<Object>(new SimpleFeatureAttributeDecoder(),
                 simpleFeatureAttributes, "attributes"), 0, Integer.MAX_VALUE);
 
         r.nextTag();
@@ -96,7 +91,7 @@ public class SimpleFeatureDecoder implements Decoder<SimpleFeature> {
      */
     @Override
     public boolean canHandle(QName name) {
-        return namespace.equals(name.getNamespaceURI());
+        return true;
     }
 
     /**

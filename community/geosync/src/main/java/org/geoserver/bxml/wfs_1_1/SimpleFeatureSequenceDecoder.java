@@ -19,9 +19,6 @@ import org.gvsig.bxml.stream.BxmlStreamReader;
  */
 public class SimpleFeatureSequenceDecoder<T> extends SequenceDecoder<T> {
 
-    /** The namespace. */
-    private final String namespace;
-
     /**
      * Instantiates a new simple feature sequence decoder.
      * 
@@ -32,10 +29,8 @@ public class SimpleFeatureSequenceDecoder<T> extends SequenceDecoder<T> {
      * @param maxOccurs
      *            the max occurs
      */
-    public SimpleFeatureSequenceDecoder(final String namespace, final int minOccurs,
-            final int maxOccurs) {
+    public SimpleFeatureSequenceDecoder(final int minOccurs, final int maxOccurs) {
         super(minOccurs, maxOccurs);
-        this.namespace = namespace;
     }
 
     /**
@@ -49,7 +44,7 @@ public class SimpleFeatureSequenceDecoder<T> extends SequenceDecoder<T> {
      */
     @Override
     protected BxmlElementIterator buildIterator(BxmlStreamReader r, Set<QName> sequenceNames) {
-        return new SimpleFeatureAttributeIterator(r, namespace);
+        return new SimpleFeatureAttributeIterator(r);
     }
 
 }

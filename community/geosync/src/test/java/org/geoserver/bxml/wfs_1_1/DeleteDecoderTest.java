@@ -2,7 +2,6 @@ package org.geoserver.bxml.wfs_1_1;
 
 import javax.xml.namespace.QName;
 
-import junit.framework.Test;
 import net.opengis.wfs.DeleteElementType;
 
 import org.geoserver.bxml.BxmlTestSupport;
