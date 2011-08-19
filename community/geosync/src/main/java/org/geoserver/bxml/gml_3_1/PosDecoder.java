@@ -57,14 +57,14 @@ public class PosDecoder implements Decoder<CoordinateSequence> {
 
             }
         }
-
-        Double[] arrayCoord = new Double[coords.size()];
+        
+        double[] arrayCoord = new double[coords.size()];
         for (int i = 0; i < arrayCoord.length; i++) {
             arrayCoord[i] = coords.get(i);
         }
 
         dimension = dimensionAtt == null ? dimension : Integer.parseInt(dimensionAtt);
-        return new PackedCoordinateSequence.Double(ArrayUtils.toPrimitive(arrayCoord), dimension);
+        return new PackedCoordinateSequence.Double(arrayCoord, dimension);
     }
 
     /**

@@ -3,7 +3,6 @@ package org.geoserver.bxml.wfs_1_1;
 import static org.mockito.Matchers.eq;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
-import junit.framework.Test;
 import net.opengis.wfs.InsertElementType;
 
 import org.geoserver.bxml.BxmlTestSupport;
