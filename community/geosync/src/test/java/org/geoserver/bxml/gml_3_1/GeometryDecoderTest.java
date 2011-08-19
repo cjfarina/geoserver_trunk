@@ -18,13 +18,6 @@ import com.vividsolutions.jts.geom.Polygon;
 
 public class GeometryDecoderTest extends BxmlTestSupport {
 
-    /**
-     * This is a READ ONLY TEST so we can use one time setup
-     */
-    public static Test suite() {
-        return new OneTimeTestSetup(new GeometryDecoderTest());
-    }
-
     public void testLinearRingPos() throws Exception {
         BxmlStreamReader reader = getReader("linearRingPos");
         reader.nextTag();

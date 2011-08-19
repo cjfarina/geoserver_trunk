@@ -11,13 +11,6 @@ import org.gvsig.bxml.stream.BxmlStreamReader;
 
 public class FeedDecoderTest extends AtomTestSupport {
 
-    /**
-     * This is a READ ONLY TEST so we can use one time setup
-     */
-    public static Test suite() {
-        return new OneTimeTestSetup(new FeedDecoderTest());
-    }
-
     public void testFeed1() throws Exception {
         BxmlStreamReader reader = super.getReader("feed1");
         reader.nextTag();

@@ -23,16 +23,8 @@ public class FilterDecoderTest extends BxmlTestSupport {
 
     FilterDecoder decoder;
 
-    /**
-     * This is a READ ONLY TEST so we can use one time setup
-     */
-    public static Test suite() {
-        return new OneTimeTestSetup(new FilterDecoderTest());
-    }
-
     @Override
-    protected void setUpInternal() throws Exception {
-        super.setUpInternal();
+    protected void setUp() throws Exception {
         decoder = new FilterDecoder();
     }
 

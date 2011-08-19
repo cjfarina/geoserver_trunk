@@ -22,13 +22,6 @@ import com.vividsolutions.jts.geom.Point;
 
 public class InsertDecoderTest extends BxmlTestSupport {
 
-    /**
-     * This is a READ ONLY TEST so we can use one time setup
-     */
-    public static Test suite() {
-        return new OneTimeTestSetup(new InsertDecoderTest());
-    }
-
     @SuppressWarnings({ "unchecked", "rawtypes" })
     protected Catalog buildCatalog(Class[] columnTypes) throws Exception {
         Name typeName = new NameImpl("http://opengeo.org/osm", "planet_osm_point");

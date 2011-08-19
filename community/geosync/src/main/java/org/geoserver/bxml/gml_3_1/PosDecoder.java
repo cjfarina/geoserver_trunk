@@ -44,13 +44,13 @@ public class PosDecoder implements Decoder<CoordinateSequence> {
         final String dimensionAtt = r.getAttributeValue(null, "dimension");
 
         SequenceDecoder seq = new SequenceDecoder<Double[]>(1, Integer.MAX_VALUE);
-        seq.add(new PrimitiveListDecoder<Double>(pos, Double.class), 1, Integer.MAX_VALUE);
+        seq.add(new PrimitiveListDecoder<double[]>(pos, double[].class), 1, Integer.MAX_VALUE);
 
-        final Iterator<Double[]> iterator = seq.decode(r);
+        final Iterator<double[]> iterator = seq.decode(r);
         List<Double> coords = new ArrayList<Double>();
         int dimension = 2;
         while (iterator.hasNext()) {
-            Double[] coord = iterator.next();
+            double[] coord = iterator.next();
             dimension = coord.length;
             for (int i = 0; i < coord.length; i++) {
                 coords.add(coord[i]);

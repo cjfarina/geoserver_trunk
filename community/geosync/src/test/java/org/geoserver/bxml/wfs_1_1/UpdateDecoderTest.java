@@ -19,13 +19,6 @@ import com.vividsolutions.jts.geom.Polygon;
 
 public class UpdateDecoderTest extends BxmlTestSupport {
 
-    /**
-     * This is a READ ONLY TEST so we can use one time setup
-     */
-    public static Test suite() {
-        return new OneTimeTestSetup(new UpdateDecoderTest());
-    }
-
     public void testFeedDecodeUpdate() throws Exception {
 
         BxmlStreamReader reader = super.getReader("update1");

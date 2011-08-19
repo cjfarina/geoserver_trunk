@@ -10,6 +10,8 @@ import org.geoserver.bxml.Decoder;
 import org.gvsig.bxml.stream.BxmlStreamReader;
 import org.gvsig.bxml.stream.EventType;
 
+import com.google.common.base.Preconditions;
+
 /**
  * This class parses an element with an array of primitive value and return this value as an in an
  * array of <T>.
@@ -19,7 +21,7 @@ import org.gvsig.bxml.stream.EventType;
  * 
  * @author cfarina
  */
-public class PrimitiveListDecoder<T> implements Decoder<T[]> {
+public class PrimitiveListDecoder<T> implements Decoder<T> {
 
     /** The name. */
     private final QName name;
@@ -36,6 +38,8 @@ public class PrimitiveListDecoder<T> implements Decoder<T[]> {
      *            the type
      */
     public PrimitiveListDecoder(final QName name, Class<T> type) {
+        Preconditions.checkArgument(type.getComponentType() != null);
+        Preconditions.checkArgument(type.getComponentType().isPrimitive());
         this.name = name;
         this.type = type;
     }
@@ -50,11 +54,11 @@ public class PrimitiveListDecoder<T> implements Decoder<T[]> {
      *             the exception
      */
     @Override
-    public T[] decode(BxmlStreamReader r) throws Exception {
+    public T decode(BxmlStreamReader r) throws Exception {
         r.require(EventType.START_ELEMENT, null, name.getLocalPart());
         EventType eventType = r.next();
 
-        T[] values = null;
+        T values = null;
         if (eventType.isValue()) {
             values = new PrimitiveListValueDecoder<T>(type).decode(r);
         }

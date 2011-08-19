@@ -18,10 +18,6 @@ public class PrimitivesValueDecoder implements ValueDecoder<Object> {
     final private PrimitiveValueDecoder<Object> primitivesValueDecoder = new PrimitiveValueDecoder<Object>(
             Object.class);
 
-    /** The primitives list value decoder. */
-    final private PrimitiveListValueDecoder<Object> primitivesListValueDecoder = new PrimitiveListValueDecoder<Object>(
-            Object.class);
-
     /**
      * Decode.
      * 
@@ -44,7 +40,8 @@ public class PrimitivesValueDecoder implements ValueDecoder<Object> {
         if (EventType.VALUE_STRING == type) {
             value = stringDecoder.decode(r);
         } else if (r.getValueCount() > 1) {
-            value = primitivesListValueDecoder.decode(r);
+            PrimitiveListValueDecoder decoder = PrimitiveListValueDecoderFactory.build(type);
+            value = decoder.decode(r);
         } else {
             value = primitivesValueDecoder.decode(r);
         }

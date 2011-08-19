@@ -54,10 +54,10 @@ public class EnvelopeDecoder extends AbstractTypeDecoder<ReferencedEnvelope> {
         ChoiceDecoder<Object> choice = new ChoiceDecoder<Object>();
 
         EnvelopeParams params = new EnvelopeParams();
-        choice.addOption(new SetterDecoder<Object>(new PrimitiveListDecoder<Double>(lowerCorner,
-                Double.class), params, "lowerCornerValues"));
-        choice.addOption(new SetterDecoder<Object>(new PrimitiveListDecoder<Double>(upperCorner,
-                Double.class), params, "uperCornerValues"));
+        choice.addOption(new SetterDecoder<Object>(new PrimitiveListDecoder<double[]>(lowerCorner,
+                double[].class), params, "lowerCornerValues"));
+        choice.addOption(new SetterDecoder<Object>(new PrimitiveListDecoder<double[]>(upperCorner,
+                double[].class), params, "uperCornerValues"));
 
         SequenceDecoder<Object> seq = new SequenceDecoder<Object>(1, 1);
         seq.add(choice, 0, Integer.MAX_VALUE);
@@ -81,17 +81,17 @@ public class EnvelopeDecoder extends AbstractTypeDecoder<ReferencedEnvelope> {
     public class EnvelopeParams {
 
         /** The lower corner values. */
-        private Double[] lowerCornerValues;
+        private double[] lowerCornerValues;
 
         /** The uper corner values. */
-        private Double[] uperCornerValues;
+        private double[] uperCornerValues;
 
         /**
          * Gets the uper corner values.
          * 
          * @return the uper corner values
          */
-        public Double[] getUperCornerValues() {
+        public double[] getUperCornerValues() {
             return uperCornerValues;
         }
 
@@ -101,7 +101,7 @@ public class EnvelopeDecoder extends AbstractTypeDecoder<ReferencedEnvelope> {
          * @param uperCornerValues
          *            the new uper corner values
          */
-        public void setUperCornerValues(Double[] uperCornerValues) {
+        public void setUperCornerValues(double[] uperCornerValues) {
             this.uperCornerValues = uperCornerValues;
         }
 
@@ -110,7 +110,7 @@ public class EnvelopeDecoder extends AbstractTypeDecoder<ReferencedEnvelope> {
          * 
          * @return the lower corner values
          */
-        public Double[] getLowerCornerValues() {
+        public double[] getLowerCornerValues() {
             return lowerCornerValues;
         }
 
@@ -120,7 +120,7 @@ public class EnvelopeDecoder extends AbstractTypeDecoder<ReferencedEnvelope> {
          * @param lowerCornerValues
          *            the new lower corner values
          */
-        public void setLowerCornerValues(Double[] lowerCornerValues) {
+        public void setLowerCornerValues(double[] lowerCornerValues) {
             this.lowerCornerValues = lowerCornerValues;
         }
     }

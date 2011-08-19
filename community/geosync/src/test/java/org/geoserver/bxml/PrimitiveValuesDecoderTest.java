@@ -15,13 +15,6 @@ import org.geotools.feature.type.DateUtil;
 
 public class PrimitiveValuesDecoderTest extends PrimitiveValuesTestSupport {
 
-    /**
-     * This is a READ ONLY TEST so we can use one time setup
-     */
-    public static Test suite() {
-        return new OneTimeTestSetup(new PrimitiveValuesDecoderTest());
-    }
-
     public void testReadBoolean() throws Exception {
         QName testElement = new QName("test");
         testDecodeValue(testElement, "true", true, new PrimitiveDecoder<Boolean>(testElement,
@@ -83,69 +76,69 @@ public class PrimitiveValuesDecoderTest extends PrimitiveValuesTestSupport {
     public void testReadListBoolean() throws Exception {
         QName testElement = new QName("test");
         boolean[] expected = new boolean[] { true, false, true };
-        Boolean[] actual = (Boolean[]) getDecodedValue(testElement, expected,
-                new PrimitiveListDecoder<Boolean>(testElement, Boolean.class));
-        assertEqualsArray(expected, ArrayUtils.toPrimitive(actual));
+        boolean[] actual = (boolean[]) getDecodedValue(testElement, expected,
+                new PrimitiveListDecoder<boolean[]>(testElement, boolean[].class));
+        assertEqualsArray(expected, actual);
 
         String insert2 = "true false true";
-        actual = (Boolean[]) getDecodedValue(testElement, insert2,
-                new PrimitiveListDecoder<Boolean>(testElement, Boolean.class));
-        assertEqualsArray(expected, ArrayUtils.toPrimitive(actual));
+        actual = (boolean[]) getDecodedValue(testElement, insert2,
+                new PrimitiveListDecoder<boolean[]>(testElement, boolean[].class));
+        assertEqualsArray(expected, actual);
     }
 
     public void testReadListByte() throws Exception {
         QName testElement = new QName("test");
         byte[] expected = new byte[] { 10, 25, 50 };
-        Byte[] actual = (Byte[]) getDecodedValue(testElement, expected,
-                new PrimitiveListDecoder<Byte>(testElement, Byte.class));
-        assertEqualsArray(expected, ArrayUtils.toPrimitive(actual));
+        byte[] actual = (byte[]) getDecodedValue(testElement, expected,
+                new PrimitiveListDecoder<byte[]>(testElement, byte[].class));
+        assertEqualsArray(expected, actual);
 
         String insert2 = "10 25 50";
-        actual = (Byte[]) getDecodedValue(testElement, insert2, new PrimitiveListDecoder<Byte>(
-                testElement, Byte.class));
-        assertEqualsArray(expected, ArrayUtils.toPrimitive(actual));
+        actual = (byte[]) getDecodedValue(testElement, insert2, new PrimitiveListDecoder<byte[]>(
+                testElement, byte[].class));
+        assertEqualsArray(expected, actual);
     }
 
     public void testReadListInteger() throws Exception {
         QName testElement = new QName("test");
         int[] expected = new int[] { 10, 25, 50 };
-        Integer[] actual = (Integer[]) getDecodedValue(testElement, expected,
-                new PrimitiveListDecoder<Integer>(testElement, Integer.class));
-        assertEqualsArray(expected, ArrayUtils.toPrimitive(actual));
+        int[] actual = (int[]) getDecodedValue(testElement, expected,
+                new PrimitiveListDecoder<int[]>(testElement, int[].class));
+        assertEqualsArray(expected, actual);
 
         String insert2 = "10 25 50";
-        actual = (Integer[]) getDecodedValue(testElement, insert2,
-                new PrimitiveListDecoder<Integer>(testElement, Integer.class));
-        assertEqualsArray(expected, ArrayUtils.toPrimitive(actual));
+        actual = (int[]) getDecodedValue(testElement, insert2,
+                new PrimitiveListDecoder<int[]>(testElement, int[].class));
+        assertEqualsArray(expected, actual);
     }
 
     public void testReadListLong() throws Exception {
         QName testElement = new QName("test");
         long[] expected = new long[] { 10l, 25l, 50l };
-        Long[] actual = (Long[]) getDecodedValue(testElement, expected,
-                new PrimitiveListDecoder<Long>(testElement, Long.class));
-        assertEqualsArray(expected, ArrayUtils.toPrimitive(actual));
+        long[] actual = (long[]) getDecodedValue(testElement, expected,
+                new PrimitiveListDecoder<long[]>(testElement, long[].class));
+        assertEqualsArray(expected, actual);
 
         String insert2 = "10 25 50";
-        actual = (Long[]) getDecodedValue(testElement, insert2, new PrimitiveListDecoder<Long>(
-                testElement, Long.class));
-        assertEqualsArray(expected, ArrayUtils.toPrimitive(actual));
+        actual = (long[]) getDecodedValue(testElement, insert2, new PrimitiveListDecoder<long[]>(
+                testElement, long[].class));
+        assertEqualsArray(expected, actual);
     }
 
     public void testReadListFloat() throws Exception {
         QName testElement = new QName("test");
         float[] array = new float[] { 1.1f, 2.3f, 6.4f };
-        Float[] array2 = (Float[]) getDecodedValue(testElement, array,
-                new PrimitiveListDecoder<Float>(testElement, Float.class));
-        assertEqualsArray(array, ArrayUtils.toPrimitive(array2));
+        float[] array2 = (float[]) getDecodedValue(testElement, array,
+                new PrimitiveListDecoder<float[]>(testElement, float[].class));
+        assertEqualsArray(array, array2);
     }
 
     public void testReadListDouble() throws Exception {
         QName testElement = new QName("test");
         double[] array = new double[] { 1.1, 2.3, 6.4 };
-        Double[] array2 = (Double[]) getDecodedValue(testElement, array,
-                new PrimitiveListDecoder<Double>(testElement, Double.class));
-        assertEqualsArray(array, ArrayUtils.toPrimitive(array2));
+        double[] array2 = (double[]) getDecodedValue(testElement, array,
+                new PrimitiveListDecoder<double[]>(testElement, double[].class));
+        assertEqualsArray(array, array2);
     }
 
     public void testReadDate() throws Exception {

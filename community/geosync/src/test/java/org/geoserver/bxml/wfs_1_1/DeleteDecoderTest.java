@@ -12,13 +12,6 @@ import org.opengis.filter.Filter;
 
 public class DeleteDecoderTest extends BxmlTestSupport {
 
-    /**
-     * This is a READ ONLY TEST so we can use one time setup
-     */
-    public static Test suite() {
-        return new OneTimeTestSetup(new DeleteDecoderTest());
-    }
-
     public void testFeedDecodeDelete1() throws Exception {
 
         BxmlStreamReader reader = super.getReader("delete1");

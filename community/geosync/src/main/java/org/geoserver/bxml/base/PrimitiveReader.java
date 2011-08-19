@@ -62,7 +62,7 @@ public class PrimitiveReader<T> {
         }
 
         if (type.equals(Boolean.class)) {
-            return (T) new Boolean(value.toString());
+            return (T) Boolean.valueOf(value.toString());
         }
 
         if (type.equals(Double.class)) {
@@ -84,7 +84,7 @@ public class PrimitiveReader<T> {
         if (type.equals(Long.class)) {
             return (T) new Long(value.toString());
         }
-
+        
         return null;
     }
 
@@ -101,7 +101,7 @@ public class PrimitiveReader<T> {
      * @throws Exception
      *             the exception
      */
-    private Object readValue(BxmlStreamReader r, EventType type) throws IOException, Exception {
+    public Object readValue(BxmlStreamReader r, EventType type) throws IOException, Exception {
         Object value = null;
         switch (type) {
         case VALUE_BOOL:

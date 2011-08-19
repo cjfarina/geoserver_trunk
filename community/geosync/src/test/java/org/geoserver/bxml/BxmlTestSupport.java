@@ -3,13 +3,16 @@ package org.geoserver.bxml;
 import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
 import java.io.InputStream;
+import java.util.logging.Logger;
 
 import javax.xml.stream.XMLInputFactory;
 
+import junit.framework.TestCase;
+
 import org.apache.commons.io.IOUtils;
-import org.geoserver.gss.functional.v_1_0_0.GSSFunctionalTestSupport;
 import org.geotools.filter.AttributeExpressionImpl;
 import org.geotools.filter.LiteralExpressionImpl;
+import org.geotools.util.logging.Logging;
 import org.gvsig.bxml.adapt.sax.XmlToBxmlSaxConverter;
 import org.gvsig.bxml.adapt.stax.XmlStreamReaderAdapter;
 import org.gvsig.bxml.stream.BxmlFactoryFinder;
@@ -24,10 +27,12 @@ import com.vividsolutions.jts.geom.MultiPoint;
 import com.vividsolutions.jts.geom.Point;
 import com.vividsolutions.jts.geom.Polygon;
 
-public abstract class BxmlTestSupport extends GSSFunctionalTestSupport {
+public abstract class BxmlTestSupport extends TestCase {
 
     private boolean isBinary;
 
+    private static final Logger LOGGER = Logging.getLogger(BxmlTestSupport.class);
+    
     @Override
     protected void runTest() throws Throwable {
 

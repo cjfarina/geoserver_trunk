@@ -38,11 +38,11 @@ public class PosListDecoder implements Decoder<CoordinateSequence> {
 
         final String dimensionAtt = r.getAttributeValue(null, "dimension");
 
-        final Double[] coords = new PrimitiveListDecoder<Double>(posList, Double.class).decode(r);
+        final double[] coords = new PrimitiveListDecoder<double[]>(posList, double[].class).decode(r);
 
         int dimension = dimensionAtt == null ? 2 : Integer.parseInt(dimensionAtt);
         r.require(EventType.END_ELEMENT, null, null);
-        return new PackedCoordinateSequence.Double(ArrayUtils.toPrimitive(coords), dimension);
+        return new PackedCoordinateSequence.Double(coords, dimension);
     }
 
     /**

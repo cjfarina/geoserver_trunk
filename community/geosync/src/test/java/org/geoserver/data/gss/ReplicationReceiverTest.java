@@ -34,7 +34,7 @@ public class ReplicationReceiverTest extends BxmlTestSupport {
 
     private GSS gss;
 
-    @Override
+    /* @Override
     public void oneTimeSetUp() throws Exception {
         super.oneTimeSetUp();
         gf = new GeometryFactory();
@@ -165,6 +165,6 @@ public class ReplicationReceiverTest extends BxmlTestSupport {
         } else {
             return null;
         }
-    }
+    }*/
 
 }
