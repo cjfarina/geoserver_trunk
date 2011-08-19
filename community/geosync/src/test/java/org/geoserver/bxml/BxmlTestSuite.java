@@ -8,6 +8,7 @@ import org.geoserver.bxml.atom.FeedDecoderTest;
 import org.geoserver.bxml.filter_1_1.FilterDecoderTest;
 import org.geoserver.bxml.gml_3_1.GeometryDecoderTest;
 import org.geoserver.bxml.wfs_1_1.DeleteDecoderTest;
+import org.geoserver.bxml.wfs_1_1.InsertDecoderTest;
 import org.geoserver.bxml.wfs_1_1.UpdateDecoderTest;
 
 public class BxmlTestSuite {
@@ -21,6 +22,7 @@ public class BxmlTestSuite {
         suite.addTestSuite(GeometryDecoderTest.class);
         suite.addTestSuite(DeleteDecoderTest.class);
         suite.addTestSuite(UpdateDecoderTest.class);
+        suite.addTestSuite(InsertDecoderTest.class);
         suite.addTestSuite(PrimitiveValuesDecoderTest.class);
 
         return suite;

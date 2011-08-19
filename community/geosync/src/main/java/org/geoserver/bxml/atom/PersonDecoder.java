@@ -59,7 +59,7 @@ public class PersonDecoder extends SimpleDecoder<PersonImpl> {
 
         // if empty element
         if (isEndElement(r)) {
-            return null;
+            return person;
         }
         Iterator<Object> iterator = seq.decode(r);
         Iterators.toArray(iterator, Object.class);

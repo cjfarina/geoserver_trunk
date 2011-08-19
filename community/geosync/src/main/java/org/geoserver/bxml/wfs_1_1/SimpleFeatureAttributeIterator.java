@@ -39,8 +39,8 @@ public class SimpleFeatureAttributeIterator extends BxmlElementIterator {
      *            the element name
      * @return true, if is expected element
      */
-    protected boolean isExpectedElement(QName elementName) {
-        return elementName.getNamespaceURI().equals(namespace);
+    protected boolean isExpectedElement(QName elementName, final BxmlStreamReader reader) {
+        return true;
     }
 
 }

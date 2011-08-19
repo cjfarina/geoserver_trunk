@@ -1,12 +1,18 @@
 package org.geoserver.data.gss;
 
+import java.io.ByteArrayInputStream;
+import java.io.ByteArrayOutputStream;
 import java.io.IOException;
+import java.io.InputStream;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
 
-import org.geoserver.bxml.BxmlTestSupport;
+import javax.xml.stream.XMLInputFactory;
+
+import org.apache.commons.io.IOUtils;
 import org.geoserver.bxml.atom.FeedDecoder;
+import org.geoserver.gss.functional.v_1_0_0.GSSFunctionalTestSupport;
 import org.geoserver.gss.impl.GSS;
 import org.geoserver.gss.internal.atom.FeedImpl;
 import org.geoserver.platform.GeoServerExtensions;
@@ -15,7 +21,12 @@ import org.geotools.factory.CommonFactoryFinder;
 import org.geotools.feature.FeatureCollection;
 import org.geotools.feature.FeatureIterator;
 import org.geotools.feature.NameImpl;
+import org.gvsig.bxml.adapt.sax.XmlToBxmlSaxConverter;
+import org.gvsig.bxml.adapt.stax.XmlStreamReaderAdapter;
+import org.gvsig.bxml.stream.BxmlFactoryFinder;
+import org.gvsig.bxml.stream.BxmlInputFactory;
 import org.gvsig.bxml.stream.BxmlStreamReader;
+import org.gvsig.bxml.util.ProgressListener;
 import org.opengis.feature.Feature;
 import org.opengis.feature.Property;
 import org.opengis.feature.type.FeatureType;
@@ -26,15 +37,17 @@ import org.opengis.filter.FilterFactory2;
 import com.vividsolutions.jts.geom.Coordinate;
 import com.vividsolutions.jts.geom.GeometryFactory;
 
-public class ReplicationReceiverTest extends BxmlTestSupport {
+public class ReplicationReceiverTest extends GSSFunctionalTestSupport {
 
     private GeometryFactory gf = new GeometryFactory();
 
     private FilterFactory2 ff;
 
     private GSS gss;
+    
+    private boolean isBinary;
 
-    /* @Override
+    @Override
     public void oneTimeSetUp() throws Exception {
         super.oneTimeSetUp();
         gf = new GeometryFactory();
@@ -52,7 +65,7 @@ public class ReplicationReceiverTest extends BxmlTestSupport {
     }
 
     public void testUpdate() throws Exception {
-        BxmlStreamReader reader = super.getReader("replicationReceiverUpdate");
+        BxmlStreamReader reader = getReader("replicationReceiverUpdate");
 
         FeedDecoder decoder = new FeedDecoder();
 
@@ -74,7 +87,7 @@ public class ReplicationReceiverTest extends BxmlTestSupport {
     }
 
     public void testDelete() throws Exception {
-        BxmlStreamReader reader = super.getReader("replicationReceiverDelete");
+        BxmlStreamReader reader = getReader("replicationReceiverDelete");
 
         FeedDecoder decoder = new FeedDecoder();
 
@@ -93,7 +106,7 @@ public class ReplicationReceiverTest extends BxmlTestSupport {
     }
 
     public void testInsert() throws Exception {
-        BxmlStreamReader reader = super.getReader("replicationReceiverInsert");
+        BxmlStreamReader reader = getReader("replicationReceiverInsert");
 
         FeedDecoder decoder = new FeedDecoder();
 
@@ -113,7 +126,7 @@ public class ReplicationReceiverTest extends BxmlTestSupport {
     }
 
     public void testInsert2() throws Exception {
-        BxmlStreamReader reader = super.getReader("replicationReceiverInsert2");
+        BxmlStreamReader reader = getReader("replicationReceiverInsert2");
 
         FeedDecoder decoder = new FeedDecoder();
 
@@ -165,6 +178,71 @@ public class ReplicationReceiverTest extends BxmlTestSupport {
         } else {
             return null;
         }
-    }*/
+    }
+    
+    protected BxmlStreamReader getReader(final String resource) throws Exception {
+
+        final String xmlResource = resource + ".xml";
+        final String bxmlResource = resource + ".bxml";
+
+        final InputStream input;
+        if (isBinary) {
+            if (null == getClass().getResourceAsStream(bxmlResource)) {
+                LOGGER.warning(" ----------- BXML resource " + bxmlResource + " not found by "
+                        + getClass().getName() + ", encoding XML resource...");
+                input = getClass().getResourceAsStream(xmlResource);
+            } else {
+                input = getClass().getResourceAsStream(bxmlResource);
+            }
+        } else {
+            input = getClass().getResourceAsStream(xmlResource);
+        }
+
+        return getReader(input);
+    }
+
+    protected BxmlStreamReader getReader(final InputStream in) throws Exception {
+        final ByteArrayOutputStream buff = new ByteArrayOutputStream();
+        IOUtils.copy(in, buff);
+
+        final boolean dataIsBinary;
+        if (1 == buff.toByteArray()[0]) {
+            dataIsBinary = true;
+        } else {
+            dataIsBinary = false;
+        }
+
+        BxmlStreamReader reader;
+
+        if (dataIsBinary) {
+            reader = getBxmlReader(new ByteArrayInputStream(buff.toByteArray()));
+        } else {
+            reader = getXmlReader(new ByteArrayInputStream(buff.toByteArray()));
+        }
+        if (isBinary && !dataIsBinary) {
+            ByteArrayOutputStream out = new ByteArrayOutputStream();
+            new XmlToBxmlSaxConverter().convert(new ByteArrayInputStream(buff.toByteArray()), out,
+                    ProgressListener.NULL, true);
+            reader = getBxmlReader(new ByteArrayInputStream(out.toByteArray()));
+        }
+
+        return reader;
+    }
+
+    private BxmlStreamReader getBxmlReader(final InputStream input) throws Exception {
+        BxmlInputFactory factory = BxmlFactoryFinder.newInputFactory();
+
+        factory.setNamespaceAware(true);
+        BxmlStreamReader reader = factory.createScanner(input);
+        return reader;
+    }
+
+    private BxmlStreamReader getXmlReader(final InputStream input) throws Exception {
+        XMLInputFactory factory = XMLInputFactory.newInstance();
+
+        factory.setProperty(XMLInputFactory.IS_NAMESPACE_AWARE, Boolean.TRUE);
+        BxmlStreamReader reader = new XmlStreamReaderAdapter(factory, input);
+        return reader;
+    }
 
 }
